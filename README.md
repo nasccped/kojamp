@@ -1,6 +1,6 @@
-<h1 align=center> Kojamp Man </h1>
+<h1 align=center> Kojamp </h1>
 
-This is Kojamp Man, a Java/Kotlin project manager tool!
+This is Kojamp, a Java/Kotlin project manager tool!
 
 > [!WARNING]
 > 
