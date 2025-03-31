@@ -15,5 +15,6 @@ pub fn action(subcmd: &ArgMatches) {
         println!("Hello, {}    xD", name);
     } else {
         println!("You're saying hello, but... there's no one    :^(");
+        println!("Try using `hello --name <SOMEONE>`");
     }
 }
