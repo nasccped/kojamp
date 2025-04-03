@@ -20,7 +20,12 @@ impl KojampMainCommandUtils for Command {
     }
 
     fn add_about(self, env_struct: &KojampEnvStruct) -> Self {
-        self.about(env_struct.get_about())
+        self.about(
+            env_struct
+                .get_about()
+                .replace("Java", "\x1b[1;31mJava\x1b[0m")
+                .replace("Kotlin", "\x1b[1;33mKotlin\x1b[0m"),
+        )
     }
 
     fn add_author(self, env_struct: &KojampEnvStruct) -> Self {
