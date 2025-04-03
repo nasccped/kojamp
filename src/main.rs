@@ -4,5 +4,6 @@ pub mod utils;
 
 fn main() {
     let main_cli = kojamp::build_kojamp();
-    let _ = main_cli.run();
+    let out = main_cli.run();
+    main_cli.return_final_output(out);
 }
