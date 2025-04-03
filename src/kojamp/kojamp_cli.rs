@@ -9,37 +9,29 @@ pub const PROGRAM_AUTHOR: &str = "nasccped <pdbt.contact@gmail.com>";
 pub struct KojampCLI(Command);
 
 impl KojampCLI {
-    pub fn build(name: &'static str) -> Self {
+    pub fn new(name: &'static str) -> Self {
         KojampCLI(Command::new(name))
     }
 
-    fn take_inner_value(&self) -> Command {
-        self.0.clone()
+    pub fn add_version(self, version: &'static str) -> Self {
+        Self(self.0.version(version))
     }
 
-    pub fn add_version(&mut self, version: &'static str) {
-        let inner = self.take_inner_value();
-        self.0 = inner.version(version);
+    pub fn add_author(self, author: &'static str) -> Self {
+        Self(self.0.author(author))
     }
 
-    pub fn add_author(&mut self, author: &'static str) {
-        let inner = self.take_inner_value();
-        self.0 = inner.author(author);
-    }
-
-    pub fn add_about(&mut self, about: &'static str) {
-        let inner = self.take_inner_value();
-        self.0 = inner.about(about);
+    pub fn add_about(self, about: &'static str) -> Self {
+        Self(self.0.about(about))
     }
 
     #[allow(dead_code)]
-    pub fn add_subcommand(&mut self, sub: Command) {
-        let inner = self.take_inner_value();
-        self.0 = inner.subcommand(sub);
+    pub fn add_subcommand(self, sub: Command) -> Self {
+        Self(self.0.subcommand(sub))
     }
 
     pub fn run(&self) -> KojampOutStatus {
-        let inner = self.take_inner_value();
+        let inner = self.0.clone();
         inner.get_matches();
         KojampOutStatus(1)
     }
