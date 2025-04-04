@@ -1,4 +1,8 @@
-use clap::{error::ErrorKind, ArgMatches, Command, Error as ClapError};
+use clap::{
+    builder::{styling, Styles},
+    error::ErrorKind,
+    ArgMatches, Command, Error as ClapError,
+};
 
 pub const PROGRAM_NAME: &str = "kojamp";
 pub const PROGRAM_VERSION: &str = "0.0.1";
@@ -39,6 +43,14 @@ impl KojampOutput<TestCase, i32> for TestCase {
     }
 }
 
+pub fn gen_default_style() -> Styles {
+    Styles::styled()
+        .header(styling::AnsiColor::Green.on_default().bold())
+        .usage(styling::AnsiColor::Green.on_default().bold())
+        .literal(styling::AnsiColor::Cyan.on_default().bold())
+        .placeholder(styling::AnsiColor::Cyan.on_default())
+}
+
 impl KojampCLI {
     pub fn new(name: &'static str) -> Self {
         KojampCLI(Command::new(name))
@@ -54,6 +66,10 @@ impl KojampCLI {
 
     pub fn add_author(self, author: &'static str) -> Self {
         Self(self.0.author(author))
+    }
+
+    pub fn add_styles(&self, default_style: Styles) -> Self {
+        Self(self.get_inner_value().styles(default_style))
     }
 
     pub fn add_about(self, about: &'static str) -> Self {
@@ -78,7 +94,8 @@ impl KojampCLI {
 
     fn print_version(&self) {
         let inner = self.get_inner_value();
-        inner.render_version();
+        let version = inner.get_version();
+        println!("kojamp {}", version.unwrap());
     }
 
     pub fn get_action(&self) -> Result<ArgMatches, ClapError> {
@@ -90,6 +107,12 @@ impl KojampCLI {
         let output = match action {
             Ok(_) => {
                 let inner_output = TestCase::new(TestCase::ItsOk);
+
+                if std::env::args().count() == 1 {
+                    self.print_help();
+                    return inner_output;
+                }
+
                 inner_output.log_value();
                 inner_output
             }
