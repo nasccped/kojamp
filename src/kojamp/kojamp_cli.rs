@@ -1,4 +1,4 @@
-use clap::Command;
+use clap::{error::ErrorKind, ArgMatches, Command, Error as ClapError};
 
 pub const PROGRAM_NAME: &str = "kojamp";
 pub const PROGRAM_VERSION: &str = "0.0.1";
@@ -19,6 +19,7 @@ impl KojampOutput<TestCase, i32> for TestCase {
     fn new(default: TestCase) -> Self {
         default
     }
+
     fn update(&mut self, new_value: TestCase) {
         *self = new_value;
     }
@@ -64,18 +65,56 @@ impl KojampCLI {
         Self(self.0.subcommand(sub))
     }
 
-    pub fn run(&self) -> impl KojampOutput<TestCase, i32> {
-        let _unused_inner = self.get_inner_value();
-        let mut output = TestCase::new(TestCase::ItsOk);
-        println!("Value \x1b[1;32mbefore\x1b[0m update: (0)");
-        output.log_value();
-        output.update(TestCase::DefinitelyNotOk);
-        println!("Value \x1b[1;31mafter\x1b[0m update: (1)");
-        output.log_value();
+    fn unexpected_input(&self) {
+        println!("The given input(s) \x1b[1;31mcouldn't\x1b[0m be used!!");
+        println!("Probably due to invalid input format, or undefined subcommand...");
+        println!("Consider using \x1b[1;32m`kojamp --help`\x1b[0m");
+    }
+
+    fn print_help(&self) {
+        let mut inner = self.get_inner_value();
+        let _ = inner.print_help();
+    }
+
+    fn print_version(&self) {
+        let inner = self.get_inner_value();
+        inner.render_version();
+    }
+
+    pub fn get_action(&self) -> Result<ArgMatches, ClapError> {
+        let inner = self.get_inner_value();
+        inner.try_get_matches()
+    }
+
+    pub fn run(&self, action: Result<ArgMatches, ClapError>) -> impl KojampOutput<TestCase, i32> {
+        let output = match action {
+            Ok(_) => {
+                let inner_output = TestCase::new(TestCase::ItsOk);
+                inner_output.log_value();
+                inner_output
+            }
+            Err(x) => {
+                let mut inner_output = TestCase::new(TestCase::ItsOk);
+
+                match x.kind() {
+                    ErrorKind::DisplayHelp => {
+                        self.print_help();
+                    }
+                    ErrorKind::DisplayVersion => {
+                        self.print_version();
+                    }
+                    _ => {
+                        self.unexpected_input();
+                        inner_output.update(TestCase::DefinitelyNotOk);
+                    }
+                }
+                inner_output
+            }
+        };
         output
     }
 
-    pub fn return_final_output(&self, output: impl KojampOutput<TestCase, i32>) {
+    pub fn exit_with_output(&self, output: impl KojampOutput<TestCase, i32>) {
         match output.get_value() {
             Ok(_) => std::process::exit(0),
             Err(_) => std::process::exit(1),
