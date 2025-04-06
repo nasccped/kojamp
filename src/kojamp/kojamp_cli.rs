@@ -4,6 +4,8 @@ use clap::{
     ArgMatches, Command, Error as ClapError,
 };
 
+use super::kjc;
+
 pub const PROGRAM_NAME: &str = "kojamp";
 pub const PROGRAM_VERSION: &str = "0.0.1";
 pub const PROGRAM_ABOUT: &str =
@@ -11,37 +13,6 @@ pub const PROGRAM_ABOUT: &str =
 pub const PROGRAM_AUTHOR: &str = "nasccped <pdbt.contact@gmail.com>";
 
 pub struct KojampCLI(Command);
-
-use super::KojampOutput;
-
-pub enum TestCase {
-    ItsOk,
-    DefinitelyNotOk,
-}
-
-impl KojampOutput<TestCase, i32> for TestCase {
-    fn new(default: TestCase) -> Self {
-        default
-    }
-
-    fn update(&mut self, new_value: TestCase) {
-        *self = new_value;
-    }
-
-    fn log_value(&self) {
-        match self {
-            TestCase::ItsOk => println!("Everything is ok!"),
-            TestCase::DefinitelyNotOk => println!("Everything is wrong  Xd"),
-        }
-    }
-
-    fn get_value(&self) -> Result<i32, i32> {
-        match self {
-            TestCase::ItsOk => Ok(0),
-            TestCase::DefinitelyNotOk => Err(1),
-        }
-    }
-}
 
 pub fn gen_default_style() -> Styles {
     Styles::styled()
@@ -103,44 +74,40 @@ impl KojampCLI {
         inner.try_get_matches()
     }
 
-    pub fn run(&self, action: Result<ArgMatches, ClapError>) -> impl KojampOutput<TestCase, i32> {
-        let output = match action {
-            Ok(_) => {
-                let inner_output = TestCase::new(TestCase::ItsOk);
+    pub fn run(&self, action: Result<ArgMatches, ClapError>) -> i32 {
+        let mut output = 0;
 
-                if std::env::args().count() == 1 {
-                    self.print_help();
-                    return inner_output;
+        if let Err(x) = action {
+            match x.kind() {
+                ErrorKind::DisplayHelp => self.print_help(),
+                ErrorKind::DisplayVersion => self.print_version(),
+                _ => {
+                    self.unexpected_input();
+                    output += 1
                 }
-
-                inner_output.log_value();
-                inner_output
             }
-            Err(x) => {
-                let mut inner_output = TestCase::new(TestCase::ItsOk);
+            return output;
+        }
 
-                match x.kind() {
-                    ErrorKind::DisplayHelp => {
-                        self.print_help();
-                    }
-                    ErrorKind::DisplayVersion => {
-                        self.print_version();
-                    }
-                    _ => {
-                        self.unexpected_input();
-                        inner_output.update(TestCase::DefinitelyNotOk);
-                    }
-                }
-                inner_output
+        if std::env::args().count() == 1 {
+            self.print_help();
+            return output;
+        }
+
+        let action = action.unwrap();
+
+        match action.subcommand().unwrap() {
+            ("new", new_matching) => {
+                output = kjc::action_new(new_matching);
             }
-        };
+            _ => {
+                output += 1;
+            }
+        }
         output
     }
 
-    pub fn exit_with_output(&self, output: impl KojampOutput<TestCase, i32>) {
-        match output.get_value() {
-            Ok(_) => std::process::exit(0),
-            Err(_) => std::process::exit(1),
-        }
+    pub fn exit_with_output(&self, output: i32) {
+        std::process::exit(output);
     }
 }
