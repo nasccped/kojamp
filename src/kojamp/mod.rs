@@ -1,15 +1,13 @@
 mod kojamp_cli;
 mod kojamp_commands;
-mod kojamp_output;
 
 use kojamp_cli::{
     gen_default_style, KojampCLI, PROGRAM_ABOUT, PROGRAM_AUTHOR, PROGRAM_NAME, PROGRAM_VERSION,
 };
 use kojamp_commands as kjc;
-pub use kojamp_output::KojampOutput;
 
 pub fn build_kojamp() -> KojampCLI {
-    let subcommands = [(kjc::command_new(), kjc::action_new)];
+    let subcommands = [kjc::command_new()];
 
     let mut app = KojampCLI::new(PROGRAM_NAME)
         .add_styles(gen_default_style())
@@ -18,7 +16,7 @@ pub fn build_kojamp() -> KojampCLI {
         .add_about(PROGRAM_ABOUT);
 
     for sub in subcommands {
-        app = app.add_subcommand(sub.0);
+        app = app.add_subcommand(sub);
     }
 
     app
