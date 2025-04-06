@@ -82,9 +82,9 @@ impl KojampCLI {
     }
 
     fn unexpected_input(&self) {
-        println!("The given input(s) \x1b[1;31mcouldn't\x1b[0m be used!!");
+        println!("The given input(s) \x1b[1;31mcouldn't\x1b[0m be used!");
         println!("Probably due to invalid input format, or undefined subcommand...");
-        println!("Consider using \x1b[1;32m`kojamp --help`\x1b[0m");
+        println!("Consider using \x1b[1;36m`kojamp --help`\x1b[0m");
     }
 
     fn print_help(&self) {
