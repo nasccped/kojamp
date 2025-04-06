@@ -7,7 +7,7 @@ pub fn command_new() -> Command {
     Command::new(COMMAND_NAME).about(COMMAND_ABOUT)
 }
 
-pub fn action_new(mtc: ArgMatches) -> i32 {
+pub fn action_new(_mtc: ArgMatches) -> i32 {
     println!("This is printed when `new` command is called!");
     0
 }
