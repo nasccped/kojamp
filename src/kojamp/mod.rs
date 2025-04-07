@@ -16,7 +16,7 @@ pub fn build_kojamp() -> KojampCLI {
         .add_about(PROGRAM_ABOUT);
 
     for sub in subcommands {
-        app = app.add_subcommand(sub);
+        app = app.add_subcommand(sub, gen_default_style());
     }
 
     app
