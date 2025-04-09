@@ -47,21 +47,50 @@ pub fn command_new() -> Command {
 }
 
 pub fn action_new(mtc: &ArgMatches) -> i32 {
-    let (p_name, p_path, p_type, p_authors, git_repo, p_prompt): (
-        Option<&String>,
-        Option<&String>,
-        Option<&String>,
-        Option<Vec<&String>>,
-        Option<&bool>,
-        Option<&bool>,
+    let (name, path, project_type, authors, git_repo, prompt): (
+        Option<String>,
+        Option<String>,
+        Option<String>,
+        Option<Vec<String>>,
+        Option<bool>,
+        Option<bool>,
     ) = (
-        mtc.get_one("name"),
-        mtc.get_one("path"),
-        mtc.get_one("type"),
-        mtc.get_many("authors").map(|vals| vals.clone().collect()),
-        mtc.get_one("no-git"),
-        mtc.get_one("prompt"),
+        mtc.get_one("name").cloned(),
+        mtc.get_one("path").cloned(),
+        mtc.get_one("type").cloned(),
+        mtc.get_many("authors").map(|vals| vals.cloned().collect()),
+        mtc.get_one("no-git").cloned(),
+        mtc.get_one("prompt").cloned(),
     );
+
+    let items = [
+        ("Name", name),
+        ("Path", path),
+        ("Type", project_type),
+        (
+            "Author(s)",
+            match authors {
+                Some(vector) => Some(format!("{}{}{}", "[", vector.join(", "), "]")),
+                _ => None,
+            },
+        ),
+        (
+            "Git Initialization:",
+            if git_repo.unwrap_or(true) {
+                Some("true".to_string())
+            } else {
+                Some("false".to_string())
+            },
+        ),
+        (
+            "Prompt Mode",
+            if prompt.unwrap_or(true) {
+                Some("true".to_string())
+            } else {
+                Some("false".to_string())
+            },
+        ),
+    ];
 
     for (k, v) in items {
         println!("{}: {:?}", k, v);
