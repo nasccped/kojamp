@@ -9,7 +9,7 @@ pub fn command_new() -> Command {
             .value_name("NAME")
             .action(ArgAction::Set)
             .required(false)
-            .help("Specify the project's name (numeric starting isn't allowed)")
+            .help("Specify the project's name")
             .index(1),
         Arg::new("path")
             .value_name("PATH")
@@ -17,27 +17,55 @@ pub fn command_new() -> Command {
             .long("path")
             .short('P')
             .required(false)
-            .help("Specify the project's path (self name in kebab case as default)"),
-        Arg::new("author")
-            .value_name("AUTHOR")
+            .help("Specify the project's path (\x1b[93m[NAME]\x1b[0m in kebab case as default)"),
+        Arg::new("type")
+            .value_name(" java | kotlin ")
             .action(ArgAction::Set)
-            .long("author")
+            .long("type")
+            .short('T')
+            .required(false)
+            .help("Specify the project's language (Java or Kotlin)"),
+        Arg::new("authors")
+            .value_name("AUTHORS")
+            .action(ArgAction::Set)
+            .long("authors")
             .short('A')
             .required(false)
             .help("Specify the project's author(s) (comma separated)")
             .num_args(0..),
+        Arg::new("no-git")
+            .long("no-git")
+            .action(ArgAction::SetFalse)
+            .required(false)
+            .help("Disable git repository initialization"),
+        Arg::new("prompt")
+            .long("prompt")
+            .action(ArgAction::SetTrue)
+            .required(false)
+            .help("Concise way to new kojamp based projects (try it by using \x1b[93m`kojamp new --prompt`\x1b[0m)")
     ])
 }
 
 pub fn action_new(mtc: &ArgMatches) -> i32 {
-    let (name, path, author): (_, _, Option<Vec<&String>>) = (
-        mtc.get_one::<String>("name"),
-        mtc.get_one::<String>("path"),
-        mtc.get_many::<String>("author")
-            .map(|vals| vals.clone().collect()),
+    let (p_name, p_path, p_type, p_authors, git_repo, p_prompt): (
+        Option<&String>,
+        Option<&String>,
+        Option<&String>,
+        Option<Vec<&String>>,
+        Option<&bool>,
+        Option<&bool>,
+    ) = (
+        mtc.get_one("name"),
+        mtc.get_one("path"),
+        mtc.get_one("type"),
+        mtc.get_many("authors").map(|vals| vals.clone().collect()),
+        mtc.get_one("no-git"),
+        mtc.get_one("prompt"),
     );
 
-    println!("{:?}, {:?}, {:?}", name, path, author);
+    for (k, v) in items {
+        println!("{}: {:?}", k, v);
+    }
 
     0
 }
