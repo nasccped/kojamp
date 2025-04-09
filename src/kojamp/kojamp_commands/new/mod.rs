@@ -32,7 +32,7 @@ pub fn command_new() -> Command {
             .short('A')
             .required(false)
             .help("Specify the project's author(s) (comma separated)")
-            .num_args(0..),
+            .num_args(1..),
         Arg::new("no-git")
             .long("no-git")
             .action(ArgAction::SetFalse)
