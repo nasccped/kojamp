@@ -52,48 +52,40 @@ pub fn action_new(mtc: &ArgMatches) -> i32 {
         Option<String>,
         Option<String>,
         Option<Vec<String>>,
-        Option<bool>,
-        Option<bool>,
+        bool,
+        bool,
     ) = (
         mtc.get_one("name").cloned(),
         mtc.get_one("path").cloned(),
         mtc.get_one("type").cloned(),
         mtc.get_many("authors").map(|vals| vals.cloned().collect()),
-        mtc.get_one("no-git").cloned(),
-        mtc.get_one("prompt").cloned(),
+        match mtc.get_one::<bool>("no-git") {
+            Some(&g) => g,
+            _ => true,
+        },
+        match mtc.get_one::<bool>("prompt") {
+            Some(&p) => p,
+            _ => false,
+        },
     );
 
-    let items = [
-        ("Name", name),
-        ("Path", path),
-        ("Type", project_type),
-        (
-            "Author(s)",
-            match authors {
-                Some(vector) => Some(format!("{}{}{}", "[", vector.join(", "), "]")),
-                _ => None,
-            },
-        ),
-        (
-            "Git Initialization:",
-            if git_repo.unwrap_or(true) {
-                Some("true".to_string())
-            } else {
-                Some("false".to_string())
-            },
-        ),
-        (
-            "Prompt Mode",
-            if prompt.unwrap_or(true) {
-                Some("true".to_string())
-            } else {
-                Some("false".to_string())
-            },
-        ),
+    let prompt_conditions = [
+        name.is_none(),
+        path.is_none(),
+        project_type.is_none(),
+        authors.is_none(),
+        git_repo,
     ];
 
-    for (k, v) in items {
-        println!("{}: {:?}", k, v);
+    if prompt && !prompt_conditions.into_iter().all(|c| c) {
+        println!("You \x1b[91mcan't\x1b[0m use `\x1b[93mkojamp new --prompt\x1b[0m` with other flags/args!");
+        println!();
+        println!("Try using one of the following:");
+        println!("1) \x1b[92mkojamp new \x1b[93m[NAME]\x1b[0m + other flags (except --prompt)");
+        println!("2) \x1b[92mkojamp new \x1b[93m--prompt\x1b[0m");
+        println!();
+        println!("Use `\x1b[92mkojamp new \x1b[93m--help\x1b[0m` for more details!");
+        return 1;
     }
 
     0
