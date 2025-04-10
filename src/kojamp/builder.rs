@@ -1,9 +1,9 @@
 use super::app::KojampCLI;
-use super::commands as cmds;
+use super::commands::new::command as cmd_new;
 use crate::globals::*;
 
 pub fn kojamp_app() -> KojampCLI {
-    let subcommands = vec![cmds::new::command()];
+    let subcommands = vec![cmd_new()];
 
     let mut app = KojampCLI::new(
         PROGRAM_NAME,
