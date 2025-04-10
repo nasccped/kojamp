@@ -3,7 +3,7 @@ use clap::{
     Command,
 };
 
-use super::kjc;
+use super::commands;
 
 pub const PROGRAM_NAME: &str = "kojamp";
 pub const PROGRAM_VERSION: &str = "0.0.1";
@@ -66,7 +66,7 @@ impl KojampCLI {
 
         match matches.subcommand() {
             Some(("new", new_matching)) => {
-                output = kjc::action_new(new_matching);
+                output = commands::new::action(new_matching);
             }
             _ => {
                 output += 1;

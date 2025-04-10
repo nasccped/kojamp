@@ -6,7 +6,7 @@ use project::Project;
 const COMMAND_NAME: &str = "new";
 const COMMAND_ABOUT: &str = "Create a new Java/Kotlin project";
 
-pub fn command_new() -> Command {
+pub fn command() -> Command {
     Command::new(COMMAND_NAME).about(COMMAND_ABOUT).args([
         Arg::new("name")
             .value_name("NAME")
@@ -49,7 +49,7 @@ pub fn command_new() -> Command {
     ])
 }
 
-pub fn action_new(mtc: &ArgMatches) -> i32 {
+pub fn action(mtc: &ArgMatches) -> i32 {
     let mut project = Project::from_match(mtc);
 
     if !project.prompt_allowed() && project.prompt_called() {
