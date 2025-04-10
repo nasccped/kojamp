@@ -1,4 +1,5 @@
 mod kojamp;
+mod utils;
 
 fn main() {
     let main_cli = kojamp::build_kojamp();
