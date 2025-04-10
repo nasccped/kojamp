@@ -19,7 +19,7 @@ pub fn command_new() -> Command {
             .required(false)
             .help("Specify the project's path (\x1b[93m[NAME]\x1b[0m in kebab case as default)"),
         Arg::new("type")
-            .value_name(" java | kotlin ")
+            .value_name("(J)ava|(K)otlin ")
             .action(ArgAction::Set)
             .long("type")
             .short('T')
