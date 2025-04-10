@@ -7,8 +7,7 @@ use super::kjc;
 
 pub const PROGRAM_NAME: &str = "kojamp";
 pub const PROGRAM_VERSION: &str = "0.0.1";
-pub const PROGRAM_ABOUT: &str =
-    "Some kind of basic 'n academic \x1b[1;31mJava\x1b[37m/\x1b[33mKotlin\x1b[0m \"project-manager\" tool";
+pub const PROGRAM_ABOUT: &str = "Some kind of basic 'n academic Java/Kotlin project-manager tool";
 pub const PROGRAM_AUTHOR: &str = "nasccped, pdbt.contact@gmail.com";
 
 pub struct KojampCLI(Command);
