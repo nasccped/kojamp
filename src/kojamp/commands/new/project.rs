@@ -154,3 +154,103 @@ impl Project {
         }
     }
 }
+
+#[cfg(test)]
+mod kojamp_commands_new_project {
+
+    use super::*;
+    use crate::kojamp::builder;
+
+    #[test]
+    fn valid_naming() {
+        let app = builder::kojamp_app();
+        let matching_cases = [
+            vec!["kojamp", "new", "Foo"],
+            vec!["kojamp", "new", "Bar"],
+            vec!["kojamp", "new", "DoubleWord"],
+            vec!["kojamp", "new", "Number2Name"],
+            vec!["kojamp", "new", "Baz"],
+        ];
+
+        for args in matching_cases {
+            let matching = app.get_subcommand_matching(args);
+            let project = Project::from_match(&matching);
+            assert!(
+                project.name_is_valid(),
+                "Was expecting a valid name, but invalid was returned with `{:?}` value",
+                project.name
+            );
+        }
+    }
+
+    #[test]
+    fn invalid_naming() {
+        let app = builder::kojamp_app();
+        let matching_cases = [
+            vec!["kojamp", "new", "lowercaseInitial"],
+            vec!["kojamp", "new", "5tartingW1thNumb3r"],
+            vec!["kojamp", "new", "Unallowed-Character"],
+            vec!["kojamp", "new", "CharacterÁccênt"],
+            vec!["kojamp", "new"],
+        ];
+
+        for args in matching_cases {
+            let matching = app.get_subcommand_matching(args);
+            let project = Project::from_match(&matching);
+            assert!(
+                !project.name_is_valid(),
+                "Was expecting an invalid name, but valid one was returned with `{:?}` value",
+                project.name
+            );
+        }
+    }
+
+    #[test]
+    fn valid_project_type() {
+        let app = builder::kojamp_app();
+        let matching_cases = [
+            vec!["kojamp", "new", "--type", "java"],
+            vec!["kojamp", "new", "--type", "Java"],
+            vec!["kojamp", "new", "--type", "J"],
+            vec!["kojamp", "new", "--type", "j"],
+            vec!["kojamp", "new", "--type", "kotlin"],
+            vec!["kojamp", "new", "--type", "KoTlIn"],
+            vec!["kojamp", "new", "--type", "K"],
+            vec!["kojamp", "new", "--type", "k"],
+        ];
+
+        for args in matching_cases {
+            let matching = app.get_subcommand_matching(args);
+            let project = Project::from_match(&matching);
+            let cur_type = project.get_type();
+            assert!(
+                project.type_is_valid(),
+                "Was expecting a valid type, but invalid one was returned (`{:?}`)",
+                cur_type
+            );
+        }
+    }
+
+    #[test]
+    fn invalid_project_type() {
+        let app = builder::kojamp_app();
+        let matching_cases = [
+            vec!["kojamp", "new", "--type", "NotJava"],
+            vec!["kojamp", "new", "--type", "N"],
+            vec!["kojamp", "new", "--type", "Ja-va"],
+            vec!["kojamp", "new", "--type", "Gotlin"],
+            vec!["kojamp", "new", "--type", "kótlin"],
+        ];
+
+        for args in matching_cases {
+            let matching = app.get_subcommand_matching(args);
+            let project = Project::from_match(&matching);
+            let cur_type = project.get_type();
+            assert!(
+                !project.type_is_valid(),
+                "Was expecting an invalid type, but a valid one was returned (`{:?}`)",
+                cur_type
+            );
+        }
+    }
+}
