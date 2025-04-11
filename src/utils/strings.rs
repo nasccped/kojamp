@@ -1,3 +1,12 @@
+pub struct StringChecker;
+
+impl StringChecker {
+    pub fn chars_in_range(value: &String, range: impl Into<String>) -> bool {
+        let as_string = range.into();
+        value.chars().all(|c| as_string.contains(c))
+    }
+}
+
 pub trait ToTitleCase {
     fn to_title_case(self) -> String;
 }
