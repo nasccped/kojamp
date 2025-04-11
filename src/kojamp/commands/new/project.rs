@@ -159,20 +159,21 @@ impl Project {
 mod kojamp_commands_new_project {
 
     use super::*;
-    use crate::kojamp::builder;
+    use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
 
     #[test]
     fn valid_naming() {
         let app = builder::kojamp_app();
         let matching_cases = [
-            vec!["kojamp", "new", "Foo"],
-            vec!["kojamp", "new", "Bar"],
-            vec!["kojamp", "new", "DoubleWord"],
-            vec!["kojamp", "new", "Number2Name"],
-            vec!["kojamp", "new", "Baz"],
+            ["new", "Foo"],
+            ["new", "Bar"],
+            ["new", "DoubleWord"],
+            ["new", "Number2Name"],
+            ["new", "Baz"],
         ];
 
-        for args in matching_cases {
+        for case in matching_cases {
+            let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
             let project = Project::from_match(&matching);
             assert!(
@@ -187,14 +188,15 @@ mod kojamp_commands_new_project {
     fn invalid_naming() {
         let app = builder::kojamp_app();
         let matching_cases = [
-            vec!["kojamp", "new", "lowercaseInitial"],
-            vec!["kojamp", "new", "5tartingW1thNumb3r"],
-            vec!["kojamp", "new", "Unallowed-Character"],
-            vec!["kojamp", "new", "CharacterÁccênt"],
-            vec!["kojamp", "new"],
+            ["new", "lowercaseInitial"],
+            ["new", "5tartingW1thNumb3r"],
+            ["new", "Unallowed-Character"],
+            ["new", "CharacterÁccênt"],
+            ["new", ""],
         ];
 
-        for args in matching_cases {
+        for case in matching_cases {
+            let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
             let project = Project::from_match(&matching);
             assert!(
@@ -209,17 +211,18 @@ mod kojamp_commands_new_project {
     fn valid_project_type() {
         let app = builder::kojamp_app();
         let matching_cases = [
-            vec!["kojamp", "new", "--type", "java"],
-            vec!["kojamp", "new", "--type", "Java"],
-            vec!["kojamp", "new", "--type", "J"],
-            vec!["kojamp", "new", "--type", "j"],
-            vec!["kojamp", "new", "--type", "kotlin"],
-            vec!["kojamp", "new", "--type", "KoTlIn"],
-            vec!["kojamp", "new", "--type", "K"],
-            vec!["kojamp", "new", "--type", "k"],
+            ["new", "--type", "java"],
+            ["new", "--type", "Java"],
+            ["new", "--type", "J"],
+            ["new", "--type", "j"],
+            ["new", "--type", "kotlin"],
+            ["new", "--type", "KoTlIn"],
+            ["new", "--type", "K"],
+            ["new", "--type", "k"],
         ];
 
-        for args in matching_cases {
+        for case in matching_cases {
+            let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
             let project = Project::from_match(&matching);
             let cur_type = project.get_type();
@@ -235,14 +238,15 @@ mod kojamp_commands_new_project {
     fn invalid_project_type() {
         let app = builder::kojamp_app();
         let matching_cases = [
-            vec!["kojamp", "new", "--type", "NotJava"],
-            vec!["kojamp", "new", "--type", "N"],
-            vec!["kojamp", "new", "--type", "Ja-va"],
-            vec!["kojamp", "new", "--type", "Gotlin"],
-            vec!["kojamp", "new", "--type", "kótlin"],
+            ["new", "--type", "NotJava"],
+            ["new", "--type", "N"],
+            ["new", "--type", "Ja-va"],
+            ["new", "--type", "Gotlin"],
+            ["new", "--type", "kótlin"],
         ];
 
-        for args in matching_cases {
+        for case in matching_cases {
+            let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
             let project = Project::from_match(&matching);
             let cur_type = project.get_type();
