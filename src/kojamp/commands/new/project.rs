@@ -1,8 +1,8 @@
-use crate::utils::strings::ToTitleCase;
+use crate::utils::strings::{StringChecker, ToTitleCase};
 use clap::ArgMatches;
 
-#[derive(Debug)]
-enum ProjectType {
+#[derive(Debug, Clone)]
+pub enum ProjectType {
     Java,
     Kotlin,
     #[allow(dead_code)]
@@ -11,20 +11,19 @@ enum ProjectType {
 
 impl ProjectType {
     fn from_string(input: String) -> Self {
-        let input = input.to_lowercase();
+        let lower_input = input.to_lowercase();
 
-        match input.as_str() {
+        match lower_input.as_str() {
             "java" | "j" => Self::Java,
             "kotlin" | "k" => Self::Kotlin,
-            else_case => Self::Undefined(else_case.to_string()),
+            _ => Self::Undefined(input),
         }
     }
 
-    #[allow(dead_code)]
     fn is_valid(&self) -> bool {
         match self {
-            ProjectType::Kotlin | ProjectType::Java => true,
-            _ => false,
+            ProjectType::Undefined(_) => false,
+            _ => true,
         }
     }
 }
@@ -99,5 +98,59 @@ impl Project {
         .all(|&condition| condition)
     }
 
-    pub fn prompt_mode(&mut self) {}
+    pub fn name_is_valid(&self) -> bool {
+        let project_name = self.name.clone();
+
+        if project_name.is_none() {
+            return false;
+        }
+
+        let project_name = project_name.unwrap();
+
+        if project_name.is_empty() {
+            return false;
+        }
+
+        if !('A'..='Z').contains(&project_name.chars().next().unwrap()) {
+            return false;
+        }
+
+        if project_name.contains(' ') {
+            return false;
+        }
+
+        let char_range: String = {
+            let mut final_result: String = String::new();
+
+            let all_cases: [String; 3] = [
+                ('A'..='Z').collect(),
+                ('a'..='z').collect(),
+                ('0'..='9').collect(),
+            ];
+
+            all_cases
+                .into_iter()
+                .for_each(|string| final_result.extend(string.chars()));
+
+            final_result
+        };
+
+        if !StringChecker::chars_in_range(&project_name, char_range) {
+            false
+        } else {
+            true
+        }
+    }
+
+    pub fn get_type(&self) -> Option<ProjectType> {
+        self.project_type.clone()
+    }
+
+    pub fn type_is_valid(&self) -> bool {
+        let project_clone = self.project_type.clone();
+        match project_clone {
+            None => false,
+            Some(x) => x.is_valid(),
+        }
+    }
 }
