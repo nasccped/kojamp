@@ -1,4 +1,4 @@
-use clap::{builder::Styles, Command};
+use clap::{builder::Styles, ArgMatches, Command};
 
 use super::commands::new as cmd_new;
 
@@ -54,6 +54,20 @@ impl KojampCLI {
             }
         }
         output
+    }
+
+    #[allow(dead_code)]
+    pub fn get_subcommand_matching(&self, args: Vec<&'static str>) -> ArgMatches {
+        if args.len() < 2 {
+            panic!(
+                "`get_subcommand_matching` was called but no subcommand was given:\n  {:?}",
+                args
+            );
+        }
+        let subcommand = args[1];
+        let inner = self.get_inner_value();
+        let global_match = inner.get_matches_from(args);
+        global_match.subcommand_matches(subcommand).unwrap().clone()
     }
 
     pub fn exit_with_output(&self, output: i32) {
