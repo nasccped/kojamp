@@ -1,6 +1,6 @@
-<h1 align=center> Kojamp Man </h1>
+<h1 align=center> Kojamp </h1>
 
-This is Kojamp Man, a Java/Kotlin project manager tool!
+This is Kojamp, a Java/Kotlin project manager tool!
 
 > [!WARNING]
 > 
@@ -10,10 +10,8 @@ This is Kojamp Man, a Java/Kotlin project manager tool!
 >
 > Stay tuned for future changes!
 
-<h4 align=center>
+<div align=center>
 
-[![license: Apache][kojamp-man-license]](#)
+[![license: Apache](https://img.shields.io/badge/License-Apache_2.0-blue?)](#)
 
-</h4>
-
-[kojamp-man-license]: https://img.shields.io/badge/License-Apache_2.0-blue?
+</div>
