@@ -156,7 +156,7 @@ impl Project {
 }
 
 #[cfg(test)]
-mod kojamp_commands_new_project {
+mod project {
 
     use super::*;
     use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
