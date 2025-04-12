@@ -1,7 +1,7 @@
 use crate::utils::strings::{StringChecker, ToTitleCase};
 use clap::ArgMatches;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ProjectType {
     Java,
     Kotlin,
@@ -261,6 +261,61 @@ mod project_type_validation {
                 !project.type_is_valid(),
                 "Was expecting an invalid type, but a valid one was returned (`{:?}`)",
                 cur_type
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+mod projecttype_asserting {
+
+    use super::ProjectType;
+
+    #[test]
+    fn expecting_java() {
+        let types = ["J", "j", "java", "JaVa"].iter().map(|val| val.to_string());
+
+        for t in types {
+            let p_type = ProjectType::from_string(t);
+            assert_eq!(
+                p_type,
+                ProjectType::Java,
+                "A strange type (`{:?}`) has been returned when Java type was expected",
+                p_type
+            );
+        }
+    }
+
+    #[test]
+    fn expecting_kotlin() {
+        let types = ["K", "k", "kotlin", "kOtLiN"]
+            .iter()
+            .map(|val| val.to_string());
+
+        for t in types {
+            let p_type = ProjectType::from_string(t);
+            assert_eq!(
+                p_type,
+                ProjectType::Kotlin,
+                "A strange type (`{:?}`) has been returned when Java type was expected",
+                p_type
+            );
+        }
+    }
+
+    #[test]
+    fn expecting_undefined() {
+        let types = ["Undefined", "a", "What", "TypeISTHIs"]
+            .iter()
+            .map(|val| val.to_string());
+
+        for t in types {
+            let p_type = ProjectType::from_string(t.clone());
+            assert_eq!(
+                p_type,
+                ProjectType::Undefined(t),
+                "A strange type (`{:?}`) has been returned when Java type was expected",
+                p_type
             );
         }
     }
