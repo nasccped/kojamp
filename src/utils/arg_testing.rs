@@ -10,6 +10,9 @@ impl ArgTestBuilder {
 
     #[allow(dead_code)]
     pub fn args_from<const N: usize>(&self, args: [&'static str; N]) -> Vec<&'static str> {
+        if args.is_empty() {
+            panic!("Given `args` is empty: {:?}. This isn't allowed!", args);
+        }
         let mut args_vector = Vec::with_capacity(N + 1);
         args_vector.push(self.program_name);
         args_vector.extend(args);
