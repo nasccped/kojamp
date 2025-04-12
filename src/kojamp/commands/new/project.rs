@@ -156,7 +156,7 @@ impl Project {
 }
 
 #[cfg(test)]
-mod project {
+mod project_naming {
 
     use super::*;
     use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
@@ -206,6 +206,13 @@ mod project {
             );
         }
     }
+}
+
+#[cfg(test)]
+mod project_type_validation {
+
+    use super::*;
+    use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
 
     #[test]
     fn valid_project_type() {
