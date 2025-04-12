@@ -3,7 +3,7 @@ use super::commands::new::command as cmd_new;
 use crate::globals::*;
 
 pub fn kojamp_app() -> KojampCLI {
-    let subcommands = vec![cmd_new()];
+    let subcommands = [cmd_new()];
 
     let mut app = KojampCLI::new(
         PROGRAM_NAME,
