@@ -207,7 +207,7 @@ mod project_naming {
 }
 
 #[cfg(test)]
-mod project_type_validation {
+mod projectfields_type_validation {
 
     use super::*;
     use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
