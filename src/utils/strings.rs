@@ -3,9 +3,8 @@ use regex::Regex;
 pub struct StringChecker;
 
 impl StringChecker {
-    pub fn chars_in_range(value: &String, range: impl Into<String>) -> bool {
-        let as_string = range.into();
-        value.chars().all(|c| as_string.contains(c))
+    pub fn chars_in_range(value: &String, range: &String) -> bool {
+        value.chars().all(|c| range.contains(c))
     }
 }
 
@@ -39,5 +38,24 @@ impl StringTransform {
         let result = re4.replace_all(binding, "-");
 
         result.trim_matches('-').to_string()
+    }
+}
+
+#[cfg(test)]
+mod stringchecker_checking {
+    use super::StringChecker;
+
+    #[test]
+    fn in_range_expected() {
+        let mut range: String = ('a'..='z').collect();
+        range.extend('A'..='Z');
+
+        let samples = ["Rust", "Is", "A", "Cool", "Language"]
+            .into_iter()
+            .map(|val| val.to_string());
+
+        for word in samples {
+            assert!(StringChecker::chars_in_range(&word, &range));
+        }
     }
 }
