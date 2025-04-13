@@ -27,7 +27,7 @@ impl ProjectType {
 }
 
 #[derive(Debug)]
-pub struct Project {
+pub struct ProjectFields {
     name: Option<String>,
     path: Option<String>,
     project_type: Option<ProjectType>,
@@ -36,7 +36,7 @@ pub struct Project {
     prompt: bool,
 }
 
-impl Project {
+impl ProjectFields {
     pub fn from_match(matching: &ArgMatches) -> Self {
         let name: Option<String> = matching.get_one("name").cloned();
         let path: Option<String> = matching.get_one("path").cloned();
@@ -173,7 +173,7 @@ mod project_naming {
         for case in matching_cases {
             let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
-            let project = Project::from_match(&matching);
+            let project = ProjectFields::from_match(&matching);
             assert!(
                 project.name_is_valid(),
                 "Was expecting a valid name, but invalid was returned with `{:?}` value",
@@ -196,7 +196,7 @@ mod project_naming {
         for case in matching_cases {
             let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
-            let project = Project::from_match(&matching);
+            let project = ProjectFields::from_match(&matching);
             assert!(
                 !project.name_is_valid(),
                 "Was expecting an invalid name, but valid one was returned with `{:?}` value",
@@ -229,7 +229,7 @@ mod project_type_validation {
         for case in matching_cases {
             let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
-            let project = Project::from_match(&matching);
+            let project = ProjectFields::from_match(&matching);
             let cur_type = project.get_type();
             assert!(
                 project.type_is_valid(),
@@ -253,7 +253,7 @@ mod project_type_validation {
         for case in matching_cases {
             let args = ARG_BUILDER.args_from(case);
             let matching = app.get_subcommand_matching(args);
-            let project = Project::from_match(&matching);
+            let project = ProjectFields::from_match(&matching);
             let cur_type = project.get_type();
             assert!(
                 !project.type_is_valid(),

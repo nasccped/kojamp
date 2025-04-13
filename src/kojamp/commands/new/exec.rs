@@ -1,4 +1,4 @@
-use super::project::Project;
+use super::project::ProjectFields;
 use clap::ArgMatches;
 
 pub fn exec(mtc: &ArgMatches) -> i32 {
@@ -14,7 +14,7 @@ pub fn exec(mtc: &ArgMatches) -> i32 {
      *   6. build the project (done - returning success)
      *
      * */
-    let project = Project::from_match(mtc);
+    let project = ProjectFields::from_match(mtc);
 
     if !project.prompt_allowed() && project.prompt_called() {
         println!("error");
