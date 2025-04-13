@@ -42,7 +42,7 @@ impl Project {
         let path: Option<String> = matching.get_one("path").cloned();
         let project_type: Option<ProjectType> = match matching.get_one::<String>("type").cloned() {
             Some(val) => Some(ProjectType::from_string(val)),
-            None => None,
+            _ => None,
         };
         let mut authors: Option<Vec<String>> = matching
             .get_many("authors")
