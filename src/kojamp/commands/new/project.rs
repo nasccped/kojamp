@@ -11,9 +11,7 @@ pub enum ProjectType {
 
 impl ProjectType {
     fn from_string(input: String) -> Self {
-        let lower_input = input.to_lowercase();
-
-        match lower_input.as_str() {
+        match input.to_lowercase().as_str() {
             "java" | "j" => Self::Java,
             "kotlin" | "k" => Self::Kotlin,
             _ => Self::Undefined(input),
