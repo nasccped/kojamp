@@ -58,4 +58,16 @@ mod stringchecker_checking {
             assert!(StringChecker::chars_in_range(&word, &range));
         }
     }
+
+    #[test]
+    fn not_in_range_expected() {
+        let range: String = ('a'..='z').collect();
+
+        let samples =
+            ["ALLCAPS", "with space", "numbers123212", "Symbols!"].map(|val| val.to_string());
+
+        for word in samples {
+            assert!(!StringChecker::chars_in_range(&word, &range));
+        }
+    }
 }
