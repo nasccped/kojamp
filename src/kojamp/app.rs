@@ -1,6 +1,6 @@
 use clap::{builder::Styles, ArgMatches, Command};
 
-use super::commands::new as cmd_new;
+use super::commands::new;
 
 pub struct KojampCLI(Command);
 
@@ -47,7 +47,7 @@ impl KojampCLI {
 
         match matches.subcommand() {
             Some(("new", new_matching)) => {
-                output = cmd_new::action(new_matching);
+                output = new::exec(new_matching);
             }
             _ => {
                 output += 1;

@@ -1,6 +1,6 @@
-mod action;
-mod command;
+mod cli;
+mod exec;
 mod project;
 
-pub use action::action;
-pub use command::command;
+pub use cli::cli;
+pub use exec::exec;

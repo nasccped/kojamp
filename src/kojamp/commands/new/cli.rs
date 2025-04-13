@@ -1,6 +1,6 @@
 use clap::{Arg, ArgAction, Command};
 
-pub fn command() -> Command {
+pub fn cli() -> Command {
     Command::new("new").about("Create a new Java/Kotlin project").args([
         Arg::new("name")
             .value_name("NAME")
