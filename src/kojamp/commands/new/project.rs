@@ -1,4 +1,4 @@
-use crate::utils::strings::{StringChecker, ToTitleCase};
+use crate::utils::strings::{StringChecker, StringTransform};
 use clap::ArgMatches;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -52,7 +52,7 @@ impl ProjectFields {
                 authors
                     .unwrap()
                     .into_iter()
-                    .map(|val| val.to_title_case())
+                    .map(|val| StringTransform::to_title_case(val))
                     .collect::<Vec<String>>()
                     .join(" ")
                     .split("/")
