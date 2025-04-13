@@ -133,7 +133,7 @@ impl ProjectFields {
             final_result
         };
 
-        if !StringChecker::chars_in_range(&project_name, char_range) {
+        if !StringChecker::chars_in_range(&project_name, &char_range) {
             false
         } else {
             true
