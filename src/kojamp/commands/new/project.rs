@@ -39,7 +39,13 @@ pub struct ProjectFields {
 impl ProjectFields {
     pub fn from_match(matching: &ArgMatches) -> Self {
         let name: Option<String> = matching.get_one("name").cloned();
-        let path: Option<String> = matching.get_one("path").cloned();
+        let path = if let Some(given_path) = matching.get_one::<String>("path").cloned() {
+            Some(given_path)
+        } else if let Some(name_value) = name.clone() {
+            Some(StringTransform::to_kebab_case(name_value))
+        } else {
+            None
+        };
         let project_type: Option<ProjectType> = match matching.get_one::<String>("type").cloned() {
             Some(val) => Some(ProjectType::from_string(val)),
             _ => None,
