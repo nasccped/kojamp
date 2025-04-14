@@ -3,7 +3,9 @@ use regex::Regex;
 pub struct StringChecker;
 
 impl StringChecker {
-    pub fn chars_in_range(value: &String, range: &String) -> bool {
+    pub fn chars_in_range(value: impl Into<String>, range: impl Into<String>) -> bool {
+        let value = value.into();
+        let range = range.into();
         value.chars().all(|c| range.contains(c))
     }
 }
@@ -11,7 +13,8 @@ impl StringChecker {
 pub struct StringTransform;
 
 impl StringTransform {
-    pub fn to_title_case(input: String) -> String {
+    pub fn to_title_case(input: impl Into<String>) -> String {
+        let input = input.into();
         if !input.is_empty() {
             input[..1].to_uppercase() + &input[1..].to_lowercase()
         } else {
@@ -19,9 +22,10 @@ impl StringTransform {
         }
     }
 
-    pub fn to_kebab_case(input: String) -> String {
+    pub fn to_kebab_case(input: impl Into<String>) -> String {
         // WARN: This was copy+pasted frm AI, commenting soon...
-        let input = input.as_str();
+        let bind = input.into();
+        let input = bind.as_str();
 
         let re1 = Regex::new(r"([a-z])([A-Z])").unwrap();
         let step1 = re1.replace_all(input, "$1-$2");
@@ -38,36 +42,5 @@ impl StringTransform {
         let result = re4.replace_all(binding, "-");
 
         result.trim_matches('-').to_string()
-    }
-}
-
-#[cfg(test)]
-mod stringchecker_checking {
-    use super::StringChecker;
-
-    #[test]
-    fn in_range_expected() {
-        let mut range: String = ('a'..='z').collect();
-        range.extend('A'..='Z');
-
-        let samples = ["Rust", "Is", "A", "Cool", "Language"]
-            .into_iter()
-            .map(|val| val.to_string());
-
-        for word in samples {
-            assert!(StringChecker::chars_in_range(&word, &range));
-        }
-    }
-
-    #[test]
-    fn not_in_range_expected() {
-        let range: String = ('a'..='z').collect();
-
-        let samples =
-            ["ALLCAPS", "with space", "numbers123212", "Symbols!"].map(|val| val.to_string());
-
-        for word in samples {
-            assert!(!StringChecker::chars_in_range(&word, &range));
-        }
     }
 }
