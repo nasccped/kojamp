@@ -16,10 +16,21 @@ pub fn exec(mtc: &ArgMatches) -> i32 {
     let project = ProjectFields::from_match(mtc);
 
     if !project.prompt_allowed() && project.prompt_called() {
-        println!("error");
+        todo!(); // prompt was called but it isn't allowed
         return 1;
     } else if project.prompt_called() {
+        todo!(); // start prompt mode
         return 0;
+    }
+
+    if !project.name_is_valid() {
+        todo!(); // invalid name alert
+        return 1;
+    }
+
+    if !project.type_is_valid() {
+        todo!(); // invalid type alert
+        return 1;
     }
 
     println!("{:?}", project);
