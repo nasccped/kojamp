@@ -157,7 +157,7 @@ impl ProjectFields {
 mod project_naming {
 
     use super::*;
-    use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
+    use crate::{kojamp::builder, utils::arg_test::ARG_BUILDER};
 
     #[test]
     fn valid_naming() {
@@ -210,7 +210,7 @@ mod project_naming {
 mod projectfields_type_validation {
 
     use super::*;
-    use crate::{kojamp::builder, utils::arg_testing::ARG_BUILDER};
+    use crate::{kojamp::builder, utils::arg_test::ARG_BUILDER};
 
     #[test]
     fn valid_project_type() {
