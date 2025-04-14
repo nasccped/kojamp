@@ -9,6 +9,6 @@ pub fn read_line() -> String {
     }
 }
 
-fn normalize_read_line_input(input: String) -> String {
+pub fn normalize_read_line_input(input: String) -> String {
     input.replace("\n", "").replace("\r", "")
 }
