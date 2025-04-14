@@ -1,4 +1,7 @@
-use crate::utils::strings::{StringChecker, StringTransform};
+use crate::utils::{
+    io,
+    strings::{StringChecker, StringTransform},
+};
 use clap::ArgMatches;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -156,6 +159,85 @@ impl ProjectFields {
             None => false,
             Some(x) => x.is_valid(),
         }
+    }
+
+    pub fn prompt_mode(&mut self) {
+        let mut name = String::new();
+        let path: String;
+        let mut project_type: ProjectType;
+        let mut authors: Vec<String> = Vec::new();
+        let git_repo: bool;
+
+        println!("You can use Ctrl-C at any time to abort!");
+
+        loop {
+            if self.name_is_valid() {
+                break;
+            }
+            println!("? Project Name: \x1b[3;90m(Try using a CamelCase name with no symbols, accents or withespaces)\x1b[0m");
+            name = io::read_line();
+
+            self.name = Some(name.clone());
+        }
+
+        let kebab_name = StringTransform::to_kebab_case(name);
+
+        println!(
+            "? Project Path: \x1b[3;90m(Press Enter to use name in kebab case `{}`)\x1b[0m",
+            kebab_name
+        );
+
+        path = match (io::read_line(), kebab_name) {
+            (x, name) if !x.is_empty() => name,
+            (_, name) => name,
+        };
+
+        self.path = Some(path);
+
+        loop {
+            if self.type_is_valid() {
+                break;
+            }
+            println!(
+                "? Project Type: \x1b[3;90m(\x1b[92m[J]\x1b[90mava or \x1b[92m[K]\x1b[90motlin)\x1b[0m"
+            );
+
+            project_type = ProjectType::from_string(io::read_line());
+            self.project_type = Some(project_type);
+        }
+
+        let mut author_buf: String;
+        let stop_case = String::from("!CONTINUE");
+
+        loop {
+            println!(
+                "? Project Authors (Type \x1b[92m{}\x1b[0m to quit): \x1b[3;90m[{}]\x1b[0m",
+                stop_case,
+                authors.join(", ")
+            );
+            author_buf = io::read_line();
+
+            if author_buf == stop_case {
+                break;
+            }
+
+            println!(
+                "no trans: {}\nwt trans: {}",
+                author_buf,
+                StringTransform::to_title_case(author_buf.clone())
+            );
+            authors.push(StringTransform::to_title_case(author_buf));
+        }
+
+        self.authors = Some(authors);
+
+        println!("? Did you want to initialize a git repo? \x1b[3;90m(Just press Enter (or yes/y) if so, else, type anything)\x1b[0m");
+        git_repo = match io::read_line() {
+            x if x.is_empty() => true,
+            x if ["yes", "y"].contains(&x.to_lowercase().as_str()) => true,
+            _ => false,
+        };
+        self.no_git = !git_repo;
     }
 }
 
