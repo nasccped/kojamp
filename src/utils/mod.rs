@@ -1,2 +1,2 @@
-pub mod arg_testing;
+pub mod arg_test;
 pub mod strings;
