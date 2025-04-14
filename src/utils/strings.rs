@@ -12,7 +12,7 @@ pub struct StringTransform;
 
 impl StringTransform {
     pub fn to_title_case(input: String) -> String {
-        if input.is_empty() {
+        if !input.is_empty() {
             input[..1].to_uppercase() + &input[1..].to_lowercase()
         } else {
             input
