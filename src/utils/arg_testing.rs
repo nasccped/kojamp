@@ -42,7 +42,7 @@ mod arg_test_builder {
 
     #[test]
     #[should_panic]
-    fn just_the_program_name() {
+    fn no_args() {
         // this will panic
         let _ = ARG_BUILDER.args_from([]);
     }
