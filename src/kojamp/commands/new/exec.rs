@@ -1,7 +1,7 @@
-use super::project::ProjectFields;
+use super::{helper, project::ProjectComposition, report};
 use clap::ArgMatches;
 
-pub fn exec(mtc: &ArgMatches) -> i32 {
+pub fn exec(matches: &ArgMatches) -> i32 {
     /* TODO:
      *   1. build project structu by using &ArgMatches
      *   2. test if prompt was called and if it's allowed
@@ -13,27 +13,38 @@ pub fn exec(mtc: &ArgMatches) -> i32 {
      *   5. build the project (done - returning success)
      *
      * */
-    let project = ProjectFields::from_match(mtc);
 
-    if !project.prompt_allowed() && project.prompt_called() {
-        todo!(); // prompt was called but it isn't allowed
+    let project: ProjectComposition;
+
+    if helper::only_prompt_called(matches) {
+        project = ProjectComposition::new_from_prompt_mode(matches);
+    } else if helper::prompt_called(matches) {
+        report::prompt_not_allowed();
         return 1;
-    } else if project.prompt_called() {
-        todo!(); // start prompt mode
-        return 0;
+    } else {
+        project = ProjectComposition::new_from_matches(matches);
+        let (name, _, p_type, authors, _) = project.destructure();
+
+        let mut invalid_count = 0;
+        let checkers: [(bool, fn()); 3] = [
+            (!name.is_valid(), report::invalid_name),
+            (!p_type.is_valid(), report::invalid_project_type),
+            (!authors.is_valid(), report::invalid_authors),
+        ];
+
+        checkers.iter().for_each(|(cond, func)| {
+            if *cond {
+                func();
+                invalid_count += 1;
+            }
+        });
+
+        if invalid_count > 0 {
+            return 1;
+        }
     }
 
-    if !project.name_is_valid() {
-        todo!(); // invalid name alert
-        return 1;
-    }
-
-    if !project.type_is_valid() {
-        todo!(); // invalid type alert
-        return 1;
-    }
-
-    println!("{:?}", project);
+    println!("Let's build the project");
 
     0
 }
