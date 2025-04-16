@@ -194,9 +194,20 @@ impl ProjectAuthors {
         }
     }
 
-    pub fn push<T: Into<String>>(&mut self, value: T) {
+    pub fn push<T: Into<String> + Clone>(&mut self, value: T) {
         if self.0.is_none() {
             self.0 = Some(Vec::new());
+        }
+
+        if value
+            .clone()
+            .into()
+            .chars()
+            .filter(|&c| c == '/' || c == '!' || c == '?')
+            .count()
+            > 0
+        {
+            return;
         }
 
         let value: String = value
