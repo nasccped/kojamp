@@ -203,7 +203,7 @@ impl ProjectAuthors {
             .clone()
             .into()
             .chars()
-            .filter(|&c| c == '/' || c == '!' || c == '?')
+            .filter(|c| ['?', '/', '!'].contains(c))
             .count()
             > 0
         {
@@ -224,6 +224,18 @@ impl ProjectAuthors {
 
     pub fn clear(&mut self) {
         self.0 = None;
+    }
+
+    pub fn is_valid(&self) -> bool {
+        if self.0.is_none() {
+            return true;
+        }
+
+        self.0
+            .as_ref()
+            .unwrap()
+            .iter()
+            .all(|aut| aut.chars().filter(|c| ['?', '/', '!'].contains(c)).count() == 0)
     }
 }
 
