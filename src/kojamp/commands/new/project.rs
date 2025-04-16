@@ -1,5 +1,5 @@
 use clap::ArgMatches;
-use std::{any::Any, borrow::Cow, fmt};
+use std::{borrow::Cow, fmt};
 
 use crate::utils::{
     io,
@@ -282,6 +282,20 @@ impl GitRepository {
     }
 }
 
+trait StrFromBool {
+    fn from_bool(b: bool) -> Self;
+}
+
+impl StrFromBool for Cow<'static, str> {
+    fn from_bool(b: bool) -> Self {
+        Cow::Owned(format!(
+            "{}{}",
+            if b { "\x1b[92mYes" } else { "\x1b[91mNo" },
+            "\x1b[0m"
+        ))
+    }
+}
+
 impl From<&GitRepository> for Cow<'static, str> {
     fn from(s: &GitRepository) -> Self {
         Cow::Owned(format!(
@@ -297,7 +311,7 @@ pub struct ProjectComposition {
     path: ProjectPath,
     project_type: ProjectType,
     project_authors: ProjectAuthors,
-    git_repo: GitRepository,
+    git_repo: bool,
     is_verbose: bool,
 }
 
@@ -308,7 +322,7 @@ impl ProjectComposition {
             path: ProjectPath::new(matches),
             project_type: ProjectType::new(matches),
             project_authors: ProjectAuthors::new(matches),
-            git_repo: GitRepository::new(matches),
+            git_repo: !matches.get_flag("no-git"),
             is_verbose: matches.get_flag("verbose"),
         }
     }
@@ -320,7 +334,6 @@ impl ProjectComposition {
         let mut path = project_composition.path.clone();
         let mut p_type = project_composition.project_type;
         let mut authors = project_composition.project_authors;
-        let mut git_repo = project_composition.git_repo;
 
         let (mut asker, mut response): (io::IOAsking, String);
 
@@ -417,6 +430,8 @@ impl ProjectComposition {
             "> ",
         );
 
+        let git_repo: bool;
+
         loop {
             response = asker.ask();
             io::remove_lines(2);
@@ -424,12 +439,12 @@ impl ProjectComposition {
             match response.to_lowercase().as_str() {
                 x if ["y", "yes", "n", "no"].contains(&x) => {
                     match x {
-                        "y" | "yes" => git_repo.set(true),
-                        _ => git_repo.set(false),
+                        "y" | "yes" => git_repo = true,
+                        _ => git_repo = false,
                     }
 
                     asker.set_answered(true);
-                    asker.update_hint(&git_repo);
+                    asker.update_hint(Cow::from_bool(git_repo));
                     asker.print_content();
                 }
                 _ => continue,
@@ -454,7 +469,7 @@ impl ProjectComposition {
         &ProjectPath,
         &ProjectType,
         &ProjectAuthors,
-        &GitRepository,
+        bool,
         bool,
     ) {
         (
@@ -462,7 +477,7 @@ impl ProjectComposition {
             &self.path,
             &self.project_type,
             &self.project_authors,
-            &self.git_repo,
+            self.git_repo,
             self.is_verbose,
         )
     }
