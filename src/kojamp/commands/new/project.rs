@@ -1,112 +1,26 @@
+use clap::ArgMatches;
+use std::fmt;
+
 use crate::utils::{
     io,
     strings::{StringChecker, StringTransform},
 };
-use clap::ArgMatches;
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum ProjectType {
-    Java,
-    Kotlin,
-    #[allow(dead_code)]
-    Undefined(String),
-}
+#[derive(Clone)]
+pub struct ProjectName(Option<String>);
 
-impl ProjectType {
-    fn from_string(input: String) -> Self {
-        match input.to_lowercase().as_str() {
-            "java" | "j" => Self::Java,
-            "kotlin" | "k" => Self::Kotlin,
-            _ => Self::Undefined(input),
-        }
+impl ProjectName {
+    pub fn new(matches: &ArgMatches) -> Self {
+        Self(matches.get_one::<String>("name").cloned())
     }
 
-    fn is_valid(&self) -> bool {
-        match self {
-            ProjectType::Undefined(_) => false,
-            _ => true,
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct ProjectFields {
-    name: Option<String>,
-    path: Option<String>,
-    project_type: Option<ProjectType>,
-    authors: Option<Vec<String>>,
-    no_git: bool,
-    prompt: bool,
-}
-
-impl ProjectFields {
-    pub fn from_match(matching: &ArgMatches) -> Self {
-        let name: Option<String> = matching.get_one("name").cloned();
-        let path = if let Some(given_path) = matching.get_one::<String>("path").cloned() {
-            Some(given_path)
-        } else if let Some(name_value) = name.clone() {
-            Some(StringTransform::to_kebab_case(name_value))
-        } else {
-            None
-        };
-        let project_type: Option<ProjectType> = match matching.get_one::<String>("type").cloned() {
-            Some(val) => Some(ProjectType::from_string(val)),
-            _ => None,
-        };
-        let mut authors: Option<Vec<String>> = matching
-            .get_many("authors")
-            .map(|vector| vector.cloned().collect());
-        if authors.is_some() {
-            authors = Some(
-                authors
-                    .unwrap()
-                    .into_iter()
-                    .map(|val| StringTransform::to_title_case(val))
-                    .collect::<Vec<String>>()
-                    .join(" ")
-                    .split("/")
-                    .filter(|name| !name.is_empty())
-                    .map(|name| name.trim().to_string())
-                    .collect(),
-            );
-        }
-        let no_git = match matching.get_one("no-git") {
-            Some(&cond) => cond,
-            _ => false,
-        };
-        let prompt = match matching.get_one("prompt") {
-            Some(&cond) => cond,
-            _ => false,
-        };
-
-        Self {
-            name,
-            path,
-            project_type,
-            authors,
-            no_git,
-            prompt,
-        }
+    pub fn set<T: Into<String>>(&mut self, new_value: T) {
+        let new_value = new_value.into();
+        self.0 = Some(new_value);
     }
 
-    pub fn prompt_called(&self) -> bool {
-        self.prompt
-    }
-
-    pub fn prompt_allowed(&self) -> bool {
-        [
-            self.name.is_none(),
-            self.path.is_none(),
-            self.project_type.is_none(),
-            self.authors.is_none(),
-            !self.no_git,
-        ]
-        .iter()
-        .all(|&condition| condition)
-    }
-
-    pub fn name_is_valid(&self) -> bool {
-        let project_name = self.name.clone();
+    pub fn is_valid(&self) -> bool {
+        let project_name = self.0.clone();
 
         if project_name.is_none() {
             return false;
@@ -148,261 +62,389 @@ impl ProjectFields {
             true
         }
     }
+}
 
-    pub fn get_type(&self) -> Option<ProjectType> {
-        self.project_type.clone()
+impl fmt::Display for ProjectName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match &self.0 {
+                Some(value) => format!("{}{}{}", "\x1b[92m", value, "\x1b[0m"),
+                _ => format!("{}{}{}", "\x1b[91m", "UNDEFINED", "\x1b[0m"),
+            }
+        )
+    }
+}
+
+#[derive(Clone)]
+pub struct ProjectPath(Option<String>);
+
+impl ProjectPath {
+    pub fn new(matches: &ArgMatches) -> Self {
+        Self(matches.get_one::<String>("path").cloned())
     }
 
-    pub fn type_is_valid(&self) -> bool {
-        let project_clone = self.project_type.clone();
-        match project_clone {
-            None => false,
-            Some(x) => x.is_valid(),
+    pub fn update_to_name_as_kebab(&mut self, project_name: &ProjectName) {
+        if let Some(name) = project_name.0.clone() {
+            self.0 = Some(StringTransform::to_kebab_case(name))
         }
     }
 
-    pub fn prompt_mode(&mut self) {
-        let mut name = String::new();
-        let path: String;
-        let mut project_type: ProjectType;
-        let mut authors: Vec<String> = Vec::new();
-        let git_repo: bool;
+    pub fn set<T: Into<String>>(&mut self, new_value: T) {
+        let new_value = new_value.into();
+        self.0 = Some(new_value);
+    }
+}
 
-        println!("You can use Ctrl-C at any time to abort!");
+impl fmt::Display for ProjectPath {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match &self.0 {
+                Some(value) => format!("{}{}{}", "\x1b[92m", value, "\x1b[0m"),
+                _ => format!("{}{}{}", "\x1b[91m", "UNDEFINED", "\x1b[0m"),
+            }
+        )
+    }
+}
+
+pub enum ProjectType {
+    Java,
+    Kotlin,
+    Undefined(String),
+    None,
+}
+
+impl ProjectType {
+    pub fn new(matches: &ArgMatches) -> Self {
+        if let Some(p_type) = matches.get_one::<String>("type").cloned() {
+            match p_type.to_lowercase().as_str() {
+                "j" | "java" => Self::Java,
+                "k" | "kotlin" => Self::Kotlin,
+                _ => Self::Undefined(p_type),
+            }
+        } else {
+            Self::None
+        }
+    }
+
+    pub fn set<T: Into<String>>(&mut self, new_value: T) {
+        let new_value = new_value.into();
+
+        match new_value.to_lowercase().as_str() {
+            "j" | "java" => *self = Self::Java,
+            "k" | "kotlin" => *self = Self::Kotlin,
+            _ => *self = Self::Undefined(new_value),
+        }
+    }
+
+    pub fn is_valid(&self) -> bool {
+        match self {
+            ProjectType::Java | ProjectType::Kotlin => true,
+            _ => false,
+        }
+    }
+}
+
+impl fmt::Display for ProjectType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}{}{}",
+            match &self {
+                ProjectType::None | ProjectType::Undefined(_) => "\x1b[91m",
+                _ => "\x1b[92m",
+            },
+            match &self {
+                ProjectType::Java => format!("{}{}{}", "\x1b[92m", "Java", "\x1b[0m"),
+                ProjectType::Kotlin => format!("{}{}{}", "\x1b[92m", "Kotlin", "\x1b[0m"),
+                ProjectType::Undefined(s) =>
+                    format!("{}[UNDEFINED {}]{}", "\x1b[92m", s, "\x1b[0m"),
+                ProjectType::None => format!("{}{}{}", "\x1b[92m", "[UNDEFINED - NONE]", "\x1b[0m"),
+            },
+            "\x1b[0m"
+        )
+    }
+}
+
+#[derive(Clone)]
+pub struct ProjectAuthors(Option<Vec<String>>);
+
+impl ProjectAuthors {
+    pub fn new(matches: &ArgMatches) -> Self {
+        if let Some(authors) = matches
+            .get_many("authors")
+            .map(|vector| vector.cloned().collect::<Vec<String>>())
+        {
+            Self(Some(
+                authors
+                    .into_iter()
+                    .map(|val| StringTransform::to_title_case(val))
+                    .collect::<Vec<String>>()
+                    .join(" ")
+                    .split("/")
+                    .filter(|name| !name.is_empty())
+                    .map(|name| name.trim().to_string())
+                    .collect(),
+            ))
+        } else {
+            Self(None)
+        }
+    }
+
+    pub fn push<T: Into<String>>(&mut self, value: T) {
+        if self.0.is_none() {
+            self.0 = Some(Vec::new());
+        }
+
+        let value: String = value
+            .into()
+            .split(" ")
+            .map(|word| StringTransform::to_title_case(word))
+            .collect::<Vec<String>>()
+            .join(" ");
+
+        if let Some(vector) = &mut self.0 {
+            vector.push(value);
+        }
+    }
+
+    pub fn clear(&mut self) {
+        self.0 = None;
+    }
+}
+
+impl fmt::Display for ProjectAuthors {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}{}{}",
+            "\x1b[92m",
+            match &self.0 {
+                None => "[]".to_string(),
+                Some(vector) => vector.join(", "),
+            },
+            "\x1b[0m"
+        )
+    }
+}
+
+pub struct GitRepository(bool);
+
+impl GitRepository {
+    pub fn new(matches: &ArgMatches) -> Self {
+        Self(!matches.get_flag("no-git"))
+    }
+
+    pub fn set(&mut self, value: bool) {
+        self.0 = value;
+    }
+}
+
+impl fmt::Display for GitRepository {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}{}",
+            if self.0 {
+                "\x1b[92m".to_string() + "Yes"
+            } else {
+                "\x1b[91m".to_string() + "No"
+            },
+            "\x1b[0m"
+        )
+    }
+}
+
+pub struct ProjectComposition {
+    name: ProjectName,
+    path: ProjectPath,
+    project_type: ProjectType,
+    project_authors: ProjectAuthors,
+    git_repo: GitRepository,
+}
+
+impl ProjectComposition {
+    pub fn new_from_matches(matches: &ArgMatches) -> Self {
+        Self {
+            name: ProjectName::new(matches),
+            path: ProjectPath::new(matches),
+            project_type: ProjectType::new(matches),
+            project_authors: ProjectAuthors::new(matches),
+            git_repo: GitRepository::new(matches),
+        }
+    }
+
+    pub fn new_from_prompt_mode(matches: &ArgMatches) -> Self {
+        let mut project_composition = Self::new_from_matches(matches);
+
+        let mut name = project_composition.name.clone();
+        let mut path = project_composition.path.clone();
+        let mut p_type = project_composition.project_type;
+        let mut authors = project_composition.project_authors;
+        let mut git_repo = project_composition.git_repo;
 
         loop {
-            if self.name_is_valid() {
+            if name.is_valid() {
+                println!(
+                    "{0}◆{1} Project Name: {2}{3}{4}",
+                    "\x1b[92m", // 0
+                    "\x1b[0m",  // 1
+                    "\x1b[92m", // 2
+                    name,       // 3
+                    "\x1b[0m",  // 4
+                );
                 break;
             }
-            println!("? Project Name: \x1b[3;90m(Try using a CamelCase name with no symbols, accents or withespaces)\x1b[0m");
-            name = io::read_line();
 
-            self.name = Some(name.clone());
+            println!(
+                "{0}◆{1} Project Name: {2}(Try using a CamelCase name with no symbols, accents or withespaces){3}",
+                "\x1b[91m",   // 0
+                "\x1b[0m",    // 1
+                "\x1b[3;90m", // 2
+                "\x1b[0m"     // 3
+            );
+
+            name.set(io::input("> "));
+            io::remove_lines(2);
         }
 
-        let kebab_name = StringTransform::to_kebab_case(name);
+        let kebab_name = StringTransform::to_kebab_case(name.clone().0.unwrap());
 
         println!(
-            "? Project Path: \x1b[3;90m(Press Enter to use name in kebab case `{}`)\x1b[0m",
-            kebab_name
+            "{0}◆{1} Project Path: {2}(Press Enter to use name in kebab case `{3}`){4}",
+            "\x1b[91m",   // 0
+            "\x1b[0m",    // 1
+            "\x1b[3;90m", // 2
+            kebab_name,   // 3
+            "\x1b[0m"     // 4
         );
 
-        path = match (io::read_line(), kebab_name) {
-            (x, name) if !x.is_empty() => name,
-            (_, name) => name,
-        };
+        let new_path = io::input("> ");
 
-        self.path = Some(path);
-
-        loop {
-            if self.type_is_valid() {
-                break;
-            }
-            println!(
-                "? Project Type: \x1b[3;90m(\x1b[92m[J]\x1b[90mava or \x1b[92m[K]\x1b[90motlin)\x1b[0m"
-            );
-
-            project_type = ProjectType::from_string(io::read_line());
-            self.project_type = Some(project_type);
+        if new_path.is_empty() {
+            path.set(kebab_name);
+        } else {
+            path.set(new_path);
         }
 
-        let mut author_buf: String;
-        let stop_case = String::from("!CONTINUE");
+        io::remove_lines(2);
+
+        println!(
+            "{0}◆{1} Project Path: {2}",
+            "\x1b[92m", // 0
+            "\x1b[0m",  // 1
+            path,       // 3
+        );
 
         loop {
-            println!(
-                "? Project Authors (Type \x1b[92m{}\x1b[0m to quit): \x1b[3;90m[{}]\x1b[0m",
-                stop_case,
-                authors.join(", ")
-            );
-            author_buf = io::read_line();
-
-            if author_buf == stop_case {
+            if p_type.is_valid() {
                 break;
             }
 
             println!(
-                "no trans: {}\nwt trans: {}",
-                author_buf,
-                StringTransform::to_title_case(author_buf.clone())
+                "{0}◆{1} Project Type: {2}({3}[J]{4}ava or {5}[K]{6}otlin){7}",
+                "\x1b[91m",   // 0
+                "\x1b[0m",    // 1
+                "\x1b[3;90m", // 2
+                "\x1b[92m",   // 3
+                "\x1b[90m",   // 4
+                "\x1b[92m",   // 5
+                "\x1b[90m",   // 6
+                "\x1b[0m"     // 7
             );
-            authors.push(StringTransform::to_title_case(author_buf));
+
+            p_type.set(io::input("> "));
+            io::remove_lines(2);
         }
 
-        self.authors = Some(authors);
+        println!(
+            "{0}◆{1} Project Type: {2}",
+            "\x1b[92m", // 0
+            "\x1b[0m",  // 1
+            p_type
+        );
 
-        println!("? Did you want to initialize a git repo? \x1b[3;90m(Just press Enter (or yes/y) if so, else, type anything)\x1b[0m");
-        git_repo = match io::read_line() {
-            x if x.is_empty() => true,
-            x if ["yes", "y"].contains(&x.to_lowercase().as_str()) => true,
-            _ => false,
-        };
-        self.no_git = !git_repo;
-    }
-}
+        let mut cur_author: String;
 
-#[cfg(test)]
-mod project_naming {
-
-    use super::*;
-    use crate::{kojamp::builder, utils::arg_test::ARG_BUILDER};
-
-    #[test]
-    fn valid_naming() {
-        let app = builder::kojamp_app();
-        let matching_cases = [
-            ["new", "Foo"],
-            ["new", "Bar"],
-            ["new", "DoubleWord"],
-            ["new", "Number2Name"],
-            ["new", "Baz"],
-        ];
-
-        for case in matching_cases {
-            let args = ARG_BUILDER.args_from(case);
-            let matching = app.get_subcommand_matching(args);
-            let project = ProjectFields::from_match(&matching);
-            assert!(
-                project.name_is_valid(),
-                "Was expecting a valid name, but invalid was returned with `{:?}` value",
-                project.name
+        loop {
+            println!(
+                "{0}◆{1} Project Authors (Type {2}!CONTINUE{3} when done or {4}!NONE{5} to abort): {6}{7}{8}",
+                "\x1b[91m",
+                "\x1b[0m",
+                "\x1b[92m",
+                "\x1b[0m",
+                "\x1b[91m",
+                "\x1b[0m",
+                "\x1b[3;90m",
+                if let Some(aut) = &authors.0 {
+                    "[".to_string() + &aut.join(", ") + "]"
+                } else {
+                    "[]".to_string()
+                },
+                "\x1b[0m",
             );
+
+            cur_author = io::input("> ");
+
+            match cur_author.as_str() {
+                "!CONTINUE" => break,
+                "!NONE" => {
+                    authors.clear();
+                    break;
+                }
+                x => authors.push(x),
+            }
+            io::remove_lines(2);
         }
-    }
 
-    #[test]
-    fn invalid_naming() {
-        let app = builder::kojamp_app();
-        let matching_cases = [
-            ["new", "lowercaseInitial"],
-            ["new", "5tartingW1thNumb3r"],
-            ["new", "Unallowed-Character"],
-            ["new", "CharacterÁccênt"],
-            ["new", ""],
-        ];
+        io::remove_lines(2);
 
-        for case in matching_cases {
-            let args = ARG_BUILDER.args_from(case);
-            let matching = app.get_subcommand_matching(args);
-            let project = ProjectFields::from_match(&matching);
-            assert!(
-                !project.name_is_valid(),
-                "Was expecting an invalid name, but valid one was returned with `{:?}` value",
-                project.name
+        println!(
+            "{0}◆{1} Project Authors: {2}",
+            "\x1b[92m", "\x1b[0m", authors
+        );
+
+        let mut git_init: String;
+
+        loop {
+            println!(
+                "{0}◆{1} Did you want to initialize a git repo? {2}({3}[Y]{4}es | {5}[N]{6}o){7}",
+                "\x1b[91m",
+                "\x1b[0m",
+                "\x1b[3;90m",
+                "\x1b[92m",
+                "\x1b[90m",
+                "\x1b[92m",
+                "\x1b[90m",
+                "\x1b[0m"
             );
+
+            git_init = io::input("> ");
+            io::remove_lines(2);
+
+            match git_init.to_lowercase().as_str() {
+                "y" | "yes" => git_repo.set(true),
+                "n" | "no" => git_repo.set(false),
+                _ => continue,
+            }
+
+            break;
         }
-    }
-}
 
-#[cfg(test)]
-mod projectfields_type_validation {
+        println!(
+            "{0}◆{1} Did you want to initialize a git repo? {2}",
+            "\x1b[92m", "\x1b[0m", git_repo
+        );
 
-    use super::*;
-    use crate::{kojamp::builder, utils::arg_test::ARG_BUILDER};
+        project_composition.name = name;
+        project_composition.path = path;
+        project_composition.project_type = p_type;
+        project_composition.project_authors = authors;
+        project_composition.git_repo = git_repo;
 
-    #[test]
-    fn valid_project_type() {
-        let app = builder::kojamp_app();
-        let matching_cases = [
-            ["new", "--type", "java"],
-            ["new", "--type", "Java"],
-            ["new", "--type", "J"],
-            ["new", "--type", "j"],
-            ["new", "--type", "kotlin"],
-            ["new", "--type", "KoTlIn"],
-            ["new", "--type", "K"],
-            ["new", "--type", "k"],
-        ];
-
-        for case in matching_cases {
-            let args = ARG_BUILDER.args_from(case);
-            let matching = app.get_subcommand_matching(args);
-            let project = ProjectFields::from_match(&matching);
-            let cur_type = project.get_type();
-            assert!(
-                project.type_is_valid(),
-                "Was expecting a valid type, but invalid one was returned (`{:?}`)",
-                cur_type
-            );
-        }
-    }
-
-    #[test]
-    fn invalid_project_type() {
-        let app = builder::kojamp_app();
-        let matching_cases = [
-            ["new", "--type", "NotJava"],
-            ["new", "--type", "N"],
-            ["new", "--type", "Ja-va"],
-            ["new", "--type", "Gotlin"],
-            ["new", "--type", "kótlin"],
-        ];
-
-        for case in matching_cases {
-            let args = ARG_BUILDER.args_from(case);
-            let matching = app.get_subcommand_matching(args);
-            let project = ProjectFields::from_match(&matching);
-            let cur_type = project.get_type();
-            assert!(
-                !project.type_is_valid(),
-                "Was expecting an invalid type, but a valid one was returned (`{:?}`)",
-                cur_type
-            );
-        }
-    }
-}
-
-#[cfg(test)]
-mod projecttype_asserting {
-
-    use super::ProjectType;
-
-    #[test]
-    fn expecting_java() {
-        let types = ["J", "j", "java", "JaVa"].iter().map(|val| val.to_string());
-
-        for t in types {
-            let p_type = ProjectType::from_string(t);
-            assert_eq!(
-                p_type,
-                ProjectType::Java,
-                "A strange type (`{:?}`) has been returned when Java type was expected",
-                p_type
-            );
-        }
-    }
-
-    #[test]
-    fn expecting_kotlin() {
-        let types = ["K", "k", "kotlin", "kOtLiN"]
-            .iter()
-            .map(|val| val.to_string());
-
-        for t in types {
-            let p_type = ProjectType::from_string(t);
-            assert_eq!(
-                p_type,
-                ProjectType::Kotlin,
-                "A strange type (`{:?}`) has been returned when Java type was expected",
-                p_type
-            );
-        }
-    }
-
-    #[test]
-    fn expecting_undefined() {
-        let types = ["Undefined", "a", "What", "TypeISTHIs"]
-            .iter()
-            .map(|val| val.to_string());
-
-        for t in types {
-            let p_type = ProjectType::from_string(t.clone());
-            assert_eq!(
-                p_type,
-                ProjectType::Undefined(t),
-                "A strange type (`{:?}`) has been returned when Java type was expected",
-                p_type
-            );
-        }
+        project_composition
     }
 }
