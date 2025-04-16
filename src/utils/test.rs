@@ -101,7 +101,7 @@ mod io {
         ];
 
         for (inp, nor) in inputs_and_normals {
-            assert_eq!(io::normalize_read_line_input(inp.to_string()), nor);
+            assert_eq!(io::normalize_input(inp.to_string()), nor);
         }
     }
 }
