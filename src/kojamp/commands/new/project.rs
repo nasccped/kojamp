@@ -1,5 +1,5 @@
 use clap::ArgMatches;
-use std::{borrow::Cow, fmt};
+use std::{any::Any, borrow::Cow, fmt};
 
 use crate::utils::{
     io,
@@ -442,5 +442,23 @@ impl ProjectComposition {
         project_composition.git_repo = git_repo;
 
         project_composition
+    }
+
+    pub fn destructure(
+        &self,
+    ) -> (
+        &ProjectName,
+        &ProjectPath,
+        &ProjectType,
+        &ProjectAuthors,
+        &GitRepository,
+    ) {
+        (
+            &self.name,
+            &self.path,
+            &self.project_type,
+            &self.project_authors,
+            &self.git_repo,
+        )
     }
 }
