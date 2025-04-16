@@ -23,7 +23,7 @@ pub fn exec(matches: &ArgMatches) -> i32 {
         return 1;
     } else {
         project = ProjectComposition::new_from_matches(matches);
-        let (name, _, p_type, authors, _) = project.destructure();
+        let (name, _, p_type, authors, _, _verbose) = project.destructure();
 
         let mut invalid_count = 0;
         let checkers: [(bool, fn()); 3] = [
