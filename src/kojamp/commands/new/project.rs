@@ -375,7 +375,7 @@ impl ProjectComposition {
             io::remove_lines(2);
         }
 
-        let binding = "Project Authors (Type \x1b[92m!CONTINUE\x1b[0m when done or \x1b[91m!NONE\x1b[0m to no user / avoid using '/', '?' and '!' chars):";
+        let binding = "Project Authors (Type \x1b[92m!CONTINUE\x1b[0m when done or \x1b[91m!NONE\x1b[0m to no author / avoid using '/', '?' and '!' chars):";
         asker = io::IOAsking::new("◆", binding, "", "> ");
 
         loop {
