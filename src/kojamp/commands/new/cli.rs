@@ -39,6 +39,11 @@ pub fn cli() -> Command {
             .long("prompt")
             .action(ArgAction::SetTrue)
             .required(false)
-            .help("Concise way to new kojamp based projects (try it by using \x1b[93m`kojamp new --prompt`\x1b[0m)")
+            .help("Concise way to new kojamp based projects (try it by using \x1b[93m`kojamp new --prompt`\x1b[0m)"),
+        Arg::new("verbose")
+            .long("verbose")
+            .action(ArgAction::SetTrue)
+            .required(false)
+            .help("Create a new project in verbose mode, by reporting warnings and errors")
     ])
 }
