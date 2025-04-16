@@ -1,5 +1,5 @@
 use clap::ArgMatches;
-use std::fmt;
+use std::{borrow::Cow, fmt};
 
 use crate::utils::{
     io,
@@ -64,16 +64,18 @@ impl ProjectName {
     }
 }
 
-impl fmt::Display for ProjectName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match &self.0 {
-                Some(value) => format!("{}{}{}", "\x1b[92m", value, "\x1b[0m"),
-                _ => format!("{}{}{}", "\x1b[91m", "UNDEFINED", "\x1b[0m"),
-            }
-        )
+impl From<&ProjectName> for Cow<'static, str> {
+    fn from(s: &ProjectName) -> Self {
+        Cow::Owned(format!(
+            "{}{}{}",
+            if s.0.is_some() {
+                "\x1b[92m"
+            } else {
+                "\x1b[91m"
+            },
+            s.0.as_ref().unwrap_or(&"[UNDEFINED]".to_string()),
+            "\x1b[0m"
+        ))
     }
 }
 
@@ -97,16 +99,18 @@ impl ProjectPath {
     }
 }
 
-impl fmt::Display for ProjectPath {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            match &self.0 {
-                Some(value) => format!("{}{}{}", "\x1b[92m", value, "\x1b[0m"),
-                _ => format!("{}{}{}", "\x1b[91m", "UNDEFINED", "\x1b[0m"),
-            }
-        )
+impl From<&ProjectPath> for Cow<'static, str> {
+    fn from(s: &ProjectPath) -> Self {
+        Cow::Owned(format!(
+            "{}{}{}",
+            if s.0.is_some() {
+                "\x1b[92m"
+            } else {
+                "\x1b[91m"
+            },
+            s.0.as_ref().unwrap_or(&"[UNDEFINED]".to_string()),
+            "\x1b[0m"
+        ))
     }
 }
 
@@ -148,16 +152,15 @@ impl ProjectType {
     }
 }
 
-impl fmt::Display for ProjectType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
+impl From<&ProjectType> for Cow<'static, str> {
+    fn from(s: &ProjectType) -> Self {
+        Cow::Owned(format!(
             "{}{}{}",
-            match &self {
+            match s {
                 ProjectType::None | ProjectType::Undefined(_) => "\x1b[91m",
                 _ => "\x1b[92m",
             },
-            match &self {
+            match s {
                 ProjectType::Java => format!("{}{}{}", "\x1b[92m", "Java", "\x1b[0m"),
                 ProjectType::Kotlin => format!("{}{}{}", "\x1b[92m", "Kotlin", "\x1b[0m"),
                 ProjectType::Undefined(s) =>
@@ -165,7 +168,7 @@ impl fmt::Display for ProjectType {
                 ProjectType::None => format!("{}{}{}", "\x1b[92m", "[UNDEFINED - NONE]", "\x1b[0m"),
             },
             "\x1b[0m"
-        )
+        ))
     }
 }
 
@@ -239,17 +242,29 @@ impl ProjectAuthors {
     }
 }
 
+impl From<&ProjectAuthors> for Cow<'static, str> {
+    fn from(s: &ProjectAuthors) -> Self {
+        Cow::Owned(format!(
+            "{}{}{}",
+            "\x1b[92m",
+            match s.0.as_ref() {
+                None => "[]".to_string(),
+                Some(vector) => format!("[{}]", vector.join(", ")),
+            },
+            "\x1b[0m"
+        ))
+    }
+}
+
 impl fmt::Display for ProjectAuthors {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}{}{}",
-            "\x1b[92m",
-            match &self.0 {
-                None => "[]".to_string(),
-                Some(vector) => vector.join(", "),
-            },
-            "\x1b[0m"
+            "[{}]",
+            match self.0.as_ref() {
+                Some(authors) => authors.join(", "),
+                None => "".into(),
+            }
         )
     }
 }
@@ -266,18 +281,13 @@ impl GitRepository {
     }
 }
 
-impl fmt::Display for GitRepository {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
+impl From<&GitRepository> for Cow<'static, str> {
+    fn from(s: &GitRepository) -> Self {
+        Cow::Owned(format!(
             "{}{}",
-            if self.0 {
-                "\x1b[92m".to_string() + "Yes"
-            } else {
-                "\x1b[91m".to_string() + "No"
-            },
+            if s.0 { "\x1b[92mYes" } else { "\x1b[91mNo" },
             "\x1b[0m"
-        )
+        ))
     }
 }
 
@@ -309,113 +319,80 @@ impl ProjectComposition {
         let mut authors = project_composition.project_authors;
         let mut git_repo = project_composition.git_repo;
 
+        let (mut asker, mut response): (io::IOAsking, String);
+
+        let binding =
+            "\x1b[3;90m(Try using a CamelCase name with no symbols, accents or withespaces)\x1b[0m";
+
+        asker = io::IOAsking::new("◆", "Project Name:", binding, "> ");
+
         loop {
             if name.is_valid() {
-                println!(
-                    "{0}◆{1} Project Name: {2}{3}{4}",
-                    "\x1b[92m", // 0
-                    "\x1b[0m",  // 1
-                    "\x1b[92m", // 2
-                    name,       // 3
-                    "\x1b[0m",  // 4
-                );
+                asker.set_answered(true);
+                asker.update_hint(&name);
+                asker.print_content();
                 break;
             }
-
-            println!(
-                "{0}◆{1} Project Name: {2}(Try using a CamelCase name with no symbols, accents or withespaces){3}",
-                "\x1b[91m",   // 0
-                "\x1b[0m",    // 1
-                "\x1b[3;90m", // 2
-                "\x1b[0m"     // 3
-            );
-
-            name.set(io::input("> "));
+            response = asker.ask();
+            name.set(response);
             io::remove_lines(2);
         }
 
         let kebab_name = StringTransform::to_kebab_case(name.clone().0.unwrap());
 
-        println!(
-            "{0}◆{1} Project Path: {2}(Press Enter to use name in kebab case `{3}`){4}",
-            "\x1b[91m",   // 0
-            "\x1b[0m",    // 1
-            "\x1b[3;90m", // 2
-            kebab_name,   // 3
-            "\x1b[0m"     // 4
-        );
+        let binding = "\x1b[3;90m(Just press Enter to use name in kebab case)\x1b[0m";
 
-        let new_path = io::input("> ");
+        asker = io::IOAsking::new("◆", "Project Path:", binding, "> ");
 
-        if new_path.is_empty() {
+        response = asker.ask();
+
+        if response.is_empty() {
             path.set(kebab_name);
         } else {
-            path.set(new_path);
+            path.set(response);
         }
 
         io::remove_lines(2);
+        asker.set_answered(true);
+        asker.update_hint(&path);
+        asker.print_content();
 
-        println!(
-            "{0}◆{1} Project Path: {2}",
-            "\x1b[92m", // 0
-            "\x1b[0m",  // 1
-            path,       // 3
-        );
+        let binding = "\x1b[3;90m(\x1b[92m[J]\x1b[90mava or \x1b[92m[K]\x1b[90motlin)\x1b[0m";
+
+        asker = io::IOAsking::new("◆", "Project Type:", binding, "> ");
 
         loop {
             if p_type.is_valid() {
+                asker.set_answered(true);
+                asker.update_hint(&p_type);
+                asker.print_content();
                 break;
             }
 
-            println!(
-                "{0}◆{1} Project Type: {2}({3}[J]{4}ava or {5}[K]{6}otlin){7}",
-                "\x1b[91m",   // 0
-                "\x1b[0m",    // 1
-                "\x1b[3;90m", // 2
-                "\x1b[92m",   // 3
-                "\x1b[90m",   // 4
-                "\x1b[92m",   // 5
-                "\x1b[90m",   // 6
-                "\x1b[0m"     // 7
-            );
+            response = asker.ask();
 
-            p_type.set(io::input("> "));
+            p_type.set(response);
             io::remove_lines(2);
         }
 
-        println!(
-            "{0}◆{1} Project Type: {2}",
-            "\x1b[92m", // 0
-            "\x1b[0m",  // 1
-            p_type
-        );
-
-        let mut cur_author: String;
+        let binding = "Project Authors (Type \x1b[92m!CONTINUE\x1b[0m when done or \x1b[91m!NONE\x1b[0m to no user / avoid using '/', '?' and '!' chars):";
+        asker = io::IOAsking::new("◆", binding, "", "> ");
 
         loop {
-            println!(
-                "{0}◆{1} Project Authors (Type {2}!CONTINUE{3} when done or {4}!NONE{5} to abort): {6}{7}{8}",
-                "\x1b[91m",
-                "\x1b[0m",
-                "\x1b[92m",
-                "\x1b[0m",
-                "\x1b[91m",
-                "\x1b[0m",
-                "\x1b[3;90m",
-                if let Some(aut) = &authors.0 {
-                    "[".to_string() + &aut.join(", ") + "]"
-                } else {
-                    "[]".to_string()
-                },
-                "\x1b[0m",
-            );
+            asker.update_hint(format!("{}{}{}", "\x1b[3;90m", authors, "\x1b[0m"));
 
-            cur_author = io::input("> ");
+            response = asker.ask();
 
-            match cur_author.as_str() {
-                "!CONTINUE" => break,
-                "!NONE" => {
-                    authors.clear();
+            match response.as_str() {
+                x if ["!CONTINUE", "!NONE"].contains(&x) => {
+                    if x == "!NONE" {
+                        authors.clear();
+                    }
+                    io::remove_lines(1);
+                    asker.update_question("Project Authors:");
+                    asker.update_hint(&authors);
+                    asker.set_answered(true);
+                    asker.print_content();
                     break;
                 }
                 x => authors.push(x),
@@ -424,43 +401,39 @@ impl ProjectComposition {
         }
 
         io::remove_lines(2);
+        asker.update_hint(&authors);
+        asker.set_answered(true);
+        asker.print_content();
 
-        println!(
-            "{0}◆{1} Project Authors: {2}",
-            "\x1b[92m", "\x1b[0m", authors
+        let binding = "\x1b[3;90m(\x1b[92m[Y]\x1b[90mes or \x1b[92m[N]\x1b[90mo)\x1b[0m";
+
+        asker = io::IOAsking::new(
+            "◆",
+            "Did you want to initialize a git repo?",
+            binding.as_ref(),
+            "> ",
         );
 
-        let mut git_init: String;
-
         loop {
-            println!(
-                "{0}◆{1} Did you want to initialize a git repo? {2}({3}[Y]{4}es | {5}[N]{6}o){7}",
-                "\x1b[91m",
-                "\x1b[0m",
-                "\x1b[3;90m",
-                "\x1b[92m",
-                "\x1b[90m",
-                "\x1b[92m",
-                "\x1b[90m",
-                "\x1b[0m"
-            );
-
-            git_init = io::input("> ");
+            response = asker.ask();
             io::remove_lines(2);
 
-            match git_init.to_lowercase().as_str() {
-                "y" | "yes" => git_repo.set(true),
-                "n" | "no" => git_repo.set(false),
+            match response.to_lowercase().as_str() {
+                x if ["y", "yes", "n", "no"].contains(&x) => {
+                    match x {
+                        "y" | "yes" => git_repo.set(true),
+                        _ => git_repo.set(false),
+                    }
+
+                    asker.set_answered(true);
+                    asker.update_hint(&git_repo);
+                    asker.print_content();
+                }
                 _ => continue,
             }
 
             break;
         }
-
-        println!(
-            "{0}◆{1} Did you want to initialize a git repo? {2}",
-            "\x1b[92m", "\x1b[0m", git_repo
-        );
 
         project_composition.name = name;
         project_composition.path = path;
