@@ -114,6 +114,7 @@ impl From<&ProjectPath> for Cow<'static, str> {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub enum ProjectType {
     Java,
     Kotlin,
@@ -164,8 +165,8 @@ impl From<&ProjectType> for Cow<'static, str> {
                 ProjectType::Java => format!("{}{}{}", "\x1b[92m", "Java", "\x1b[0m"),
                 ProjectType::Kotlin => format!("{}{}{}", "\x1b[92m", "Kotlin", "\x1b[0m"),
                 ProjectType::Undefined(s) =>
-                    format!("{}[UNDEFINED {}]{}", "\x1b[92m", s, "\x1b[0m"),
-                ProjectType::None => format!("{}{}{}", "\x1b[92m", "[UNDEFINED - NONE]", "\x1b[0m"),
+                    format!("{}[UNDEFINED - {}]{}", "\x1b[91m", s, "\x1b[0m"),
+                ProjectType::None => format!("{}{}{}", "\x1b[91m", "[UNDEFINED - NONE]", "\x1b[0m"),
             },
             "\x1b[0m"
         ))
