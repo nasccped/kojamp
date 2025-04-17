@@ -1,5 +1,10 @@
 use super::{helper, project::ProjectComposition, report};
+use crate::{
+    utils::io::{IOReporting, ReportStatus},
+    vec_dispbox,
+};
 use clap::ArgMatches;
+use std::fmt;
 
 pub fn exec(matches: &ArgMatches) -> i32 {
     /* TODO:
@@ -17,6 +22,13 @@ pub fn exec(matches: &ArgMatches) -> i32 {
     let project: ProjectComposition;
     let is_verbose = matches.get_flag("verbose");
 
+    let mut fail_reporting = IOReporting::new::<_, &str>(
+        ReportStatus::Err,
+        Some("REPORTING FAILS - `kojamp new` OPERATIONS"),
+        None,
+        vec_dispbox!["Returned a fail for the following validation tests: "],
+    );
+
     if helper::only_prompt_called(matches) {
         project = ProjectComposition::new_from_prompt_mode(matches);
     } else if helper::prompt_called(matches) {
@@ -26,22 +38,50 @@ pub fn exec(matches: &ArgMatches) -> i32 {
         project = ProjectComposition::new_from_matches(matches);
         let (name, _, p_type, authors, _) = project.destructure();
 
-        let mut invalid_count = 0;
-        let checkers: [(bool, fn(bool)); 3] = [
-            (!name.is_valid(), report::invalid_name),
-            (!p_type.is_valid(), report::invalid_project_type),
-            (!authors.is_valid(), report::invalid_authors),
+        let mut is_invalid = false;
+        let checkers: [(bool, fn(), &str); 3] = [
+            (!name.is_valid(), report::invalid_name, "Name"),
+            (!p_type.is_valid(), report::invalid_project_type, "Type"),
+            (!authors.is_valid(), report::invalid_authors, "Authors"),
         ];
 
-        checkers.iter().for_each(|(cond, func)| {
-            if *cond {
-                func(is_verbose);
-                invalid_count += 1;
-            }
-        });
+        checkers
+            .iter()
+            .for_each(|(cond, func, message)| match (*cond, is_verbose) {
+                (true, x) => {
+                    if fail_reporting.get_how_many_rows() == 1 {
+                        fail_reporting.append_message_line("");
+                    }
+                    is_invalid = true;
+                    if x {
+                        func();
+                    } else {
+                        fail_reporting.append_message_line(format!(
+                            "  {}- {}{}",
+                            "\x1b[96m", message, "\x1b[0m"
+                        ));
+                    }
+                }
+                _ => {}
+            });
 
-        if invalid_count > 0 {
-            return 1;
+        if is_invalid {
+            fail_reporting.append_message_line("");
+            fail_reporting.append_message_line(format!(
+                "You can try using the same inputs with the {}`--verbose`{} flag.",
+                "\x1b[92m", "\x1b[0m",
+            ));
+        }
+
+        match (is_invalid, is_verbose) {
+            (true, true) => {
+                return 1;
+            }
+            (true, false) => {
+                fail_reporting.print_content();
+                return 1;
+            }
+            _ => {}
         }
     }
 
