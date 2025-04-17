@@ -1,9 +1,12 @@
 use clap::ArgMatches;
 use std::{borrow::Cow, fmt};
 
-use crate::utils::{
-    io,
-    strings::{StringChecker, StringTransform},
+use crate::{
+    utils::{
+        io::{self, IOReporting, ReportStatus},
+        strings::{StringChecker, StringTransform},
+    },
+    vec_dispbox,
 };
 
 #[derive(Clone)]
@@ -332,12 +335,36 @@ impl ProjectComposition {
         let mut p_type = project_composition.project_type;
         let mut authors = project_composition.project_authors;
 
+        let io_report: IOReporting = IOReporting::new::<_, &str>(
+            ReportStatus::Warn,
+            Some("PROMPT MODE ALERTS"),
+            None,
+            vec_dispbox![
+                format!(
+                    "We'll start an {}Ask-Answer{} scheme to set valuable data",
+                    "\x1b[93m", "\x1b[0m"
+                ),
+                "about your project. Don't worry if you accidentally give",
+                format!(
+                    "{}invalid{} responses. The program will ask you again {}:^D{}",
+                    "\x1b[91m", "\x1b[0m", "\x1b[3;92m", "\x1b[0m"
+                ),
+                "",
+                format!(
+                    "You can {}abort{} at any time by using the {}<Ctrl-C>{} combination!",
+                    "\x1b[91m", "\x1b[0m", "\x1b[96m", "\x1b[0m"
+                )
+            ],
+        );
+
+        io_report.print_content();
+
         let (mut asker, mut response): (io::IOAsking, String);
 
         let binding =
             "\x1b[3;90m(Try using a CamelCase name with no symbols, accents or withespaces)\x1b[0m";
 
-        asker = io::IOAsking::new("◆", "Project Name:", binding, "> ");
+        asker = io::IOAsking::new("+", "Project Name:", binding, "- ");
 
         loop {
             if name.is_valid() {
@@ -355,7 +382,7 @@ impl ProjectComposition {
 
         let binding = "\x1b[3;90m(Just press Enter to use name in kebab case)\x1b[0m";
 
-        asker = io::IOAsking::new("◆", "Project Path:", binding, "> ");
+        asker = io::IOAsking::new("+", "Project Path:", binding, "- ");
 
         response = asker.ask();
 
@@ -372,7 +399,7 @@ impl ProjectComposition {
 
         let binding = "\x1b[3;90m(\x1b[92m[J]\x1b[90mava or \x1b[92m[K]\x1b[90motlin)\x1b[0m";
 
-        asker = io::IOAsking::new("◆", "Project Type:", binding, "> ");
+        asker = io::IOAsking::new("+", "Project Type:", binding, "- ");
 
         loop {
             if p_type.is_valid() {
@@ -389,7 +416,7 @@ impl ProjectComposition {
         }
 
         let binding = "Project Authors (Type \x1b[92m!CONTINUE\x1b[0m when done or \x1b[91m!NONE\x1b[0m to no author / avoid using '/', '?' and '!' chars):";
-        asker = io::IOAsking::new("◆", binding, "", "> ");
+        asker = io::IOAsking::new("+", binding, "", "- ");
 
         loop {
             asker.update_hint(format!("{}{}{}", "\x1b[3;90m", authors, "\x1b[0m"));
@@ -421,10 +448,10 @@ impl ProjectComposition {
         let binding = "\x1b[3;90m(\x1b[92m[Y]\x1b[90mes or \x1b[92m[N]\x1b[90mo)\x1b[0m";
 
         asker = io::IOAsking::new(
-            "◆",
+            "+",
             "Did you want to initialize a git repo?",
             binding.as_ref(),
-            "> ",
+            "- ",
         );
 
         let git_repo: bool;
