@@ -88,8 +88,9 @@ pub fn exec(matches: &ArgMatches) -> i32 {
 
         if is_invalid {
             fail_reporting.append_message_line("");
+            fail_reporting.append_message_line("You can try using the same inputs with");
             fail_reporting.append_message_line(format!(
-                "You can try using the same inputs with the {}`--verbose`{} flag.",
+                "the {}`--verbose`{} flag for detailed info.",
                 "\x1b[92m", "\x1b[0m",
             ));
         }
