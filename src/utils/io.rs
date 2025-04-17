@@ -113,22 +113,22 @@ pub enum ReportStatus {
 
 pub struct IOReporting {
     title_status: ReportStatus,
-    personalized_title: Option<String>,
-    append_to_title: Option<String>,
+    title_content: Option<Cow<'static, str>>,
     message: Vec<Box<dyn fmt::Display>>,
 }
 
 impl IOReporting {
-    pub fn new<T: Into<String>, U: Into<String>>(
+    pub fn new<T>(
         title_status: ReportStatus,
-        personalized_title: Option<T>,
-        append_to_title: Option<U>,
+        title_content: Option<T>,
         message: Vec<Box<dyn fmt::Display>>,
-    ) -> Self {
+    ) -> Self
+    where
+        T: Into<Cow<'static, str>>,
+    {
         Self {
             title_status,
-            personalized_title: personalized_title.map(Into::into),
-            append_to_title: append_to_title.map(Into::into),
+            title_content: title_content.map(Into::into),
             message,
         }
     }
@@ -142,47 +142,33 @@ impl IOReporting {
     }
 
     fn get_title(&self) -> String {
-        let title_escape = match &self.title_status {
-            ReportStatus::Ok => "\x1b[1;92m",
-            ReportStatus::Warn => "\x1b[1;93m",
-            ReportStatus::Err => "\x1b[1;91m",
-            ReportStatus::None => "\x1b[1;97m",
+        let white_escape = "\x1b[97m";
+
+        let title_tag = match &self.title_status {
+            ReportStatus::Ok => format!("{}[{}SUCCESS{}]:", white_escape, "\x1b[92m", white_escape),
+            ReportStatus::Warn => {
+                format!("{}[{}WARNING{}]:", white_escape, "\x1b[1;93m", white_escape)
+            }
+            ReportStatus::Err => format!("{}[{}FAIL{}]:", white_escape, "\x1b[1;91m", white_escape),
+            ReportStatus::None => format!("{}[N/A]:", white_escape),
         };
 
-        let title_content = match (&self.title_status, &self.personalized_title) {
-            (x, None) => Cow::from(match x {
-                ReportStatus::Ok => "OK",
-                ReportStatus::Warn => "WARN",
-                ReportStatus::Err => "FAIL",
-                ReportStatus::None => "",
-            }),
-            (_, Some(x)) => Cow::from(x),
-        };
-
-        String::from("\x1b[97m[")
-            + title_escape
-            + title_content.as_ref()
-            + "\x1b[97m]: "
-            + &self.append_to_title.clone().unwrap_or("".to_string())
-            + "\x1b[0m"
+        title_tag + " " + self.title_content.clone().unwrap_or(Cow::from("")).as_ref() + "\x1b[0m"
     }
 
     fn get_title_bar(&self) -> String {
-        let mut repeat_value: usize;
-
-        if let Some(personalized) = &self.personalized_title {
-            repeat_value = personalized.len() + 3;
+        let mut repeat_value: usize = if let Some(personalized) = &self.title_content {
+            personalized.len() + 1
         } else {
-            repeat_value = match &self.title_status {
-                ReportStatus::Ok => 5,
-                ReportStatus::None => 3,
-                _ => 7,
-            }
-        }
+            0
+        };
 
-        if let Some(append) = &self.append_to_title {
-            repeat_value += append.len() + 1;
-        }
+        repeat_value += match self.title_status {
+            ReportStatus::Ok => 10,
+            ReportStatus::Err => 7,
+            ReportStatus::Warn => 10,
+            _ => 6,
+        };
 
         format!("{}{}{}", "\x1b[1;97m", "^".repeat(repeat_value), "\x1b[0m")
     }
