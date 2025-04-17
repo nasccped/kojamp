@@ -7,10 +7,9 @@ use std::{borrow::Cow, fmt};
 type CowAlias<'a, 'b> = &'a Cow<'b, str>;
 
 pub fn prompt_not_allowed() {
-    let io_report: IOReporting = IOReporting::new::<_, &str>(
+    let io_report: IOReporting = IOReporting::new(
         ReportStatus::Err,
-        Some("FAIL ON `new --prompt`"),
-        None,
+        Some("on `new --prompt`"),
         vec_dispbox![
             format!(
                 "You probably typed something like: {},",
@@ -30,11 +29,11 @@ pub fn prompt_not_allowed() {
             "",
             "For everything to work properly, consider using:",
             format!(
-                "{}a) {}{} {}(for prompt mode generating){}",
+                "  {}a) {}{} {}(for prompt mode generating){}",
                 "\x1b[96m", "\x1b[92m", "`kojamp new --prompt`", "\x1b[90m", "\x1b[0m"
             ),
             format!(
-                "{}b) {} (for default mode generating){}",
+                "  {}b) {} (for default mode generating){}",
                 "\x1b[96m",
                 format!(
                     "{}`kojamp new {}<YOUR_PROJECT_NAME>{} -T {}<YOUR_PROJECT_TYPE>{}`{}",
@@ -62,9 +61,8 @@ pub fn prompt_not_allowed() {
 }
 
 pub fn invalid_name(name: CowAlias) {
-    let io_report: IOReporting = IOReporting::new::<&str, _>(
+    let io_report: IOReporting = IOReporting::new(
         ReportStatus::Err,
-        None,
         Some("Trying to build a project with an invalid name"),
         vec_dispbox![
             format!("You can't build a project with the `{}` name due", name),

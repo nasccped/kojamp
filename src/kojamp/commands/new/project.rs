@@ -339,10 +339,9 @@ impl ProjectComposition {
         let input_ind = "- ";
         let response_escape = "\x1b[3;96m";
 
-        let io_report: IOReporting = IOReporting::new::<_, &str>(
+        let io_report: IOReporting = IOReporting::new(
             ReportStatus::Warn,
-            Some("PROMPT MODE ALERTS"),
-            None,
+            Some("Prompt mode alerts"),
             vec_dispbox![
                 format!(
                     "We'll start an {}Ask-Answer{} scheme to set valuable data",

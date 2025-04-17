@@ -22,15 +22,13 @@ pub fn exec(matches: &ArgMatches) -> i32 {
     let project: ProjectComposition;
     let is_verbose = matches.get_flag("verbose");
 
-    let mut fail_reporting = IOReporting::new::<_, &str>(
+    let mut fail_reporting = IOReporting::new(
         ReportStatus::Err,
-        Some("REPORTING FAILS - `kojamp new` OPERATIONS"),
-        None,
+        Some("`kojamp new` operations"),
         vec_dispbox!["Returned a fail for the following validation tests: "],
     );
-    let succes_reporting = IOReporting::new::<&str, _>(
-        ReportStatus::Err,
-        None,
+    let succes_reporting = IOReporting::new(
+        ReportStatus::Ok,
         Some("Your project is built"),
         vec_dispbox![],
     );
