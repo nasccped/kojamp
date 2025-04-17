@@ -94,3 +94,89 @@ fn input<T: fmt::Display>(prompt: T) -> String {
 pub fn normalize_input(input: String) -> String {
     input.replace("\n", "").replace("\r", "")
 }
+
+pub enum ReportStatus {
+    Ok,
+    Warn,
+    Err,
+    None,
+}
+
+pub struct IOReporting {
+    title_status: ReportStatus,
+    personalized_title: Option<String>,
+    append_to_title: Option<String>,
+    message: Vec<Box<dyn fmt::Display>>,
+}
+
+impl IOReporting {
+    pub fn new<T: Into<String>>(
+        title_status: ReportStatus,
+        personalized_title: Option<T>,
+        append_to_title: Option<T>,
+        message: Vec<Box<dyn fmt::Display>>,
+    ) -> Self {
+        Self {
+            title_status,
+            personalized_title: personalized_title.map(Into::into),
+            append_to_title: append_to_title.map(Into::into),
+            message,
+        }
+    }
+
+    fn get_title(&self) -> String {
+        let title_escape = match &self.title_status {
+            ReportStatus::Ok => "\x1b[1;92m",
+            ReportStatus::Warn => "\x1b[1;93m",
+            ReportStatus::Err => "\x1b[1;91m",
+            ReportStatus::None => "\x1b[1;97m",
+        };
+
+        let title_content = match (&self.title_status, &self.personalized_title) {
+            (x, None) => Cow::from(match x {
+                ReportStatus::Ok => "OK",
+                ReportStatus::Warn => "WARN",
+                ReportStatus::Err => "FAIL",
+                ReportStatus::None => "",
+            }),
+            (_, Some(x)) => Cow::from(x),
+        };
+
+        String::from("\x1b[97m[")
+            + title_escape
+            + title_content.as_ref()
+            + "\x1b[97m]: "
+            + &self.append_to_title.clone().unwrap_or("".to_string())
+            + "\x1b[0m"
+    }
+
+    fn get_title_bar(&self) -> String {
+        let mut repeat_value: usize;
+
+        if let Some(personalized) = &self.personalized_title {
+            repeat_value = personalized.len() + 3;
+        } else {
+            repeat_value = match &self.title_status {
+                ReportStatus::Ok => 5,
+                ReportStatus::None => 3,
+                _ => 7,
+            }
+        }
+
+        if let Some(append) = &self.append_to_title {
+            repeat_value += append.len() + 1;
+        }
+
+        format!("{}{}{}", "\x1b[1;97m", "^".repeat(repeat_value), "\x1b[0m")
+    }
+
+    pub fn print_content(&self) {
+        let title = self.get_title();
+        let bar = self.get_title_bar();
+        println!("{}\n{}", title, bar);
+        for row in &self.message {
+            println!("{}", row);
+        }
+        println!();
+    }
+}
