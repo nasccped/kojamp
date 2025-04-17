@@ -312,7 +312,6 @@ pub struct ProjectComposition {
     project_type: ProjectType,
     project_authors: ProjectAuthors,
     git_repo: bool,
-    is_verbose: bool,
 }
 
 impl ProjectComposition {
@@ -323,7 +322,6 @@ impl ProjectComposition {
             project_type: ProjectType::new(matches),
             project_authors: ProjectAuthors::new(matches),
             git_repo: !matches.get_flag("no-git"),
-            is_verbose: matches.get_flag("verbose"),
         }
     }
 
@@ -470,7 +468,6 @@ impl ProjectComposition {
         &ProjectType,
         &ProjectAuthors,
         bool,
-        bool,
     ) {
         (
             &self.name,
@@ -478,7 +475,6 @@ impl ProjectComposition {
             &self.project_type,
             &self.project_authors,
             self.git_repo,
-            self.is_verbose,
         )
     }
 }

@@ -15,6 +15,7 @@ pub fn exec(matches: &ArgMatches) -> i32 {
      * */
 
     let project: ProjectComposition;
+    let is_verbose = matches.get_flag("verbose");
 
     if helper::only_prompt_called(matches) {
         project = ProjectComposition::new_from_prompt_mode(matches);
@@ -23,10 +24,10 @@ pub fn exec(matches: &ArgMatches) -> i32 {
         return 1;
     } else {
         project = ProjectComposition::new_from_matches(matches);
-        let (name, _, p_type, authors, _, _verbose) = project.destructure();
+        let (name, _, p_type, authors, _) = project.destructure();
 
         let mut invalid_count = 0;
-        let checkers: [(bool, fn()); 3] = [
+        let checkers: [(bool, fn(bool)); 3] = [
             (!name.is_valid(), report::invalid_name),
             (!p_type.is_valid(), report::invalid_project_type),
             (!authors.is_valid(), report::invalid_authors),
@@ -34,7 +35,7 @@ pub fn exec(matches: &ArgMatches) -> i32 {
 
         checkers.iter().for_each(|(cond, func)| {
             if *cond {
-                func();
+                func(is_verbose);
                 invalid_count += 1;
             }
         });
