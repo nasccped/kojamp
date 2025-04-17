@@ -60,14 +60,14 @@ pub fn prompt_not_allowed() {
     io_report.print_content();
 }
 
-pub fn invalid_name(verbose: bool) {
+pub fn invalid_name() {
     println!("The current name is invalid");
 }
 
-pub fn invalid_project_type(verbose: bool) {
+pub fn invalid_project_type() {
     println!("The current project type is invalid");
 }
 
-pub fn invalid_authors(verbose: bool) {
+pub fn invalid_authors() {
     println!("The current authors are invalid");
 }
