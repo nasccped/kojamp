@@ -4,7 +4,7 @@ use crate::{
     vec_dispbox,
 };
 use clap::ArgMatches;
-use std::fmt;
+use std::{borrow::Cow, fmt};
 
 pub fn exec(matches: &ArgMatches) -> i32 {
     /* TODO:
@@ -28,6 +28,12 @@ pub fn exec(matches: &ArgMatches) -> i32 {
         None,
         vec_dispbox!["Returned a fail for the following validation tests: "],
     );
+    let succes_reporting = IOReporting::new::<&str, _>(
+        ReportStatus::Err,
+        None,
+        Some("Your project is built"),
+        vec_dispbox![],
+    );
 
     if helper::only_prompt_called(matches) {
         project = ProjectComposition::new_from_prompt_mode(matches);
@@ -39,22 +45,36 @@ pub fn exec(matches: &ArgMatches) -> i32 {
         let (name, _, p_type, authors, _) = project.destructure();
 
         let mut is_invalid = false;
-        let checkers: [(bool, fn(), &str); 3] = [
-            (!name.is_valid(), report::invalid_name, "Name"),
-            (!p_type.is_valid(), report::invalid_project_type, "Type"),
-            (!authors.is_valid(), report::invalid_authors, "Authors"),
+        let checkers: [(bool, fn(&'_ Cow<'_, str>), &str, Cow<'_, str>); 3] = [
+            (
+                !name.is_valid(),
+                report::invalid_name,
+                "Name",
+                Cow::from(name),
+            ),
+            (
+                !p_type.is_valid(),
+                report::invalid_project_type,
+                "Type",
+                Cow::from(p_type),
+            ),
+            (
+                !authors.is_valid(),
+                report::invalid_authors,
+                "Authors",
+                Cow::from(authors),
+            ),
         ];
 
-        checkers
-            .iter()
-            .for_each(|(cond, func, message)| match (*cond, is_verbose) {
+        checkers.iter().for_each(
+            |(cond, func, message, argument)| match (*cond, is_verbose) {
                 (true, x) => {
                     if fail_reporting.get_how_many_rows() == 1 {
                         fail_reporting.append_message_line("");
                     }
                     is_invalid = true;
                     if x {
-                        func();
+                        func(argument);
                     } else {
                         fail_reporting.append_message_line(format!(
                             "  {}- {}{}",
@@ -63,7 +83,8 @@ pub fn exec(matches: &ArgMatches) -> i32 {
                     }
                 }
                 _ => {}
-            });
+            },
+        );
 
         if is_invalid {
             fail_reporting.append_message_line("");
@@ -85,7 +106,7 @@ pub fn exec(matches: &ArgMatches) -> i32 {
         }
     }
 
-    println!("Let's build the project");
+    succes_reporting.print_content();
 
     0
 }
