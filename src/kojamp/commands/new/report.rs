@@ -1,9 +1,10 @@
-use std::fmt;
-
 use crate::{
     utils::io::{IOReporting, ReportStatus},
     vec_dispbox,
 };
+use std::{borrow::Cow, fmt};
+
+type CowAlias<'a, 'b> = &'a Cow<'b, str>;
 
 pub fn prompt_not_allowed() {
     let io_report: IOReporting = IOReporting::new::<_, &str>(
@@ -60,14 +61,40 @@ pub fn prompt_not_allowed() {
     io_report.print_content();
 }
 
-pub fn invalid_name() {
-    println!("The current name is invalid");
+pub fn invalid_name(name: CowAlias) {
+    let io_report: IOReporting = IOReporting::new::<&str, _>(
+        ReportStatus::Err,
+        None,
+        Some("Trying to build a project with an invalid name"),
+        vec_dispbox![
+            format!("You can't build a project with the `{}` name due", name),
+            "to the following reasons:",
+            "",
+            format!(
+                "  {}a){} Your projects name also defines the main func file name",
+                "\x1b[96m", "\x1b[0m"
+            ),
+            format!(
+                "  {}b){} Java/Kotlin have a {}Language Convetion{} for file name: CamelCase",
+                "\x1b[96m", "\x1b[0m", "\x1b[96m", "\x1b[0m"
+            ),
+            "",
+            "Basically, creating a new project that doesn't follow",
+            format!(
+                "these {}Language Conventions{} can result in a {}bug/error{} at compile",
+                "\x1b[96m", "\x1b[0m", "\x1b[91m", "\x1b[0m"
+            ),
+            format!(
+                "or run time! {}(Avoid using special chars/whitespaces too){}",
+                "\x1b[90m", "\x1b[0m"
+            )
+        ],
+    );
+    io_report.print_content();
 }
 
-pub fn invalid_project_type() {
-    println!("The current project type is invalid");
-}
+pub fn invalid_project_type(p_type: CowAlias) {}
 
-pub fn invalid_authors() {
+pub fn invalid_authors(authors: CowAlias) {
     println!("The current authors are invalid");
 }
