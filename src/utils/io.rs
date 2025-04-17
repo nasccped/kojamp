@@ -9,6 +9,7 @@ pub struct IOAsking<'a> {
     question: Cow<'a, str>,
     hint: Cow<'a, str>,
     input_indicator: Cow<'a, str>,
+    input_escape: Cow<'a, str>,
     answered: bool,
 }
 
@@ -18,12 +19,14 @@ impl<'a> IOAsking<'a> {
         question: T,
         hint: T,
         input_indicator: T,
+        input_escape: T,
     ) -> Self {
         Self {
             question_indicator: question_indicator.into(),
             question: question.into(),
             hint: hint.into(),
             input_indicator: input_indicator.into(),
+            input_escape: input_escape.into(),
             answered: false,
         }
     }
@@ -42,9 +45,11 @@ impl<'a> IOAsking<'a> {
             self.hint
         );
 
-        let input_ind = self.input_indicator.clone();
+        let input_ind = "\x1b[97m".to_string() + self.input_indicator.clone().as_ref() + "\x1b[0m";
+        let response_escape_binding = self.input_escape.clone();
+        let response_escape = response_escape_binding.as_ref();
 
-        normalize_input(input(input_ind))
+        normalize_input(input(input_ind, response_escape))
     }
 
     pub fn update_question<T: Into<Cow<'a, str>>>(&mut self, question: T) {
@@ -80,9 +85,13 @@ pub fn remove_lines(go_up: usize) {
     print!("\x1B[0J");
 }
 
-fn input<T: fmt::Display>(prompt: T) -> String {
+fn input<T, U>(prompt: T, response_escape: U) -> String
+where
+    T: fmt::Display,
+    U: fmt::Display,
+{
     let mut buffer = String::new();
-    print!("{}", prompt);
+    print!("{}{}", prompt, response_escape);
     io::stdout().flush().unwrap();
     if let Err(_) = io::stdin().read_line(&mut buffer) {
         "".to_string()
