@@ -6,7 +6,7 @@ pub fn cli() -> Command {
             .value_name("NAME")
             .action(ArgAction::Set)
             .required(false)
-            .help("Specify the project's name")
+            .help("Specify the project's name \x1b[91m(Should be CamelCased)\x1b[0m")
             .index(1),
         Arg::new("path")
             .value_name("PATH")
@@ -21,7 +21,7 @@ pub fn cli() -> Command {
             .long("type")
             .short('T')
             .required(false)
-            .help("Specify the project's language (Java or Kotlin)"),
+            .help("Specify the project's language (Java or Kotlin) \x1b[91m(Required)\x1b[0m"),
         Arg::new("authors")
             .value_name("AUTHORS")
             .action(ArgAction::Set)
