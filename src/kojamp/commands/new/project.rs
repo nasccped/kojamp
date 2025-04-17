@@ -246,11 +246,10 @@ impl ProjectAuthors {
 impl From<&ProjectAuthors> for Cow<'static, str> {
     fn from(s: &ProjectAuthors) -> Self {
         Cow::Owned(format!(
-            "{}{}{}",
-            "\x1b[92m",
+            "{}{}",
             match s.0.as_ref() {
-                None => "[]".to_string(),
-                Some(vector) => format!("[{}]", vector.join(", ")),
+                None => "\x1b[91mNONE".to_string(),
+                Some(vector) => format!("\x1b[92m[{}]", vector.join(", ")),
             },
             "\x1b[0m"
         ))
