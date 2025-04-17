@@ -6,9 +6,9 @@ use crate::{
 };
 
 pub fn prompt_not_allowed() {
-    let io_report: IOReporting = IOReporting::new::<&str, &str>(
+    let io_report: IOReporting = IOReporting::new::<_, &str>(
         ReportStatus::Err,
-        Some("FAIL ON NEW --PROMPT"),
+        Some("FAIL ON `new --prompt`"),
         None,
         vec_dispbox![
             format!(
