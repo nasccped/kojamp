@@ -133,6 +133,14 @@ impl IOReporting {
         }
     }
 
+    pub fn append_message_line<T: fmt::Display + 'static>(&mut self, message: T) {
+        self.message.push(Box::new(message));
+    }
+
+    pub fn get_how_many_rows(&self) -> usize {
+        self.message.len()
+    }
+
     fn get_title(&self) -> String {
         let title_escape = match &self.title_status {
             ReportStatus::Ok => "\x1b[1;92m",
