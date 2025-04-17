@@ -171,6 +171,7 @@ impl IOReporting {
     }
 
     pub fn print_content(&self) {
+        println!();
         let title = self.get_title();
         let bar = self.get_title_bar();
         println!("{}\n{}", title, bar);
