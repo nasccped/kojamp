@@ -9,7 +9,7 @@ type CowAlias<'a, 'b> = &'a Cow<'b, str>;
 pub fn prompt_not_allowed() {
     let io_report: IOReporting = IOReporting::new(
         ReportStatus::Err,
-        Some("on `new --prompt`"),
+        Some("On `new --prompt`"),
         vec_dispbox![
             format!(
                 "You probably typed something like: {},",
@@ -69,7 +69,7 @@ pub fn invalid_name(name: CowAlias) {
             "to the following reasons:",
             "",
             format!(
-                "  {}a){} Your projects name also defines the main func file name",
+                "  {}a){} Your project name also defines the main func file name",
                 "\x1b[96m", "\x1b[0m"
             ),
             format!(
@@ -79,7 +79,7 @@ pub fn invalid_name(name: CowAlias) {
             "",
             "Basically, creating a new project that doesn't follow",
             format!(
-                "these {}Language Conventions{} can result in a {}bug/error{} at compile",
+                "this {}Language Conventions{} can result in a {}bug/error{} at compile",
                 "\x1b[96m", "\x1b[0m", "\x1b[91m", "\x1b[0m"
             ),
             format!(
