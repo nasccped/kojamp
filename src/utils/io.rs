@@ -110,10 +110,10 @@ pub struct IOReporting {
 }
 
 impl IOReporting {
-    pub fn new<T: Into<String>>(
+    pub fn new<T: Into<String>, U: Into<String>>(
         title_status: ReportStatus,
         personalized_title: Option<T>,
-        append_to_title: Option<T>,
+        append_to_title: Option<U>,
         message: Vec<Box<dyn fmt::Display>>,
     ) -> Self {
         Self {
