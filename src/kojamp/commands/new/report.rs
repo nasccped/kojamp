@@ -57,7 +57,6 @@ pub fn prompt_not_allowed() {
             ),
         ],
     );
-
     io_report.print_content();
 }
 
