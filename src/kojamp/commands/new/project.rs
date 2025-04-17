@@ -3,7 +3,7 @@ use std::{borrow::Cow, fmt};
 
 use crate::{
     utils::{
-        io::{self, IOReporting, ReportStatus},
+        io::{self, IOAsking, IOReporting, ReportStatus},
         strings::{StringChecker, StringTransform},
     },
     vec_dispbox,
@@ -363,12 +363,12 @@ impl ProjectComposition {
 
         io_report.print_content();
 
-        let (mut asker, mut response): (io::IOAsking, String);
+        let (mut asker, mut response): (IOAsking, String);
 
         let binding =
             "\x1b[3;90m(Try using a CamelCase name with no symbols, accents or withespaces)\x1b[0m";
 
-        asker = io::IOAsking::new(
+        asker = IOAsking::new(
             question_ind,
             "Project Name:",
             binding,
@@ -392,7 +392,7 @@ impl ProjectComposition {
 
         let binding = "\x1b[3;90m(Just press Enter to use name in kebab case)\x1b[0m";
 
-        asker = io::IOAsking::new(
+        asker = IOAsking::new(
             question_ind,
             "Project Path:",
             binding,
@@ -415,7 +415,7 @@ impl ProjectComposition {
 
         let binding = "\x1b[3;90m(\x1b[92m[J]\x1b[90mava or \x1b[92m[K]\x1b[90motlin)\x1b[0m";
 
-        asker = io::IOAsking::new(
+        asker = IOAsking::new(
             question_ind,
             "Project Type:",
             binding,
@@ -438,7 +438,7 @@ impl ProjectComposition {
         }
 
         let binding = "Project Authors (Type \x1b[92m!CONTINUE\x1b[0m when done or \x1b[91m!NONE\x1b[0m to no author / avoid using '/', '?' and '!' chars):";
-        asker = io::IOAsking::new(question_ind, binding, "", input_ind, response_escape);
+        asker = IOAsking::new(question_ind, binding, "", input_ind, response_escape);
 
         loop {
             asker.update_hint(format!("{}{}{}", "\x1b[3;90m", authors, "\x1b[0m"));
@@ -469,7 +469,7 @@ impl ProjectComposition {
 
         let binding = "\x1b[3;90m(\x1b[92m[Y]\x1b[90mes or \x1b[92m[N]\x1b[90mo)\x1b[0m";
 
-        asker = io::IOAsking::new(
+        asker = IOAsking::new(
             question_ind,
             "Did you want to initialize a git repo?",
             binding.as_ref(),
