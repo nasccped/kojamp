@@ -7,7 +7,7 @@ use std::borrow::Cow;
 type CowAlias<'a, 'b> = &'a Cow<'b, str>;
 
 pub fn prompt_not_allowed() {
-    let io_report: IOReporting = IOReporting::new(
+    let io_report = IOReporting::new(
         ReportStatus::Err,
         Some("On `new --prompt`"),
         vec_dispbox![
@@ -61,7 +61,7 @@ pub fn prompt_not_allowed() {
 }
 
 pub fn invalid_name(name: CowAlias) {
-    let io_report: IOReporting = IOReporting::new(
+    let io_report = IOReporting::new(
         ReportStatus::Err,
         Some("Trying to build a project with an invalid name"),
         vec_dispbox![
