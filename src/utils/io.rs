@@ -1,3 +1,4 @@
+use super::strings::StringTransform;
 use std::{
     borrow::Cow,
     fmt,
@@ -158,7 +159,7 @@ impl IOReporting {
 
     fn get_title_bar(&self) -> String {
         let mut repeat_value: usize = if let Some(personalized) = &self.title_content {
-            personalized.len() + 1
+            StringTransform::remove_ansi_escape(personalized.as_ref()).len() + 1
         } else {
             0
         };
