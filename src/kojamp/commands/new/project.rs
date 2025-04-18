@@ -238,11 +238,12 @@ impl ProjectAuthors {
             return true;
         }
 
-        self.0
-            .as_ref()
-            .unwrap()
-            .iter()
-            .all(|aut| aut.chars().filter(|c| ['?', '/', '!'].contains(c)).count() == 0)
+        self.0.as_ref().unwrap().iter().all(|aut| {
+            aut.chars()
+                .filter(|c| ['?', '/', '!', ','].contains(c))
+                .count()
+                == 0
+        })
     }
 }
 
