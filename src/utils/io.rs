@@ -109,7 +109,6 @@ pub enum ReportStatus {
     Ok,
     Warn,
     Err,
-    None,
 }
 
 pub struct IOReporting {
@@ -151,7 +150,6 @@ impl IOReporting {
                 format!("{}[{}WARNING{}]:", white_escape, "\x1b[1;93m", white_escape)
             }
             ReportStatus::Err => format!("{}[{}FAIL{}]:", white_escape, "\x1b[1;91m", white_escape),
-            ReportStatus::None => format!("{}[N/A]:", white_escape),
         };
 
         title_tag + " " + self.title_content.clone().unwrap_or(Cow::from("")).as_ref() + "\x1b[0m"
@@ -168,7 +166,6 @@ impl IOReporting {
             ReportStatus::Ok => 10,
             ReportStatus::Err => 7,
             ReportStatus::Warn => 10,
-            _ => 6,
         };
 
         format!("{}{}{}", "\x1b[1;97m", "^".repeat(repeat_value), "\x1b[0m")
