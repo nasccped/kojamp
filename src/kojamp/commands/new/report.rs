@@ -126,5 +126,30 @@ pub fn invalid_project_type(p_type: CowAlias) {
 }
 
 pub fn invalid_authors(authors: CowAlias) {
-    println!("The current authors are invalid");
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some(format!(
+            "Trying to build a project with invalid authors: {}",
+            authors.as_ref()
+        )),
+        vec_dispbox![
+            "Authors aren't required for project creating!",
+            "This error only occurs when you try to set authors with",
+            format!(
+                "invalid chars such as {}.",
+                ['?', '/', '!', ',']
+                    .into_iter()
+                    .map(|c| format!("{}'{}'{}", "\x1b[91m", c, "\x1b[0m"))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+            "",
+            format!(
+                "You can create a project with {}no authors{} or avoid using",
+                "\x1b[96m", "\x1b[0m"
+            ),
+            "The invalid chars!"
+        ],
+    );
+    io_report.print_content();
 }
