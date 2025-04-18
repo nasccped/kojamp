@@ -43,4 +43,23 @@ impl StringTransform {
 
         result.trim_matches('-').to_string()
     }
+
+    pub fn remove_ansi_escape(input: impl Into<String>) -> String {
+        let input = input.into();
+        input
+            .chars()
+            .fold(
+                (String::new(), false),
+                |(mut result, mut ansi_trigger), c| {
+                    match (ansi_trigger, c) {
+                        (false, '\x1b') => ansi_trigger = true,
+                        (true, 'm') => ansi_trigger = false,
+                        (false, c) => result.push(c),
+                        _ => {}
+                    }
+                    (result, ansi_trigger)
+                },
+            )
+            .0
+    }
 }
