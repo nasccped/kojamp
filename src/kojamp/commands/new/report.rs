@@ -91,7 +91,39 @@ pub fn invalid_name(name: CowAlias) {
     io_report.print_content();
 }
 
-pub fn invalid_project_type(p_type: CowAlias) {}
+pub fn invalid_project_type(p_type: CowAlias) {
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some("Trying to build a project with an invalid type"),
+        vec_dispbox![
+            "This is a Java/Kotlin project manager, so a Java/Kotlin",
+            format!("project type is expected, but the `{}`", p_type.as_ref()),
+            "type was found!",
+            "",
+            "To specify an acceptable project type, you can",
+            format!(
+                "use the {}`--type {}<YOUR_PROJECT_TYPE>{}`{}, flag/arg.",
+                "\x1b[3;92m", "\x1b[93m", "\x1b[92m", "\x1b[0m"
+            ),
+            "",
+            format!(
+                "{}NOTE:{} the project type arg can only",
+                "\x1b[3;96m", "\x1b[0m",
+            ),
+            format!(
+                "be {} or {}. {}",
+                ["J", "Java", "K"]
+                    .into_iter()
+                    .map(|word| format!("{}{}{}", "\x1b[3;96m", word, "\x1b[0m"))
+                    .collect::<Vec<_>>()
+                    .join(", "),
+                "\x1b[3;96mKotlin\x1b[0m",
+                "\x1b[3;90m(No case sensitive)\x1b[0m"
+            )
+        ],
+    );
+    io_report.print_content();
+}
 
 pub fn invalid_authors(authors: CowAlias) {
     println!("The current authors are invalid");
