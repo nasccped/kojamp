@@ -12,12 +12,12 @@
 #[macro_export]
 macro_rules! vec_dispbox {
     [] => {
-        Vec::<Box<dyn fmt::Display>>::new()
+        Vec::<Box<dyn std::fmt::Display>>::new()
     };
 
     [$($element:expr),+ $(,)?] => {
         vec![
-            $(Box::new($element) as Box<dyn fmt::Display> ), +
+            $(Box::new($element) as Box<dyn std::fmt::Display> ), +
         ]
     };
 }
