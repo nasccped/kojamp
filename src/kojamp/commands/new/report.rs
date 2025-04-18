@@ -2,7 +2,7 @@ use crate::{
     utils::io::{IOReporting, ReportStatus},
     vec_dispbox,
 };
-use std::{borrow::Cow, fmt};
+use std::borrow::Cow;
 
 type CowAlias<'a, 'b> = &'a Cow<'b, str>;
 

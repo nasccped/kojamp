@@ -4,7 +4,7 @@ use crate::{
     vec_dispbox,
 };
 use clap::ArgMatches;
-use std::{borrow::Cow, fmt};
+use std::borrow::Cow;
 
 pub fn exec(matches: &ArgMatches) -> i32 {
     /* TODO:
