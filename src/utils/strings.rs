@@ -15,10 +15,16 @@ pub struct StringTransform;
 impl StringTransform {
     pub fn to_title_case(input: impl Into<String>) -> String {
         let input = input.into();
-        if !input.is_empty() {
-            input[..1].to_uppercase() + &input[1..].to_lowercase()
+
+        if input.is_empty() {
+            input
         } else {
             input
+                .split(" ")
+                .filter(|word| !word.is_empty())
+                .map(|word| word[..1].to_uppercase() + word[1..].to_lowercase().as_str())
+                .collect::<Vec<_>>()
+                .join(" ")
         }
     }
 
