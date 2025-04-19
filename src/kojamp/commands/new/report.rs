@@ -178,3 +178,29 @@ pub fn no_args_or_flags() {
     );
     io_report.print_content();
 }
+
+pub fn invalid_project_abs_path(path: CowAlias) {
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some(format!(
+            "Couldn't create a project for the path: `{}`",
+            path
+        )),
+        vec_dispbox![
+            "When trying to get the project's absolute path, it",
+            format!("returned {}`None`{}.", "\x1b[91m", "\x1b[0m"),
+            "",
+            "This may occur due to:",
+            "",
+            format!(
+                "  {}a){} The current directory doesn't exists",
+                "\x1b[96m", "\x1b[0m"
+            ),
+            format!(
+                "  {}a){} There's insufficient permissions for the current directory",
+                "\x1b[96m", "\x1b[0m"
+            ),
+        ],
+    );
+    io_report.print_content()
+}
