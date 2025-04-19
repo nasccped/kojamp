@@ -113,6 +113,10 @@ mod strings {
 mod io {
 
     use super::super::io;
+    use crate::{
+        utils::io::{IOReporting, ReportStatus},
+        vec_dispbox,
+    };
 
     #[test]
     fn io() {
@@ -123,6 +127,25 @@ mod io {
 
         for (inp, nor) in inputs_and_normals {
             assert_eq!(io::normalize_input(inp.to_string()), nor);
+        }
+    }
+
+    #[test]
+    fn io_reporting_how_many_rows() {
+        let rows_and_length = [
+            (vec!["row 1", "row 2", "row 3"], 3),
+            (vec![], 0),
+            (vec!["One", "Two", "Three", "Four", "Five"], 5),
+        ];
+
+        for (row, len) in rows_and_length {
+            let mut io_report = IOReporting::new::<&str>(ReportStatus::Ok, None, vec_dispbox![]);
+
+            for r in row.into_iter() {
+                io_report.append_message_line(r);
+            }
+
+            assert_eq!(io_report.get_how_many_rows(), len);
         }
     }
 }
