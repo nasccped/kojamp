@@ -22,6 +22,11 @@ pub fn exec(matches: &ArgMatches) -> i32 {
     let project: ProjectComposition;
     let is_verbose = matches.get_flag("verbose");
 
+    if helper::no_args_or_flags(matches) {
+        report::no_args_or_flags();
+        return 0;
+    }
+
     let mut fail_reporting = IOReporting::new(
         ReportStatus::Err,
         Some("`kojamp new` operations"),
