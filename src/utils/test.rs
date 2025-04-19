@@ -80,6 +80,8 @@ mod strings {
             ("NAME", "Name"),
             ("iS", "Is"),
             ("cOOL", "Cool"),
+            ("multi word", "Multi Word"),
+            ("MULTI WORD AGAIN", "Multi Word Again"),
         ];
 
         for (inp, tls) in inputs_and_titles {
