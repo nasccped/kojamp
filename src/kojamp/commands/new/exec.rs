@@ -4,7 +4,7 @@ use crate::{
     vec_dispbox,
 };
 use clap::ArgMatches;
-use std::borrow::Cow;
+use std::{borrow::Cow, env};
 
 pub fn exec(matches: &ArgMatches) -> i32 {
     /* TODO:
@@ -25,6 +25,11 @@ pub fn exec(matches: &ArgMatches) -> i32 {
     if helper::no_args_or_flags(matches) {
         report::no_args_or_flags();
         return 0;
+    }
+
+    if env::current_dir().is_err() {
+        report::current_path_is_none();
+        return 1;
     }
 
     let mut fail_reporting = IOReporting::new(
@@ -108,6 +113,15 @@ pub fn exec(matches: &ArgMatches) -> i32 {
             }
             _ => {}
         }
+    }
+
+    let (_name, path, _p_type, _authors, _git) = project.destructure();
+
+    let abs_path = path.to_absolute_path();
+
+    if abs_path.is_none() {
+        report::invalid_project_abs_path(&Cow::from(path));
+        return 1;
     }
 
     succes_reporting.print_content();
