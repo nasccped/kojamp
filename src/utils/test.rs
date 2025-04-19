@@ -88,6 +88,25 @@ mod strings {
             assert_eq!(StringTransform::to_title_case(inp), tls);
         }
     }
+
+    #[test]
+    fn string_transform_remove_ansi_escape() {
+        let in_and_outs = [
+            ("\x1b[1;31mHello, red world!\x1b[0m", "Hello, red world!"),
+            (
+                "escape \x1b[31mon the \x1b[0mmiddle",
+                "escape on the middle",
+            ),
+            (
+                "multi \x1b[3;90m\x1b[32mescapes \x1b[0mxD",
+                "multi escapes xD",
+            ),
+        ];
+
+        for (inp, outs) in in_and_outs {
+            assert_eq!(StringTransform::remove_ansi_escape(inp), outs);
+        }
+    }
 }
 
 #[cfg(test)]
