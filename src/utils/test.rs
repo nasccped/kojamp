@@ -35,7 +35,7 @@ mod strings {
     use super::super::strings::{StringChecker, StringTransform};
 
     #[test]
-    fn in_range_expected() {
+    fn string_checker_in_range() {
         let mut range: String = ('a'..='z').collect();
         range.extend('A'..='Z');
 
@@ -49,7 +49,7 @@ mod strings {
     }
 
     #[test]
-    fn not_in_range_expected() {
+    fn string_checker_not_in_range_expected() {
         let range: String = ('a'..='z').collect();
 
         let samples =
@@ -61,7 +61,7 @@ mod strings {
     }
 
     #[test]
-    fn kebab_transform() {
+    fn string_transform_to_kebab_case() {
         let inputs_and_kebabs = [
             ("SomeValue", "some-value"),
             ("value with spaces", "value-with-spaces"),
@@ -74,7 +74,7 @@ mod strings {
     }
 
     #[test]
-    fn title_case_transform() {
+    fn string_transform_to_title_case() {
         let inputs_and_titles = [
             ("some", "Some"),
             ("NAME", "Name"),
