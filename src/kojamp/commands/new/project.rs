@@ -217,15 +217,10 @@ impl ProjectAuthors {
             return;
         }
 
-        let value: String = value
-            .into()
-            .split(" ")
-            .map(|word| StringTransform::to_title_case(word))
-            .collect::<Vec<String>>()
-            .join(" ");
+        let title_cased = StringTransform::to_title_case(value);
 
         if let Some(vector) = &mut self.0 {
-            vector.push(value);
+            vector.push(title_cased);
         }
     }
 
