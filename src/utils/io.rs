@@ -5,6 +5,10 @@ use std::{
     io::{self, Write},
 };
 
+const SUCCESS_TEXT: &str = "SUCCESS";
+const WARNING_TEXT: &str = "WARNING";
+const ERROR_TEXT: &str = "FAIL";
+
 pub struct IOAsking<'a> {
     question_indicator: Cow<'a, str>,
     question: Cow<'a, str>,
@@ -145,11 +149,20 @@ impl IOReporting {
         let white_escape = "\x1b[97m";
 
         let title_tag = match &self.title_status {
-            ReportStatus::Ok => format!("{}[{}SUCCESS{}]:", white_escape, "\x1b[92m", white_escape),
+            ReportStatus::Ok => format!(
+                "{}[{}{}{}]:",
+                white_escape, "\x1b[92m", SUCCESS_TEXT, white_escape
+            ),
             ReportStatus::Warn => {
-                format!("{}[{}WARNING{}]:", white_escape, "\x1b[1;93m", white_escape)
+                format!(
+                    "{}[{}{}{}]:",
+                    white_escape, "\x1b[1;93m", WARNING_TEXT, white_escape
+                )
             }
-            ReportStatus::Err => format!("{}[{}FAIL{}]:", white_escape, "\x1b[1;91m", white_escape),
+            ReportStatus::Err => format!(
+                "{}[{}{}{}]:",
+                white_escape, "\x1b[1;91m", ERROR_TEXT, white_escape
+            ),
         };
 
         title_tag + " " + self.title_content.clone().unwrap_or(Cow::from("")).as_ref() + "\x1b[0m"
