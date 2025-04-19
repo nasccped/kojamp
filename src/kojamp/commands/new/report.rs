@@ -179,6 +179,10 @@ pub fn no_args_or_flags() {
     io_report.print_content();
 }
 
+pub fn current_path_is_none() {
+    todo!();
+}
+
 pub fn invalid_project_abs_path(path: CowAlias) {
     let io_report = IOReporting::new(
         ReportStatus::Err,
