@@ -153,3 +153,28 @@ pub fn invalid_authors(authors: CowAlias) {
     );
     io_report.print_content();
 }
+
+pub fn no_args_or_flags() {
+    let io_report = IOReporting::new(
+        ReportStatus::Warn,
+        Some("No args founded"),
+        vec_dispbox![
+            "You've probably typed something like",
+            format!(
+                "{}`kojamp new`{}. This won't do anything.",
+                "\x1b[92m", "\x1b[0m"
+            ),
+            "",
+            "If you want to check the help panel, consider using",
+            format!(
+                "{}`kojamp new --help`{}. If you want to run the subcommand,",
+                "\x1b[92m", "\x1b[0m"
+            ),
+            format!(
+                "consider using {}`kojamp new {}<PROJECT_NAME>{} --type {}<PROJECT_TYPE>{}`{}.",
+                "\x1b[92m", "\x1b[93m", "\x1b[92m", "\x1b[93m", "\x1b[92m", "\x1b[0m"
+            )
+        ],
+    );
+    io_report.print_content();
+}
