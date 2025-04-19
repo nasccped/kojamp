@@ -1,5 +1,5 @@
 use clap::ArgMatches;
-use std::{borrow::Cow, fmt};
+use std::{borrow::Cow, env, fmt, path::PathBuf};
 
 use crate::{
     utils::{
@@ -99,6 +99,14 @@ impl ProjectPath {
     pub fn set<T: Into<String>>(&mut self, new_value: T) {
         let new_value = new_value.into();
         self.0 = Some(new_value);
+    }
+
+    pub fn to_absolute_path(&self) -> Option<PathBuf> {
+        match (env::current_dir(), &self.0) {
+            (Err(_), _) => None,
+            (_, None) => None,
+            (Ok(cur_path), Some(p_path)) => Some(cur_path.join(p_path)),
+        }
     }
 }
 
