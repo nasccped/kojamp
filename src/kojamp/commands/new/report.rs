@@ -215,17 +215,64 @@ pub fn invalid_project_abs_path(path: CowAlias) {
             "When trying to get the project's absolute path, it",
             format!("returned {}`None`{}.", "\x1b[91m", "\x1b[0m"),
             "",
-            "This may occur due to:",
-            "",
+            "This may occur due to an invalid path char.",
             format!(
-                "  {}a){} The current directory doesn't exists",
-                "\x1b[96m", "\x1b[0m"
-            ),
-            format!(
-                "  {}a){} There's insufficient permissions for the current directory",
-                "\x1b[96m", "\x1b[0m"
-            ),
+                "Avoid using `{}/{}` and special chars",
+                "\x1b[91m", "\x1b[0m"
+            )
         ],
     );
     io_report.print_content()
+}
+
+pub fn path_already_exists(path: CowAlias) {
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some(format!("Project path `{}` already exists", path)),
+        vec_dispbox![
+            "Couldn't create the project directory because it",
+            "already exists!",
+            "",
+            "When creating a new project, the path will be automatically",
+            "set to the project name in kebab case, or you can specify a path",
+            format!(
+                "by using the {}`--path {}<VALUE>{}`{} flag/args.",
+                "\x1b[92m", "\x1b[93m", "\x1b[92m", "\x1b[0m"
+            )
+        ],
+    );
+    io_report.print_content();
+}
+
+pub fn permission_denied() {
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some("Permission denied for directory creation"),
+        vec_dispbox![
+            "This is a common behavior at unix-like systems.",
+            "",
+            "You're trying to run the command without being sudo or root"
+        ],
+    );
+    io_report.print_content();
+}
+
+pub fn undefined_error() {
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some("Undefined Error"),
+        vec_dispbox![
+            "This is an undefined error when trying to create a new dir/file.",
+            "",
+            "This message is being printed because all errors have been",
+            "covered and this is an unexpected one",
+            "",
+            format!(
+                "Please, consider opening an issue at {}https://github.com/nasccped/kojamp{}",
+                "\x1b[92m", "\x1b[0m"
+            ),
+            "Describing the steps to get this behavior!"
+        ],
+    );
+    io_report.print_content();
 }
