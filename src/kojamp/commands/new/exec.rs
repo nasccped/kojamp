@@ -1,5 +1,5 @@
 use super::{
-    helper,
+    helper::{self, PathCreationErrors},
     project::{ProjectComposition, ProjectPath},
     report,
 };
@@ -135,6 +135,30 @@ pub fn exec(matches: &ArgMatches) -> i32 {
 
     if abs_path.is_none() {
         report::invalid_project_abs_path(&Cow::from(path));
+        return 1;
+    }
+
+    let abs_path = abs_path.unwrap();
+
+    if let Err(e) = helper::create_path(abs_path.clone()) {
+        match e {
+            PathCreationErrors::InvalidPathName => {
+                report::invalid_project_abs_path(&Cow::from(path))
+            }
+            PathCreationErrors::AlreadyExists => report::path_already_exists(&Cow::from(path)),
+            PathCreationErrors::ParentDoesntExists => {
+                report::invalid_project_abs_path(&Cow::from(path))
+            }
+            PathCreationErrors::PermissionDenied => report::permission_denied(),
+            PathCreationErrors::UndefinedReason => report::undefined_error(),
+        }
+        return 1;
+    }
+
+    let src_path = abs_path.join("src");
+
+    if let Err(_) = helper::create_path(src_path) {
+        report::undefined_error();
         return 1;
     }
 
