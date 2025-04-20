@@ -28,7 +28,7 @@ pub fn exec(matches: &ArgMatches) -> i32 {
     }
 
     if env::current_dir().is_err() {
-        report::current_path_is_none();
+        report::invalid_cur_path();
         return 1;
     }
 
