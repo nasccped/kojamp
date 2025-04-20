@@ -102,10 +102,12 @@ impl ProjectPath {
     }
 
     pub fn to_absolute_path(&self) -> Option<PathBuf> {
-        match (env::current_dir(), &self.0) {
-            (Err(_), _) => None,
-            (_, None) => None,
-            (Ok(cur_path), Some(p_path)) => Some(cur_path.join(p_path)),
+        if let Some(path) = &self.0 {
+            // this looks error prone, but isn't. There's an early current_dir check
+            // so, env::current_dir won't return an error (I expect)
+            Some(env::current_dir().unwrap().join(path))
+        } else {
+            None
         }
     }
 }
