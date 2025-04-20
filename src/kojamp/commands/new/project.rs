@@ -110,6 +110,10 @@ impl ProjectPath {
             None
         }
     }
+
+    pub fn is_inner_none(&self) -> bool {
+        self.0.is_none()
+    }
 }
 
 impl From<&ProjectPath> for Cow<'static, str> {
@@ -512,6 +516,10 @@ impl ProjectComposition {
         project_composition.git_repo = git_repo;
 
         project_composition
+    }
+
+    pub fn update_path(&mut self, new_path: ProjectPath) {
+        self.path = new_path;
     }
 
     pub fn destructure(
