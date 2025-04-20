@@ -1,4 +1,8 @@
-use super::{helper, project::ProjectComposition, report};
+use super::{
+    helper,
+    project::{ProjectComposition, ProjectPath},
+    report,
+};
 use crate::{
     utils::io::{IOReporting, ReportStatus},
     vec_dispbox,
@@ -19,7 +23,7 @@ pub fn exec(matches: &ArgMatches) -> i32 {
      *
      * */
 
-    let project: ProjectComposition;
+    let mut project: ProjectComposition;
     let is_verbose = matches.get_flag("verbose");
 
     if helper::no_args_or_flags(matches) {
@@ -45,6 +49,16 @@ pub fn exec(matches: &ArgMatches) -> i32 {
 
     if helper::only_prompt_called(matches) {
         project = ProjectComposition::new_from_prompt_mode(matches);
+        let (name, path, ..) = project.destructure();
+
+        match (name, path) {
+            (n, p) if p.is_inner_none() => {
+                let mut new_path = ProjectPath::new(matches);
+                new_path.update_to_name_as_kebab(n);
+                project.update_path(new_path);
+            }
+            _ => {}
+        }
     } else if helper::prompt_called(matches) {
         report::prompt_not_allowed();
         return 1;
