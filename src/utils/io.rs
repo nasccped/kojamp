@@ -98,11 +98,16 @@ where
     let mut buffer = String::new();
     print!("{}{}", prompt, response_escape);
     io::stdout().flush().unwrap();
+    let result: String;
+
     if let Err(_) = io::stdin().read_line(&mut buffer) {
-        "".to_string()
+        result = "".into()
     } else {
-        normalize_input(buffer)
+        result = normalize_input(buffer);
     }
+    print!("\x1b[0m");
+    io::stdout().flush().unwrap();
+    result
 }
 
 pub fn normalize_input(input: String) -> String {
