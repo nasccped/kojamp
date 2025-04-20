@@ -179,8 +179,29 @@ pub fn no_args_or_flags() {
     io_report.print_content();
 }
 
-pub fn current_path_is_none() {
-    todo!();
+pub fn invalid_cur_path() {
+    let io_report = IOReporting::new(
+        ReportStatus::Err,
+        Some("Trying to create a project in an invalid directory"),
+        vec_dispbox![
+            format!(
+                "Obtained `{}None{}` when trying to access the current working directory",
+                "\x1b[91m", "\x1b[0m"
+            ),
+            "",
+            "It car occur by some reasons like:",
+            "",
+            format!(
+                "  {}a){} The current directory doesn't exists {}(You probably removed it){}",
+                "\x1b[96m", "\x1b[0m", "\x1b[90m", "\x1b[0m"
+            ),
+            format!(
+                "  {}a){} There's insufficient access permissions {}(Common at unix envs){}",
+                "\x1b[96m", "\x1b[0m", "\x1b[90m", "\x1b[0m"
+            )
+        ],
+    );
+    io_report.print_content();
 }
 
 pub fn invalid_project_abs_path(path: CowAlias) {
