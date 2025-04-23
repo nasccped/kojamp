@@ -1,10 +1,11 @@
-use super::app_trait::KojampCLI;
+use super::{app_trait::KojampCLI, subcommands as subcmds};
 use crate::globals::*;
 use clap::Command;
 
 pub fn kojamp_app() -> Command {
     let subcommands = [
         // TODO: add subcommands here
+        subcmds::new::cmd(),
     ];
 
     let mut app = Command::new_kojamp(PROGRAM_NAME)
