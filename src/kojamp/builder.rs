@@ -1,5 +1,5 @@
 use super::{app_trait::KojampCLI, subcommands as subcmds};
-use crate::globals::*;
+use crate::globals::{PROGRAM_ABOUT, PROGRAM_AUTHOR, PROGRAM_NAME, PROGRAM_STYLE, PROGRAM_VERSION};
 use clap::Command;
 
 pub fn kojamp_app() -> Command {
