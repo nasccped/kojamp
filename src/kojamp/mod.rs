@@ -1,5 +1,4 @@
-mod app;
+mod app_trait;
 mod builder;
-mod commands;
 
 pub use builder::kojamp_app;
