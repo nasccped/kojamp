@@ -1,5 +1,6 @@
 mod globals;
 mod kojamp;
+mod utils;
 
 use kojamp::{kojamp_app, KojampCLI};
 
