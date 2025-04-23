@@ -1,3 +1,4 @@
+use super::action;
 use crate::globals::PROGRAM_REPO_URL;
 use clap::{builder::Styles, ArgMatches, Command};
 use colored::Colorize;
@@ -5,6 +6,8 @@ use std::{process, rc::Rc};
 
 type StrAlias = &'static str;
 type MatchingAlias = Option<(Rc<str>, ArgMatches)>;
+
+const CREATE_PROJECT_COMMANDS: [&str; 3] = ["new", "init", "ini"];
 
 pub trait KojampCLI {
     fn new_kojamp(app_name: StrAlias) -> Self;
@@ -63,8 +66,9 @@ impl KojampCLI for Command {
         let matching = matching.unwrap();
 
         match (matching.0.as_ref(), matching.1) {
-            ("new", _cmd) => {
+            (x, cmd) if CREATE_PROJECT_COMMANDS.contains(&x) => {
                 // TODO: impl the new action call
+                output = action::new_project((x, cmd));
             }
             // if matching isn't None and it's different from the matches above, alert:
             _ => {
