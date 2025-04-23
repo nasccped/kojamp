@@ -10,3 +10,5 @@ pub const PROGRAM_STYLE: Styles = Styles::styled()
     .literal(styling::AnsiColor::Yellow.on_default().bold())
     .placeholder(styling::AnsiColor::Cyan.on_default());
 pub const PROGRAM_REPO_URL: &str = "https://github.com/nasccped/kojamp";
+
+pub const ERROR_BADGE: &str = "error";
