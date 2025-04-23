@@ -9,3 +9,4 @@ pub const PROGRAM_STYLE: Styles = Styles::styled()
     .usage(styling::AnsiColor::Green.on_default().bold())
     .literal(styling::AnsiColor::Cyan.on_default().bold())
     .placeholder(styling::AnsiColor::Cyan.on_default());
+pub const PROGRAM_REPO_URL: &str = "https://github.com/nasccped/kojamp";
