@@ -53,12 +53,18 @@ impl KojampCLI for Command {
     }
 
     fn run_app(&mut self, matching: MatchingAlias) -> i32 {
-        // TODO: impl the run control flow
         let mut output = 0;
-        match matching {
-            // if matching is None, no arg was provided, so
-            None => {
-                let _ = self.print_help();
+
+        if matching.is_none() {
+            let _ = self.print_help();
+            return output;
+        }
+
+        let matching = matching.unwrap();
+
+        match (matching.0.as_ref(), matching.1) {
+            ("new", _cmd) => {
+                // TODO: impl the new action call
             }
             // if matching isn't None and it's different from the matches above, alert:
             _ => {
