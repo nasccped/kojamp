@@ -4,7 +4,7 @@ use colored::Colorize;
 pub fn cmd() -> Command {
     Command::new("new")
         .alias("n")
-        .about("Create a new Java/Kotlin project")
+        .about("Create a Java/Kotlin project in a new directory")
         .args([
             Arg::new("name")
                 .value_name("NAME")
