@@ -1,9 +1,11 @@
-use std::process;
 mod globals;
 mod kojamp;
 
+use kojamp::{kojamp_app, KojampCLI};
+
 fn main() {
-    let app = kojamp::kojamp_app();
-    app.get_matches();
-    process::exit(0);
+    let mut app = kojamp_app();
+    let matching = app.get_matching();
+    let output = app.run_app(matching);
+    app.exit_output(output);
 }
