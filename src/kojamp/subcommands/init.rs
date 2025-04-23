@@ -18,7 +18,7 @@ pub fn cmd() -> Command {
             Arg::new("kind")
                 .long("kind")
                 .short('K')
-                .required(true)
+                .required(false)
                 .value_name("JAVA|KOTLIN")
                 .action(ArgAction::Set)
                 .help(format!(
