@@ -1,4 +1,6 @@
+use crate::globals::PROGRAM_REPO_URL;
 use clap::{builder::Styles, ArgMatches, Command};
+use colored::Colorize;
 use std::{process, rc::Rc};
 
 type StrAlias = &'static str;
@@ -52,10 +54,26 @@ impl KojampCLI for Command {
 
     fn run_app(&mut self, matching: MatchingAlias) -> i32 {
         // TODO: impl the run control flow
-        let output = 0;
+        let mut output = 0;
         match matching {
-            _ => {
+            // if matching is None, no arg was provided, so
+            None => {
                 let _ = self.print_help();
+            }
+            // if matching isn't None and it's different from the matches above, alert:
+            _ => {
+                println!(
+                    "This message serves to alert that the program has fallen into {}.",
+                    "unexpected behavior".bright_red().bold()
+                );
+                println!();
+                println!(
+                    "Please, consider opening an {} at {}",
+                    "issue".bright_red().bold(),
+                    PROGRAM_REPO_URL.bright_green().bold()
+                );
+                println!("describing your steps to get here.");
+                output = 1;
             }
         }
         output
