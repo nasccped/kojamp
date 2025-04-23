@@ -1,4 +1,4 @@
-use crate::utils::report;
+use crate::utils::{report, string::StringTransformation};
 use clap::ArgMatches;
 use colored::Colorize;
 use std::{env, path::PathBuf};
@@ -30,7 +30,7 @@ pub fn main(pair: (&str, ArgMatches)) -> i32 {
 
 fn from_new(matching: ArgMatches, cur_path: PathBuf) -> i32 {
     let name = ProjectName::new(&matching);
-    let path = cur_path.join(name.0);
+    let path = cur_path.join(name.0.to_kebab_case());
     println!("Creating the `{}` project on a new", name.0.bright_green());
     println!("directory: `{}`", path.to_str().unwrap().bright_yellow());
     0
