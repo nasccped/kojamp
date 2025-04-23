@@ -1,7 +1,8 @@
 use clap::{builder::Styles, ArgMatches, Command};
-use std::process;
+use std::{process, rc::Rc};
 
 type StrAlias = &'static str;
+type MatchingAlias = Option<(Rc<str>, ArgMatches)>;
 
 pub trait KojampCLI {
     fn new_kojamp(app_name: StrAlias) -> Self;
@@ -10,8 +11,8 @@ pub trait KojampCLI {
     fn set_author(self, author: StrAlias) -> Self;
     fn set_style(self, style: Styles) -> Self;
     fn add_subcommand(self, subcommand: Command) -> Self;
-    fn get_matching(&self) -> ArgMatches;
-    fn run_app(&self, matching: ArgMatches) -> i32;
+    fn get_matching(&self) -> MatchingAlias;
+    fn run_app(&mut self, matching: MatchingAlias) -> i32;
     fn exit_output(&self, out_value: i32);
 }
 
@@ -42,14 +43,22 @@ impl KojampCLI for Command {
         self.subcommand(subcommand)
     }
 
-    fn get_matching(&self) -> ArgMatches {
-        self.clone().get_matches().clone()
+    fn get_matching(&self) -> MatchingAlias {
+        self.clone()
+            .get_matches()
+            .subcommand()
+            .map(|(name, sub_matches)| (Rc::from(name), sub_matches.clone()))
     }
 
-    fn run_app(&self, matching: ArgMatches) -> i32 {
+    fn run_app(&mut self, matching: MatchingAlias) -> i32 {
         // TODO: impl the run control flow
-        println!("{:?}", matching);
-        0
+        let output = 0;
+        match matching {
+            _ => {
+                let _ = self.print_help();
+            }
+        }
+        output
     }
 
     fn exit_output(&self, out_value: i32) {
