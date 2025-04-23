@@ -6,6 +6,7 @@ pub fn kojamp_app() -> Command {
     let subcommands = [
         // TODO: add subcommands here
         subcmds::new::cmd(),
+        subcmds::init::cmd(),
     ];
 
     let mut app = Command::new_kojamp(PROGRAM_NAME)
