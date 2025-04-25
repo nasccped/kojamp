@@ -23,7 +23,7 @@ pub fn undefined_cur_dir() {
     println!("Avoid creating projects in root directories, such as");
     println!(
         "`{}` on Windows or `{}` on Linux",
-        "C:\\".bright_yellow().italic(),
-        "/".bright_yellow().italic()
+        "C:\\".bright_yellow(),
+        "/".bright_yellow()
     );
 }
