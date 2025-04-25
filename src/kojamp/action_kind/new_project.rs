@@ -210,14 +210,20 @@ impl ProjectFieldsConstructor {
 }
 
 fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
-    let path = if let Ok(p) = ProjectPath::try_from(matching) {
-        p
-    } else if let Ok(p) = ProjectPath::try_from(&fields.project_name) {
-        p
-    } else {
+    let path: Option<ProjectPath> = [
+        ProjectPath::try_from(matching),
+        ProjectPath::try_from(&fields.project_name),
+    ]
+    .into_iter()
+    .find(|p| p.is_ok())
+    .and_then(|p| Some(p.unwrap()));
+
+    if path.is_none() {
         report::path::undefined_cur_dir();
         return FAILURE_EXIT_STATUS;
-    };
+    }
+
+    let path = path.unwrap();
 
     println!(
         "Creating a new `{}` project ({}) on a new",
