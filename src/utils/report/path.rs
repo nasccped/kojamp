@@ -28,7 +28,7 @@ pub fn undefined_cur_dir() {
     );
 }
 
-pub fn invalid_path_when_new(path: Option<&str>) {
+fn generic_invalid_path_project(path: Option<&str>) {
     report_header(
         ERROR_BADGE.bright_red().bold(),
         "Couldn't create a project due to invalid path!",
@@ -40,6 +40,10 @@ pub fn invalid_path_when_new(path: Option<&str>) {
         path.unwrap_or("[UNDEFINED PATH]").bright_red()
     );
     println!("returned fail when doing validation tests.");
+}
+
+pub fn invalid_path_when_new(path: Option<&str>) {
+    generic_invalid_path_project(path);
     println!();
 
     println!("This can occur due to some reasons:");
@@ -85,4 +89,14 @@ pub fn invalid_path_when_new(path: Option<&str>) {
         "<PATH_NAME>".bright_yellow()
     );
     println!("in this case.");
+}
+
+pub fn invalid_path_when_init(path: Option<&str>) {
+    generic_invalid_path_project(path);
+    println!();
+
+    println!("If you're seeing this message, you're probably");
+    println!("near to the root path.");
+    println!("Avoid creating projects here. It can conflict with");
+    println!("The path validation tests!");
 }
