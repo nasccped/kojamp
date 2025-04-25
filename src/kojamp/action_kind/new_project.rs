@@ -86,52 +86,143 @@ impl From<PathBuf> for ProjectPath {
     }
 }
 
-fn from_new(matching: ArgMatches) -> i32 {
-    let name = ProjectName::from(&matching);
-    let path = if let Ok(p) = ProjectPath::try_from(&matching) {
+struct ProjectAuthors(Option<Vec<String>>);
+
+impl From<&ArgMatches> for ProjectAuthors {
+    fn from(value: &ArgMatches) -> Self {
+        let authors = value.get_one::<String>("authors").map(|aut| {
+            aut.split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ")
+                .split(",")
+                .map(|name| name.trim().to_string())
+                .collect()
+        });
+        Self(authors)
+    }
+}
+
+struct ProjectFields {
+    project_name: ProjectName,
+    project_kind: ProjectKind,
+    project_authors: ProjectAuthors,
+    project_repo: bool,
+}
+
+struct ProjectFieldsConstructor {
+    project_name: Option<ProjectName>,
+    project_kind: Option<ProjectKind>,
+    project_authors: Option<ProjectAuthors>,
+    project_repo: Option<bool>,
+}
+
+impl ProjectFieldsConstructor {
+    fn new() -> Self {
+        Self {
+            project_name: None,
+            project_kind: None,
+            project_authors: None,
+            project_repo: None,
+        }
+    }
+
+    fn name(mut self, name: ProjectName) -> Self {
+        self.project_name = Some(name);
+        self
+    }
+
+    fn kind(mut self, kind: ProjectKind) -> Self {
+        self.project_kind = Some(kind);
+        self
+    }
+
+    fn authors(mut self, authors: ProjectAuthors) -> Self {
+        self.project_authors = Some(authors);
+        self
+    }
+
+    fn repo(mut self, repo: bool) -> Self {
+        self.project_repo = Some(repo);
+        self
+    }
+
+    fn build(self) -> ProjectFields {
+        let project_name = self.project_name.expect(
+            "Couldn't take ProjectName. You probably missed the ProjectFieldsConstructor.name function",
+        );
+        let project_kind = self.project_kind.expect(
+            "Couldn't take ProjectKind. You probably missed the ProjectFieldsConstructor.kind function",
+        );
+        let project_authors = self.project_authors.expect(
+            "Couldn't take ProjectAuthors. You probably missed the ProjectFieldsConstructor.authors function",
+        );
+        let project_repo = self.project_repo.expect(
+            "Couldn't take bool for project_repo. You probably missed the ProjectFieldsConstructor.repo function",
+        );
+
+        ProjectFields {
+            project_name,
+            project_kind,
+            project_authors,
+            project_repo,
+        }
+    }
+}
+
+fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
+    let path = if let Ok(p) = ProjectPath::try_from(matching) {
         p
-    } else if let Ok(p) = ProjectPath::try_from(&name) {
+    } else if let Ok(p) = ProjectPath::try_from(&fields.project_name) {
         p
     } else {
         report::path::undefined_cur_dir();
         return 1;
     };
-    let kind = ProjectKind::from(&matching);
 
     println!(
         "Creating a new `{}` project ({}) on a new",
-        kind,
-        name.0.bright_green()
+        fields.project_kind,
+        fields.project_name.0.bright_green()
     );
     println!("directory: `{}`", path.0.to_str().unwrap().bright_yellow());
     0
 }
 
-fn from_init(matching: ArgMatches, cur_path: PathBuf) -> i32 {
-    let name = ProjectName::from(&matching);
+fn from_init(fields: ProjectFields) -> i32 {
+    let cur_path = if let Ok(p) = env::current_dir() {
+        p
+    } else {
+        report::path::undefined_cur_dir();
+        return 1;
+    };
+
     let path = ProjectPath::from(cur_path);
-    let kind = ProjectKind::from(&matching);
 
     println!(
         "Creating a new `{}` project ({}) on the current",
-        kind,
-        name.0.bright_green()
+        fields.project_kind,
+        fields.project_name.0.bright_green()
     );
-    println!("directory: `{}`", path.0.to_str().unwrap().bright_yellow());
+    println!("directory: `{}`", path.0.to_string_lossy().bright_yellow());
     0
 }
 
 pub fn main(pair: (&str, ArgMatches)) -> i32 {
-    let cur_path = match env::current_dir() {
-        Err(_) => {
-            report::path::undefined_cur_dir();
-            return 1;
-        }
-        Ok(p) => p,
-    };
+    let (cmd, matching) = (pair.0, &pair.1);
+    let name = ProjectName::from(matching);
+    let kind = ProjectKind::from(matching);
+    let authors = ProjectAuthors::from(matching);
+    let git_repo = !matching.get_flag("no-git");
 
-    match pair {
-        ("new", matching) => from_new(matching),
-        (_, matching) => from_init(matching, cur_path),
+    let project_fields: ProjectFields = ProjectFieldsConstructor::new()
+        .name(name)
+        .kind(kind)
+        .authors(authors)
+        .repo(git_repo)
+        .build();
+
+    match (cmd, matching) {
+        ("new", matching) => from_new(project_fields, matching),
+        _ => from_init(project_fields),
     }
 }
