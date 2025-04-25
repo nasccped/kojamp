@@ -87,21 +87,6 @@ impl From<PathBuf> for ProjectPath {
     }
 }
 
-pub fn main(pair: (&str, ArgMatches)) -> i32 {
-    let cur_path = match env::current_dir() {
-        Err(_) => {
-            report::path::undefined_cur_dir();
-            return 1;
-        }
-        Ok(p) => p,
-    };
-
-    match pair {
-        ("new", matching) => from_new(matching),
-        (_, matching) => from_init(matching, cur_path),
-    }
-}
-
 fn from_new(matching: ArgMatches) -> i32 {
     let name = ProjectName::from(&matching);
     let path = if let Ok(p) = ProjectPath::try_from(&matching) {
@@ -135,4 +120,19 @@ fn from_init(matching: ArgMatches, cur_path: PathBuf) -> i32 {
     );
     println!("directory: `{}`", path.0.to_str().unwrap().bright_yellow());
     0
+}
+
+pub fn main(pair: (&str, ArgMatches)) -> i32 {
+    let cur_path = match env::current_dir() {
+        Err(_) => {
+            report::path::undefined_cur_dir();
+            return 1;
+        }
+        Ok(p) => p,
+    };
+
+    match pair {
+        ("new", matching) => from_new(matching),
+        (_, matching) => from_init(matching, cur_path),
+    }
 }
