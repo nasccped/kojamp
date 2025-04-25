@@ -12,3 +12,6 @@ pub const PROGRAM_STYLE: Styles = Styles::styled()
 pub const PROGRAM_REPO_URL: &str = "https://github.com/nasccped/kojamp";
 
 pub const ERROR_BADGE: &str = "error";
+
+pub const SUCCESS_EXIT_STATUS: i32 = 0;
+pub const FAILURE_EXIT_STATUS: i32 = 1;
