@@ -8,6 +8,30 @@ use std::{convert::TryFrom, env, fmt, path::PathBuf, rc::Rc};
 
 struct ProjectName(Rc<str>);
 
+impl ProjectName {
+    /// Test ProjectName validity for ProjectName value
+    fn is_valid(&self) -> bool {
+        // if empty str
+        if self.0.is_empty() {
+            return false;
+        }
+
+        // get chars
+        let mut self_chars = self.0.as_ref().chars();
+
+        // NOTE: unwrap is safe here 'cause we have already checked if inner value is empty
+        let next = self_chars.next().unwrap();
+
+        // the first char should be uppercase
+        if !('A'..='Z').contains(&next) {
+            return false;
+        }
+
+        // consume the created chars + check if all in range of acceptable java file name
+        self_chars.into_iter().all(|c| c.is_digit(36))
+    }
+}
+
 impl From<&ArgMatches> for ProjectName {
     fn from(value: &ArgMatches) -> Self {
         Self(Rc::from(
@@ -216,6 +240,11 @@ pub fn main(pair: (&str, ArgMatches)) -> i32 {
     let kind = ProjectKind::from(matching);
     let authors = ProjectAuthors::from(matching);
     let git_repo = !matching.get_flag("no-git");
+
+    if !name.is_valid() {
+        report::project::name_is_invalid();
+        return FAILURE_EXIT_STATUS;
+    }
 
     let project_fields: ProjectFields = ProjectFieldsConstructor::new()
         .name(name)
