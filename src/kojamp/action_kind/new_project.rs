@@ -54,6 +54,19 @@ enum ProjectKind {
     Undefined(Rc<str>),
 }
 
+impl ProjectKind {
+    fn is_valid(&self) -> bool {
+        matches!(self, ProjectKind::Java | ProjectKind::Kotlin)
+    }
+
+    fn get_undefined_value<'a>(&'a self) -> Option<&'a str> {
+        match self {
+            ProjectKind::Undefined(x) => Some(x.as_ref()),
+            _ => None,
+        }
+    }
+}
+
 impl From<&ArgMatches> for ProjectKind {
     fn from(value: &ArgMatches) -> Self {
         let kind = match value.get_one::<String>("kind") {
@@ -243,6 +256,11 @@ pub fn main(pair: (&str, ArgMatches)) -> i32 {
 
     if !name.is_valid() {
         report::project::name_is_invalid();
+        return FAILURE_EXIT_STATUS;
+    }
+
+    if !kind.is_valid() {
+        report::project::kind_is_invalid(kind.get_undefined_value().unwrap());
         return FAILURE_EXIT_STATUS;
     }
 
