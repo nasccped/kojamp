@@ -1,4 +1,7 @@
-use crate::utils::{report, string::StringTransformation};
+use crate::{
+    globals::{FAILURE_EXIT_STATUS, SUCCESS_EXIT_STATUS},
+    utils::{report, string::StringTransformation},
+};
 use clap::ArgMatches;
 use colored::Colorize;
 use std::{convert::TryFrom, env, fmt, path::PathBuf, rc::Rc};
@@ -176,7 +179,7 @@ fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
         p
     } else {
         report::path::undefined_cur_dir();
-        return 1;
+        return FAILURE_EXIT_STATUS;
     };
 
     println!(
@@ -185,7 +188,7 @@ fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
         fields.project_name.0.bright_green()
     );
     println!("directory: `{}`", path.0.to_str().unwrap().bright_yellow());
-    0
+    SUCCESS_EXIT_STATUS
 }
 
 fn from_init(fields: ProjectFields) -> i32 {
@@ -193,7 +196,7 @@ fn from_init(fields: ProjectFields) -> i32 {
         p
     } else {
         report::path::undefined_cur_dir();
-        return 1;
+        return FAILURE_EXIT_STATUS;
     };
 
     let path = ProjectPath::from(cur_path);
@@ -204,7 +207,7 @@ fn from_init(fields: ProjectFields) -> i32 {
         fields.project_name.0.bright_green()
     );
     println!("directory: `{}`", path.0.to_string_lossy().bright_yellow());
-    0
+    SUCCESS_EXIT_STATUS
 }
 
 pub fn main(pair: (&str, ArgMatches)) -> i32 {
