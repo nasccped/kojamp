@@ -4,7 +4,12 @@ use crate::{
 };
 use clap::ArgMatches;
 use colored::Colorize;
-use std::{convert::TryFrom, env, fmt, path::PathBuf, rc::Rc};
+use std::{
+    convert::TryFrom,
+    env, fmt,
+    path::{Path, PathBuf},
+    rc::Rc,
+};
 
 struct ProjectName(Rc<str>);
 
@@ -97,6 +102,25 @@ impl fmt::Display for ProjectKind {
 }
 
 struct ProjectPath(PathBuf);
+
+impl ProjectPath {
+    fn is_valid(&self, should_exists: bool) -> bool {
+        let path = &self.0;
+
+        if path.file_name().is_none() {
+            return false;
+        }
+
+        match path.parent() {
+            None => return false,
+            Some(x) if x == Path::new("") => return false,
+            Some(x) if !x.exists() => return false,
+            _ => {}
+        }
+
+        path.exists() == should_exists
+    }
+}
 
 impl TryFrom<&ArgMatches> for ProjectPath {
     type Error = ();
@@ -224,6 +248,11 @@ fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
     }
 
     let path = path.unwrap();
+
+    if !path.is_valid(false) {
+        report::path::invalid_path_when_new(path.0.to_str());
+        return FAILURE_EXIT_STATUS;
+    }
 
     println!(
         "Creating a new `{}` project ({}) on a new",
