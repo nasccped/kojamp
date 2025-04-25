@@ -264,14 +264,17 @@ fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
 }
 
 fn from_init(fields: ProjectFields) -> i32 {
-    let cur_path = if let Ok(p) = env::current_dir() {
-        p
+    let path = if let Ok(p) = env::current_dir() {
+        ProjectPath::from(p)
     } else {
         report::path::undefined_cur_dir();
         return FAILURE_EXIT_STATUS;
     };
 
-    let path = ProjectPath::from(cur_path);
+    if !path.is_valid(true) {
+        report::path::invalid_path_when_init(path.0.to_str());
+        return FAILURE_EXIT_STATUS;
+    }
 
     println!(
         "Creating a new `{}` project ({}) on the current",
