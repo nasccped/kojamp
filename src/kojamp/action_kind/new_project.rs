@@ -63,9 +63,8 @@ impl TryFrom<&ArgMatches> for ProjectPath {
 
     fn try_from(value: &ArgMatches) -> Result<Self, Self::Error> {
         match (env::current_dir(), value.get_one::<String>("path")) {
-            (Err(_), _) => Err(()),
-            (_, None) => Err(()),
             (Ok(cur), Some(path)) => Ok(Self(cur.join(path))),
+            _ => Err(()),
         }
     }
 }
