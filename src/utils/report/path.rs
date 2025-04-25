@@ -27,3 +27,62 @@ pub fn undefined_cur_dir() {
         "/".bright_yellow()
     );
 }
+
+pub fn invalid_path_when_new(path: Option<&str>) {
+    report_header(
+        ERROR_BADGE.bright_red().bold(),
+        "Couldn't create a project due to invalid path!",
+    );
+    println!();
+
+    println!(
+        "The path {}",
+        path.unwrap_or("[UNDEFINED PATH]").bright_red()
+    );
+    println!("returned fail when doing validation tests.");
+    println!();
+
+    println!("This can occur due to some reasons:");
+
+    let reasons = [
+        format!(
+            "You've set a compound path {}",
+            "(Like 'this/path')".bright_black()
+        ),
+        format!(
+            "You've used `{}`/`{}` in path value {}",
+            "CUR_DIR<.>".bright_blue(),
+            "PREV_DIR<..>".bright_blue(),
+            "(like 'this/..')".bright_black()
+        ),
+        "The path already exists".to_string(),
+    ];
+
+    for (r, ind) in reasons.into_iter().zip('a'..='c') {
+        let col_ind = [ind, ')'].into_iter().collect::<String>().bright_cyan();
+        println!("  {} {}", col_ind, r);
+    }
+    println!();
+
+    println!("Also, this can occur if you don't specify a path name!");
+    println!("The program build a kebab-case path based on your");
+    println!(
+        "project name, so, if you create a new project called `{}`",
+        "CoolJava".bright_green()
+    );
+    println!(
+        "and there's a directory called `{}`, the program",
+        "cool-java".bright_yellow()
+    );
+    println!("will fail!");
+    println!();
+
+    println!(
+        "You can use `{} {} {} {}`",
+        "kojamp new".bright_green(),
+        "<PROJECT_NAME>".bright_yellow(),
+        "--path".bright_green(),
+        "<PATH_NAME>".bright_yellow()
+    );
+    println!("in this case.");
+}
