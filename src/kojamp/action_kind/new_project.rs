@@ -296,8 +296,16 @@ fn create_kotlin_file_content(class_name: &str) -> String {
         .as_str(),
         " */",
         "",
+        "fun turnGreen(value: String): String {",
+        "    return \"\\u001b[92m$value\\u001b[0m\"",
+        "}",
+        "",
         "fun greeting(): String {",
-        format!("     return \"Hello from '{}' project\"", class_name).as_str(),
+        format!(
+            "     return \"Hello from ${{turnGreen(\"'{}'\")}} project\"",
+            class_name
+        )
+        .as_str(),
         "}",
         "",
         "fun main() {",
