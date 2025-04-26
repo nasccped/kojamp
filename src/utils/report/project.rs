@@ -1,5 +1,5 @@
 use super::report_header;
-use crate::globals::ERROR_BADGE;
+use crate::globals::{ERROR_BADGE, PROGRAM_REPO_URL};
 use colored::Colorize;
 
 pub fn name_is_invalid() {
@@ -71,5 +71,40 @@ pub fn kind_is_invalid(kind_value: &str) {
             "`".italic(),
             "(No case sensitive)".bright_black().italic()
         )
+    );
+}
+
+pub fn couldnt_create_src_dir() {
+    report_header(
+        ERROR_BADGE.bright_red().bold(),
+        format!(
+            "Couldn't create a `{}` dir for this project!",
+            "src".bright_yellow()
+        ),
+    );
+    println!();
+
+    println!("If you're seeing this message, an error value was");
+    println!(
+        "returned from the `{}` function.",
+        format!(
+            "{}{}{}{}{}{} {}{}",
+            "std".bright_yellow(),
+            "::".bright_white(),
+            "fs".bright_yellow(),
+            "::{".bright_white(),
+            "create_dir".bright_red(),
+            ",".bright_white(),
+            "create_dir_all".bright_red(),
+            "}".bright_white()
+        )
+    );
+    println!();
+
+    println!("This function is internal from Rust's stdlib, so");
+    println!("a fail here is an uncommun behaviour.");
+    println!(
+        "Consider opening an issue at {}.",
+        PROGRAM_REPO_URL.bright_yellow()
     );
 }
