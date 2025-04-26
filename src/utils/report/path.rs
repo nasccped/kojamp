@@ -98,5 +98,5 @@ pub fn invalid_path_when_init(path: Option<&str>) {
     println!("If you're seeing this message, you're probably");
     println!("near to the root path.");
     println!("Avoid creating projects here. It can conflict with");
-    println!("The path validation tests!");
+    println!("the program's path validation tests!");
 }
