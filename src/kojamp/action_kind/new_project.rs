@@ -1,12 +1,12 @@
 use crate::{
-    globals::{FAILURE_EXIT_STATUS, SUCCESS_EXIT_STATUS},
+    globals::{FAILURE_EXIT_STATUS, PROGRAM_REPO_URL, SUCCESS_EXIT_STATUS},
     utils::{report, string::StringTransformation},
 };
 use clap::ArgMatches;
 use colored::Colorize;
 use std::{
     convert::TryFrom,
-    env, fmt,
+    env, fmt, fs,
     path::{Path, PathBuf},
     rc::Rc,
 };
@@ -233,6 +233,87 @@ impl ProjectFieldsConstructor {
     }
 }
 
+fn create_java_file_content(class_name: &str) -> String {
+    [
+        "/**",
+        "* This file was generated using kojamp CLI-app",
+        format!(
+            "* Take a look at the official repository at {}",
+            PROGRAM_REPO_URL
+        )
+        .as_str(),
+        "*/",
+        "",
+        format!("public class {} {{", class_name).as_str(),
+        "",
+        "    private static String turnGreen(String text) {",
+        "        return \"\\u001b[92m\" + text + \"\\u001b[0m\";",
+        "    }",
+        "",
+        "    private static void println(Object o) {",
+        "        System.out.println(o);",
+        "    }",
+        "",
+        "    private static void println() {",
+        "        System.out.println();",
+        "    }",
+        "",
+        "    private static void print(Object o) {",
+        "        System.out.print(o);",
+        "    }",
+        "",
+        "    public String greeting() {",
+        format!(
+            "        return \"This is a hello from \" + turnGreen(\"'{}'\") + \" project!\";",
+            class_name
+        )
+        .as_str(),
+        "    }",
+        "",
+        "    public static void main(String[] args) {",
+        "        print(\"Hi\");",
+        "        print(\" \");",
+        "        println(\"there\");",
+        "",
+        format!("        println(new {}().greeting());", class_name).as_str(),
+        "    }",
+        "}",
+    ]
+    .map(|v| v.to_string())
+    .into_iter()
+    .collect::<Vec<_>>()
+    .join("\n")
+}
+
+fn create_kotlin_file_content(class_name: &str) -> String {
+    [
+        "/**",
+        " * This file was generated using kojamp CLI-app,",
+        format!(
+            " * Take a look at the official repository at {}",
+            PROGRAM_REPO_URL
+        )
+        .as_str(),
+        " */",
+        "",
+        "fun greeting(): String {",
+        format!("     return \"Hello from '{}' project\"", class_name).as_str(),
+        "}",
+        "",
+        "fun main() {",
+        "    print(\"Hi\")",
+        "    print(\" \")",
+        "    println(\"there\")",
+        "",
+        "    println(greeting())",
+        "}",
+    ]
+    .map(|v| v.to_string())
+    .into_iter()
+    .collect::<Vec<_>>()
+    .join("\n")
+}
+
 fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
     let path: Option<ProjectPath> = [
         ProjectPath::try_from(matching),
@@ -254,13 +335,7 @@ fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
         return FAILURE_EXIT_STATUS;
     }
 
-    println!(
-        "Creating a new `{}` project ({}) on a new",
-        fields.project_kind,
-        fields.project_name.0.bright_green()
-    );
-    println!("directory: `{}`", path.0.to_str().unwrap().bright_yellow());
-    SUCCESS_EXIT_STATUS
+    build_from_fields(fields, Some(path.0))
 }
 
 fn from_init(fields: ProjectFields) -> i32 {
@@ -276,13 +351,47 @@ fn from_init(fields: ProjectFields) -> i32 {
         return FAILURE_EXIT_STATUS;
     }
 
-    println!(
-        "Creating a new `{}` project ({}) on the current",
-        fields.project_kind,
-        fields.project_name.0.bright_green()
-    );
-    println!("directory: `{}`", path.0.to_string_lossy().bright_yellow());
-    SUCCESS_EXIT_STATUS
+    build_from_fields(fields, None)
+}
+
+fn build_from_fields(fields: ProjectFields, path: Option<PathBuf>) -> i32 {
+    let mut path_handler = if let Some(p) = path {
+        p
+    } else {
+        PathBuf::new()
+    };
+    path_handler.push("src");
+
+    if fs::create_dir_all(&path_handler).is_err() {
+        report::project::couldnt_create_src_dir();
+        return FAILURE_EXIT_STATUS;
+    }
+
+    let project_name_str: &str = fields.project_name.0.as_ref();
+    let file_content: String;
+    let file_name: String;
+
+    match fields.project_kind {
+        ProjectKind::Java => {
+            file_content = create_java_file_content(project_name_str);
+            file_name = format!("{}.java", project_name_str);
+        }
+        _ => {
+            file_content = create_kotlin_file_content(project_name_str);
+            file_name = format!("{}.kt", project_name_str);
+        }
+    }
+
+    path_handler.push(file_name);
+    if fs::write(&path_handler, file_content).is_err() {
+        // TODO: report error for main file building
+        return FAILURE_EXIT_STATUS;
+    }
+
+    path_handler.pop();
+    path_handler.pop();
+
+    return SUCCESS_EXIT_STATUS;
 }
 
 pub fn main(pair: (&str, ArgMatches)) -> i32 {
