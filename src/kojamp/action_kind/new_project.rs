@@ -242,12 +242,12 @@ fn from_new(fields: ProjectFields, matching: &ArgMatches) -> i32 {
     .find(|p| p.is_ok())
     .and_then(|p| Some(p.unwrap()));
 
-    if path.is_none() {
+    let path = if let Some(p) = path {
+        p
+    } else {
         report::path::undefined_cur_dir();
         return FAILURE_EXIT_STATUS;
-    }
-
-    let path = path.unwrap();
+    };
 
     if !path.is_valid(false) {
         report::path::invalid_path_when_new(path.0.to_str());
