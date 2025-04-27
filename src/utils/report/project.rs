@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::report_header;
 use crate::globals::{ERROR_BADGE, PROGRAM_REPO_URL};
 use colored::Colorize;
@@ -33,7 +35,7 @@ pub fn name_is_invalid() {
     )
 }
 
-pub fn kind_is_invalid(kind_value: &str) {
+pub fn kind_is_invalid(kind_value: impl fmt::Display) {
     report_header(
         ERROR_BADGE.bright_red().bold(),
         "Couldn't create a new project due to invalid project kind!",
@@ -41,13 +43,7 @@ pub fn kind_is_invalid(kind_value: &str) {
     println!();
 
     println!("This is a Java/Kotlin project manager, so these");
-    println!(
-        "kinds are expected, but {} was specified!",
-        match kind_value {
-            "" => format!("{}", "no kind".bright_red()),
-            x => format!("`{}` kind", x.bright_red()),
-        }
-    );
+    println!("kinds are expected, but `{}` was specified!", kind_value);
     println!();
 
     println!("You can specify a project kind by");
