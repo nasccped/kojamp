@@ -63,13 +63,6 @@ impl ProjectKind {
     fn is_valid(&self) -> bool {
         matches!(self, ProjectKind::Java | ProjectKind::Kotlin)
     }
-
-    fn get_undefined_value<'a>(&'a self) -> Option<&'a str> {
-        match self {
-            ProjectKind::Undefined(x) => Some(x.as_ref()),
-            _ => None,
-        }
-    }
 }
 
 impl From<&ArgMatches> for ProjectKind {
@@ -415,7 +408,7 @@ pub fn main(pair: (&str, ArgMatches)) -> i32 {
     }
 
     if !kind.is_valid() {
-        report::project::kind_is_invalid(kind.get_undefined_value().unwrap());
+        report::project::kind_is_invalid(kind);
         return FAILURE_EXIT_STATUS;
     }
 
