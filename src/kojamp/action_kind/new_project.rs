@@ -4,6 +4,7 @@ use crate::{
 };
 use clap::ArgMatches;
 use colored::Colorize;
+use serde::Serialize;
 use std::{
     convert::TryFrom,
     env, fmt, fs,
@@ -164,6 +165,32 @@ struct ProjectFields {
     project_kind: ProjectKind,
     project_authors: ProjectAuthors,
     project_repo: bool,
+}
+
+#[derive(Serialize)]
+struct MainToml<'a> {
+    #[serde(rename = "project")]
+    project: ProjectToml<'a>,
+}
+
+#[derive(Serialize)]
+struct ProjectToml<'a> {
+    name: Rc<str>,
+    kind: &'a str,
+    authors: Rc<&'a Option<Vec<String>>>,
+}
+
+impl<'a> From<&'a ProjectFields> for ProjectToml<'a> {
+    fn from(value: &'a ProjectFields) -> Self {
+        Self {
+            name: Rc::clone(&value.project_name.0),
+            kind: match value.project_kind {
+                ProjectKind::Java => "java",
+                _ => "kotlin",
+            },
+            authors: Rc::from(&value.project_authors.0),
+        }
+    }
 }
 
 struct ProjectFieldsConstructor {
@@ -391,6 +418,25 @@ fn build_from_fields(fields: ProjectFields, path: Option<PathBuf>) -> i32 {
 
     path_handler.pop();
     path_handler.pop();
+    path_handler.push("Kojamp.toml");
+
+    let t = MainToml {
+        project: ProjectToml::from(&fields),
+    };
+
+    let toml_string = toml::to_string(&t)
+        .unwrap()
+        .lines()
+        .filter(|row| !row.trim().is_empty())
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    if fs::write(&path_handler, toml_string).is_err() {
+        // TODO: report error for toml building
+        return FAILURE_EXIT_STATUS;
+    }
+
+    println!("Success");
 
     return SUCCESS_EXIT_STATUS;
 }
