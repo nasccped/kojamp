@@ -1,8 +1,9 @@
-pub mod action_kind;
-mod app_trait;
+mod action_kind;
+mod app_factory;
 mod builder;
 mod subcommands;
 
-pub use action_kind as action;
-pub use app_trait::KojampCLI;
+use action_kind as action;
+
+pub use app_factory::KojampApp;
 pub use builder::kojamp_app;
