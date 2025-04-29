@@ -65,4 +65,12 @@ impl ProjectPath {
     pub fn add_from_project_name(&mut self, project_name: &ProjectName) {
         self.specified_path = Some(Rc::from(project_name.as_str().to_kebab_case()))
     }
+
+    pub fn get_inner(&self) -> PathBuf {
+        let path = match &self.specified_path {
+            Some(x) => x.as_ref(),
+            _ => "",
+        };
+        PathBuf::from(path)
+    }
 }

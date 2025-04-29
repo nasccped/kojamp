@@ -29,6 +29,10 @@ impl ProjectName {
     pub fn as_str(&self) -> &str {
         self.0.as_ref()
     }
+
+    pub fn get_inner(&self) -> &str {
+        self.0.as_ref()
+    }
 }
 
 impl From<&ArgMatches> for ProjectName {

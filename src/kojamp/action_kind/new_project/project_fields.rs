@@ -77,4 +77,16 @@ impl ProjectFields {
     pub fn new() -> ProjectFieldsInnerBuilder {
         ProjectFieldsInnerBuilder::default()
     }
+
+    pub fn get_path(&self) -> &ProjectPath {
+        &self.project_path
+    }
+
+    pub fn get_name(&self) -> &ProjectName {
+        &self.project_name
+    }
+
+    pub fn get_kind(&self) -> &ProjectKind {
+        &self.project_kind
+    }
 }
