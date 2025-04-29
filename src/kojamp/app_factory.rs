@@ -1,6 +1,6 @@
 use super::action;
 use crate::{
-    globals::PROGRAM_REPO_URL,
+    globals::{FAILURE_EXIT_STATUS, PROGRAM_REPO_URL, SUCCESS_EXIT_STATUS},
     utils::{array::ToText, error::ErrorPrinting},
 };
 use clap::{builder::Styles, ArgMatches, Command};
@@ -119,10 +119,10 @@ impl KojampApp for Command {
 
     fn exit_output(&self, output: Result<(), Error>) {
         process::exit(match output {
-            Ok(_) => 0,
+            Ok(_) => SUCCESS_EXIT_STATUS,
             Err(x) => {
                 x.print_error();
-                1
+                FAILURE_EXIT_STATUS
             }
         });
     }
