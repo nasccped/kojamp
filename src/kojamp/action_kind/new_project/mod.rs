@@ -1,3 +1,4 @@
+mod file_content;
 mod init;
 mod main;
 mod new;
