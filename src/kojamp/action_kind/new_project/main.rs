@@ -49,7 +49,7 @@ const INVALID_CUR_DIR: [&str; 7] = [
     "\x1b[3;90m(no sudo or Admin)\x1b[0m",
 ];
 
-const INVALID_PATH_WHEN_NEW: [&str; 22] = [
+const INVALID_PATH_WHEN_NEW: [&str; 23] = [
     "Couldn't create a project due to invalid path!",
     "The path returned fail when doing validation tests.",
     "",
@@ -58,6 +58,7 @@ const INVALID_PATH_WHEN_NEW: [&str; 22] = [
     "\x1b[3;90m(with '/' chars)\x1b[0m",
     "  \x1b[96mb)\x1b[0m You've used dots when seting the path",
     "  \x1b[96mc)\x1b[0m The path already exists",
+    "  \x1b[96md)\x1b[0m You're near to the root path",
     "",
     "Also, this can occur if you don't specify a path name!",
     "The program build a kebab-case path based on your",
