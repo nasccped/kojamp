@@ -10,15 +10,58 @@ Kojamp
 
 </div>
 
-This is Kojamp, a Java/Kotlin project manager tool!
+This is Kojamp, a Java/Kotlin project manager tool 📦
 
-> [!WARNING]
-> 
-> The **Kojamp Man** program is currently undergoing a fix process.
+## Requirements
+
+This tool targets Java/Kotlin projects and requires:
+
+<div align="center">
+
+| Tool(s)           | Description                       | Link                                                                                 | Required?                                           |
+| :---------------- | :-------------------------------- | :----------------------------------------------------------------------------------- | :-------------------------------------------------- |
+| `rustc` + `cargo` | Rust compiler and package manager | [rust-lang.org](https://www.rust-lang.org)                                           | Yes ✅ (source is in Rust)                           |
+| `javac` + `java`  | Java compiler and runtime         | [oracle.com](https://www.oracle.com/java/technologies/downloads/)                    | No ❌ (required only for Java compilation/execution) |
+| `kotlinc`         | Kotlin compiler                   | [kotlinlang.org](https://kotlinlang.org/docs/command-line.html#install-the-compiler) | No ❌ (same as Java)                                 |
+
+
+</div>
+
+## Installation
+
+> [!IMPORTANT]
 >
-> Many things will change, such as program stack & development flux.
+> Requires [Git](https://git-scm.com/)
+
+1. Clone the repository ⬇️
+
+```sh
+git clone --depth 1 https://github.com/nasccped/kojamp
+rm -rf kojamp/.git
+# If you're at Windows Powershell, use this:
+# Remove-Item kojamp/.git -Recurse -Force
+```
+
+2. Build and install 🪛
+
+```sh
+cd kojamp
+cargo install --path .
+```
+
+3. Verify installation 🔭
+
+```sh
+kojamp --help
+```
+
+> [!CAUTION]
 >
-> Stay tuned for future changes!
+> `Kojamp` is under active development!
+>
+> For current progress, see
+> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md)
+> 😉
 
 <div align=center>
 
