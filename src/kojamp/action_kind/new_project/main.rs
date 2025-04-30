@@ -132,7 +132,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
         .set_kind(kind)
         .set_path(path)
         .set_authors(ProjectAuthors::from(matching))
-        .set_repo(!matching.get_flag("no-git"))
+        .set_repo(matching.get_flag("no-git"))
         .build();
 
     let output = if is_new_subcommand {
