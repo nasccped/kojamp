@@ -18,7 +18,7 @@ const INVALID_NAME: [&str; 15] = [
     "\x1b[92m--path\x1b[0m \x1b[93m<PATH_HERE>\x1b[0m` &&",
     "flag.",
     "\x1b[3;96mNOTE:\x1b[0m &&",
-    "\x1b[3;90m(`--path` flag only available for the `new` subcommand)\x1b[0m",
+    "\x1b[3;90m(`--path` flag is only available for the `new` subcommand)\x1b[0m",
 ];
 
 const INVALID_KIND: [&str; 15] = [
@@ -34,7 +34,7 @@ const INVALID_KIND: [&str; 15] = [
     "\x1b[3;96mNOTE:\x1b[0m &&",
     "\x1b[3;93m<PROJECT_KIND>\x1b[0m\x1b[3m &&",
     "can only be &&",
-    "`\x1b[3;94mJava\x1b[0m\x1b[3m or &&",
+    "`\x1b[3;94mJava\x1b[0m`\x1b[3m or &&",
     "`\x1b[3;94mKotlin\x1b[0m\x1b[3m` &&",
     "\x1b[90m(No case sensitive)\x1b[0m",
 ];
