@@ -1,6 +1,5 @@
-use super::ProjectKind;
+use super::{ProjectFields, ProjectKind};
 use crate::globals::{PROGRAM_REPO_URL, PROGRAM_VERSION};
-use std::rc::Rc;
 
 pub fn java(class_name: &str) -> String {
     [
@@ -85,20 +84,20 @@ pub fn kotlin(file_name: &str) -> String {
     .join("\n")
 }
 
-pub fn readme(
-    project_name: &str,
-    project_kind: &ProjectKind,
-    project_authors: Option<Vec<Rc<str>>>,
-) -> String {
+pub fn readme(project_fields: &ProjectFields) -> String {
+    let name = project_fields.get_name().get_inner();
+    let kind = project_fields.get_kind();
+    let authors = project_fields.get_authors().get_inner();
+
     let mut begin = vec![
         String::from("<div align=\"center\">"),
         String::new(),
-        format!("{}", project_name),
-        format!("{}", "=".repeat(project_name.len())),
+        format!("{}", name),
+        format!("{}", "=".repeat(name.len())),
         String::new(),
         format!("[![built in](https://img.shields.io/badge/built_in-kojamp_{}-blue?)](https://github.com/nasccped/kojamp)", PROGRAM_VERSION),
         format!(
-            "[![project kind](https://img.shields.io/badge/project_kind-{}?)](#)", match project_kind {
+            "[![project kind](https://img.shields.io/badge/project_kind-{}?)](#)", match kind {
                 ProjectKind::Java => "java-orange",
                 _ => "kotlin-blue",
             }
@@ -108,8 +107,8 @@ pub fn readme(
         String::new(),
         format!(
             "Welcome to the **{}** project{}",
-            project_name,
-            if project_authors.is_some() {
+            name,
+            if authors.is_some() {
                 " by:\n"
             } else {
                 "!"
@@ -117,10 +116,9 @@ pub fn readme(
         ),
     ];
 
-    let authors = if let Some(authors) = project_authors {
-        authors
-            .iter()
-            .map(|aut| format!("- {}", aut))
+    let authors = if let Some(aut) = authors {
+        aut.iter()
+            .map(|a| format!("- {}", a))
             .collect::<Vec<_>>()
             .join("\n")
     } else {
@@ -128,4 +126,8 @@ pub fn readme(
     };
     begin.push(authors);
     begin.join("\n")
+}
+
+pub fn gitignore() -> String {
+    ["# Ignore only the output bytecode content", "out/"].join("\n")
 }
