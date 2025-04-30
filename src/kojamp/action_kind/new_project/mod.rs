@@ -1,7 +1,6 @@
+mod fields_validation;
 mod file_content;
-mod init;
 mod main;
-mod new;
 mod project_authors;
 mod project_fields;
 mod project_kind;
