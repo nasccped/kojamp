@@ -89,7 +89,16 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
-    let path = ProjectPath::try_new();
+    let (path, new_called) = match (cmd, ProjectPath::try_new()) {
+        (_, Err(_)) => return Err(Error::new(ErrorKind::Other, INVALID_CUR_DIR.to_text())),
+        ("new", Ok(mut x)) => {
+            if x.add_from_matching(matching).is_none() {
+                x.add_from_project_name(&name);
+            }
+            (x, true)
+        }
+        (_, Ok(x)) => (x, false),
+    };
 
     if !name.is_valid() {
         return Err(Error::new(ErrorKind::InvalidInput, INVALID_NAME.to_text()));
@@ -99,27 +108,10 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
         return Err(Error::new(ErrorKind::InvalidInput, INVALID_KIND.to_text()));
     }
 
-    let is_new_subcommand: bool;
-
-    let path = match (cmd, path) {
-        (_, Err(_)) => return Err(Error::new(ErrorKind::Other, INVALID_CUR_DIR.to_text())),
-        ("new", Ok(mut x)) => {
-            is_new_subcommand = true;
-            if x.add_from_matching(matching).is_none() {
-                x.add_from_project_name(&name);
-            }
-            x
-        }
-        (_, Ok(x)) => {
-            is_new_subcommand = false;
-            x
-        }
-    };
-
-    if !path.is_valid(!is_new_subcommand) {
+    if !path.is_valid(!new_called) {
         return Err(Error::new(
             ErrorKind::Other,
-            if is_new_subcommand {
+            if new_called {
                 INVALID_PATH_WHEN_NEW.to_text()
             } else {
                 INVALID_PATH_WHEN_INIT.to_text()
@@ -135,6 +127,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
         .set_repo(matching.get_flag("no-git"))
         .build();
 
+    // FIX: this will panic at compilation. Just commiting the lines above :^P
     let output = if is_new_subcommand {
         new::new(project_fields)
     } else {
