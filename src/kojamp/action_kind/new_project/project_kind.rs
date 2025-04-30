@@ -10,6 +10,14 @@ impl ProjectKind {
     pub fn is_valid(&self) -> bool {
         matches!(self, ProjectKind::Java | ProjectKind::Kotlin)
     }
+
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            ProjectKind::Java => "java",
+            ProjectKind::Kotlin => "kotlin",
+            ProjectKind::Invalid => "INVALID",
+        }
+    }
 }
 
 impl From<&ArgMatches> for ProjectKind {

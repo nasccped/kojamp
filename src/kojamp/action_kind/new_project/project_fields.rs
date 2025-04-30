@@ -89,4 +89,12 @@ impl ProjectFields {
     pub fn get_kind(&self) -> &ProjectKind {
         &self.project_kind
     }
+
+    pub fn get_authors(&self) -> &ProjectAuthors {
+        &self.project_authors
+    }
+
+    pub fn have_repo(&self) -> bool {
+        self.project_repo
+    }
 }
