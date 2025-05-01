@@ -6,8 +6,8 @@ Here you find infos about subcommand and flags usage.
 ## Subcommand sumary
 
 - [subcommands](#subcommands)
-  - [help](./#help-subcommandflag)
-  - [new](./#new-subcommand)
+  - [help](#help-subcommandflag)
+  - [new](#new-subcommand)
 
 ## Subcommands
 
