@@ -1,22 +1,20 @@
 Usage
 =====
 
-Here you find infos about subcommand and flags usage.
+Here you'll find infos about subcommands and flags usage.
 
-## Subcommand summary
+## Summary
 
-- [subcommands](#subcommands)
-  - [help](#help-subcommandflag)
-  - [new](#new-subcommand)
+- [help](#help)
+- [new](#new)
+  - [arguments and flags](#arguments-and-flags)
 
-## Subcommands
+## Help
 
-### Help subcommand/flag
+Will print a help panel of the program or the give subcommand.
+It can be called as a subcommand or a flag too!
 
-This will print a help panel of the program or a subcommand.
-It can be called as a subcommand or a flag too, for example:
-
-this:
+This:
 
 ```sh
 kojamp --help
@@ -28,18 +26,21 @@ works the same as this:
 kojamp help
 ```
 
----
-
-You can also call a subcommand help panel, like:
+Calling the help panel for a subcommand will work:
 
 ```sh
-kojamp <SUBCOMMAND_NAME> --help
+# this way
+kojamp help subcommand_name
+
+# or this way too
+kojamp subcommand_name --help
 ```
 
-### New subcommand
+## New
 
-This will create a Java/Kotlin project in a new folder and have the
-following args/options:
+Create a Java/Kotlin project in a new folder.
+
+### Arguments and flags
 
 | name      | alias        | position index     | usage                                        | description                                                          | required |
 | :-------- | :----------- | :----------------- | :------------------------------------------- | :------------------------------------------------------------------- | :------- |
