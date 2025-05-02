@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::io::Error;
 
 pub trait ErrorPrinting {
@@ -7,12 +8,15 @@ pub trait ErrorPrinting {
 impl ErrorPrinting for Error {
     fn print_error(&self) {
         println!(
-            "{}[{}ERROR{}]: {}{}",
-            "\x1b[97m",
-            "\x1b[91m",
-            "\x1b[97m",
-            self.kind(),
-            "\x1b[0m"
+            "{} {}",
+            "error".bright_red().to_string() + ":".bright_white().as_ref(),
+            self.kind()
+                .to_string()
+                .split_whitespace()
+                .map(|word| word[..1].to_uppercase() + &word[1..].to_lowercase().as_ref())
+                .collect::<Vec<_>>()
+                .join(" ")
+                .bright_white()
         );
         println!();
 
