@@ -9,7 +9,7 @@ pub fn cmd() -> Command {
                 .value_name("CAMEL_CASED_NAME")
                 .action(ArgAction::Set)
                 .required(true)
-                .help("Specify the project name")
+                .help("Specifies the project name")
                 .index(1),
             Arg::new("kind")
                 .long("kind")
@@ -17,7 +17,7 @@ pub fn cmd() -> Command {
                 .required(false)
                 .value_name("JAVA|KOTLIN")
                 .action(ArgAction::Set)
-                .help("Specify the project kind"),
+                .help("Specifies the project kind"),
             Arg::new("path")
                 .long("path")
                 .short('P')
@@ -25,7 +25,7 @@ pub fn cmd() -> Command {
                 .value_name("PATH")
                 .action(ArgAction::Set)
                 .help(format!(
-                    "Specify the project path {}",
+                    "Specifies the project path {}",
                     "(project name in kebab case as default)"
                         .bright_black()
                         .italic()
@@ -36,7 +36,7 @@ pub fn cmd() -> Command {
                 .required(false)
                 .value_name("QUOTED_LIST")
                 .action(ArgAction::Set)
-                .help("Specify the project authors"),
+                .help("Specifies the project authors"),
             Arg::new("no-git")
                 .long("no-git")
                 .required(false)
