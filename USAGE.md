@@ -3,7 +3,7 @@ Usage
 
 Here you find infos about subcommand and flags usage.
 
-## Subcommand sumary
+## Subcommand summary
 
 - [subcommands](#subcommands)
   - [help](#help-subcommandflag)
