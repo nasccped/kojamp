@@ -10,7 +10,7 @@ Here you'll find infos about subcommands and flags usage.
 
 ## Help
 
-Will print a help panel of the program or the give subcommand.
+Prints a help panel of the program or the given subcommand.
 It can be called as a subcommand or a flag too!
 
 This:
@@ -31,13 +31,13 @@ Calling the help panel for a subcommand will work:
 # this way
 kojamp help subcommand_name
 
-# or this way too
+# or this way
 kojamp subcommand_name --help
 ```
 
 ## New
 
-Create a Java/Kotlin project in a new folder.
+Creates a Java/Kotlin project in a new folder.
 
 ### Arguments and flags
 
