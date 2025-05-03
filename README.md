@@ -41,8 +41,7 @@ git clone --depth 1 https://github.com/nasccped/kojamp
 2. Build and install 🪛
 
 ```sh
-cd kojamp
-cargo install --path .
+cargo install --path kojamp
 ```
 
 3. Verify installation 🔭
