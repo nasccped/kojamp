@@ -38,11 +38,10 @@ rm -rf kojamp/.git
 Remove-Item kojamp/.git -Recurse -Force
 ```
 
-2. Go to the project directory + install by using `cargo`:
+2. Install by using `cargo`:
 
 ```sh
-cd kojamp
-cargo install --path .
+cargo install --path kojamp
 ```
 
 3. Test if the program was successfully installed:
