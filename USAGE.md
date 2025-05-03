@@ -145,7 +145,7 @@ Creates a Java/Kotlin project in a new folder.
 > You doesn't need to worry about white spaces. The kojamp program
 > will handle it for you:
 >
-> - `"So    much  spaces"` author becomes `"So much spaces"`
+> - [`So` ` ` ` ` `much` ` ` `spaces`] author becomes `So much spaces`
 
 5. **`no-git` flag:** It's useful when you want to create a new
    project with no git repository (when using an alternative
