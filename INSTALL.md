@@ -22,7 +22,7 @@ This tool targets Java/Kotlin projects and requires:
 Currently, there are the following options for installing this
 project: _(use the buttons bellow to view/hide the content)_
 
-- [git + cargo](#git-and-cargo-)
+- [git and cargo 📦](#git-and-cargo-)
 
 ### Git and Cargo 📦
 
