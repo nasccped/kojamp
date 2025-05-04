@@ -2,11 +2,12 @@ use colored::Colorize;
 use std::fmt;
 use std::rc::Rc;
 
-use crate::globals::{ERROR_BADGE, WARNING_BADGE};
+use crate::globals::{ERROR_BADGE, SUCCESS_BADGE, WARNING_BADGE};
 
 pub enum ReportType {
     Error,
     Warning,
+    Success,
 }
 
 pub struct KojampReport {
@@ -16,7 +17,7 @@ pub struct KojampReport {
 }
 
 impl KojampReport {
-    fn new<T, U>(report_type: ReportType, title: T, content: U) -> Self
+    pub fn new<T, U>(report_type: ReportType, title: T, content: U) -> Self
     where
         T: AsRef<str>,
         U: AsRef<str>,
@@ -40,6 +41,7 @@ impl fmt::Display for KojampReport {
             match self.report_type {
                 ReportType::Error => ERROR_BADGE.bright_red(),
                 ReportType::Warning => WARNING_BADGE.bright_yellow(),
+                _ => SUCCESS_BADGE.bright_green(),
             },
             ":".bright_white(),
             self.title.bright_white(),

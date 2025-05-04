@@ -1,3 +1,3 @@
-mod kojamp_error;
+mod kojamp_report;
 
-pub use kojamp_error::{KojampReport, ReportType};
+pub use kojamp_report::{KojampReport, ReportType};
