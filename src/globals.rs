@@ -14,6 +14,9 @@ pub const PROGRAM_REPO_URL: &str = "https://github.com/nasccped/kojamp";
 pub const SUCCESS_EXIT_STATUS: i32 = 0;
 pub const FAILURE_EXIT_STATUS: i32 = 1;
 
+pub const ERROR_BADGE: &str = "error";
+pub const WARNING_BADGE: &str = "warning";
+
 pub const SRC_DIR: &str = "src";
 pub const JAVA_FILE_EXTENSION: &str = "java";
 pub const KOTLIN_FILE_EXTENSION: &str = "kt";
