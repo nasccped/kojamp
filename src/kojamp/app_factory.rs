@@ -130,8 +130,13 @@ impl KojampApp for Command {
             Err(r) => (r, FAILURE_EXIT_STATUS),
         };
 
-        for r in reports {
+        let mut reports = reports.iter().peekable();
+
+        while let Some(r) = reports.next() {
             println!("{}", r);
+            if reports.peek().is_some() {
+                println!();
+            }
         }
 
         process::exit(exit);
