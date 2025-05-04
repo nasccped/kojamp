@@ -1,14 +1,11 @@
 use super::action;
 use crate::{
+    essentials::{KojampReport, ReportType},
     globals::{FAILURE_EXIT_STATUS, PROGRAM_REPO_URL, SUCCESS_EXIT_STATUS},
-    utils::{array::ToText, error::ErrorPrinting},
+    utils::array::ToText,
 };
 use clap::{builder::Styles, ArgMatches, Command};
-use std::{
-    io::{Error, ErrorKind},
-    process,
-    rc::Rc,
-};
+use std::{process, rc::Rc};
 
 type StrAlias = &'static str;
 type MatchingAlias = Option<(Rc<str>, ArgMatches)>;
@@ -75,8 +72,11 @@ pub trait KojampApp {
     fn new_app() -> KojampBuilder;
     fn add_subcommand(self, subcommand: Command) -> Self;
     fn get_matching(&self) -> MatchingAlias;
-    fn run_kojamp_app(&mut self, matching: MatchingAlias) -> Result<(), Error>;
-    fn exit_output(&self, output: Result<(), Error>);
+    fn run_kojamp_app(
+        &mut self,
+        matching: MatchingAlias,
+    ) -> Result<Vec<KojampReport>, Vec<KojampReport>>;
+    fn exit_output(&self, output: Result<Vec<KojampReport>, Vec<KojampReport>>);
 }
 
 impl KojampApp for Command {
@@ -95,13 +95,16 @@ impl KojampApp for Command {
             .map(|(name, sub_matches)| (Rc::from(name), sub_matches.clone()))
     }
 
-    fn run_kojamp_app(&mut self, matching: MatchingAlias) -> Result<(), Error> {
+    fn run_kojamp_app(
+        &mut self,
+        matching: MatchingAlias,
+    ) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
         if matching.is_none() {
             let _ = self.print_help();
-            return Ok(());
+            return Ok(Vec::new());
         }
 
-        let output: Result<(), Error>;
+        let output: Result<Vec<KojampReport>, Vec<KojampReport>>;
 
         let matching = matching.unwrap();
 
@@ -111,19 +114,26 @@ impl KojampApp for Command {
             }
             // if matching isn't None and it's different from the matches above, alert:
             _ => {
-                output = Err(Error::new(ErrorKind::Other, UNDEFINED_ERROR.to_text()));
+                output = Err(Vec::from([KojampReport::new(
+                    ReportType::Error,
+                    "Undefined Error",
+                    UNDEFINED_ERROR.to_text(),
+                )]));
             }
         }
         output
     }
 
-    fn exit_output(&self, output: Result<(), Error>) {
-        process::exit(match output {
-            Ok(_) => SUCCESS_EXIT_STATUS,
-            Err(x) => {
-                x.print_error();
-                FAILURE_EXIT_STATUS
-            }
-        });
+    fn exit_output(&self, output: Result<Vec<KojampReport>, Vec<KojampReport>>) {
+        let (reports, exit): (Vec<KojampReport>, i32) = match output {
+            Ok(r) => (r, SUCCESS_EXIT_STATUS),
+            Err(r) => (r, FAILURE_EXIT_STATUS),
+        };
+
+        for r in reports {
+            println!("{}", r);
+        }
+
+        process::exit(exit);
     }
 }

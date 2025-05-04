@@ -3,6 +3,7 @@ use super::{
     ProjectName, ProjectPath,
 };
 use crate::{
+    essentials::{KojampReport, ReportType},
     globals::{
         GIT_COMMAND, GIT_IGNORE_FILE_FULLNAME, GIT_INITIALIZATION_ARG, JAVA_FILE_EXTENSION,
         KOTLIN_FILE_EXTENSION, MARKDOWN_FILE_EXTENSION, PROGRAM_REPO_URL, PROGRAM_TOML_FILE_NAME,
@@ -14,7 +15,6 @@ use clap::ArgMatches;
 use colored::Colorize;
 use std::{
     fs,
-    io::{Error, ErrorKind},
     path::PathBuf,
     process::{Command, Stdio},
 };
@@ -54,10 +54,11 @@ const COULD_NOT_CREATE_TOML: [&str; 6] = [
     "is highly encouraged)\x1b[0m",
 ];
 
-fn create_project_dir(path: &PathBuf) -> Result<(), Error> {
+fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
     if fs::create_dir(path).is_err() {
-        Err(Error::new(
-            ErrorKind::Other,
+        Err(KojampReport::new(
+            ReportType::Error,
+            "Couldn't Create The Project Directory",
             COULD_NOT_CREATE_PROJECT_DIR.to_text(),
         ))
     } else {
@@ -65,11 +66,12 @@ fn create_project_dir(path: &PathBuf) -> Result<(), Error> {
     }
 }
 
-fn create_src_dir(path: &mut PathBuf) -> Result<(), Error> {
+fn create_src_dir(path: &mut PathBuf) -> Result<(), KojampReport> {
     path.push(SRC_DIR);
     if fs::create_dir(&path).is_err() {
-        return Err(Error::new(
-            ErrorKind::Other,
+        return Err(KojampReport::new(
+            ReportType::Error,
+            "Couldn't Create The `src` Directory",
             COULD_NOT_CREATE_SRC_DIR.to_text(),
         ));
     }
@@ -77,7 +79,7 @@ fn create_src_dir(path: &mut PathBuf) -> Result<(), Error> {
     Ok(())
 }
 
-fn create_main_source_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), Error> {
+fn create_main_source_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), KojampReport> {
     let (name, kind) = (fields.get_name().get_inner(), fields.get_kind());
     let (ext, content) = match kind {
         ProjectKind::Java => (JAVA_FILE_EXTENSION, file_content::java(name)),
@@ -89,8 +91,12 @@ fn create_main_source_file(path: &mut PathBuf, fields: &ProjectFields) -> Result
     path.set_extension(ext);
 
     if fs::write(&path, content).is_err() {
-        return Err(Error::new(
-            ErrorKind::Other,
+        return Err(KojampReport::new(
+            ReportType::Error,
+            format!(
+                "Couldn't Create The Main Source File ({:?})",
+                path.file_name().unwrap()
+            ),
             COULD_NOT_CREATE_MAIN_SOURCE_FILE.to_text(),
         ));
     }
@@ -100,14 +106,15 @@ fn create_main_source_file(path: &mut PathBuf, fields: &ProjectFields) -> Result
     Ok(())
 }
 
-fn create_toml_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), Error> {
+fn create_toml_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), KojampReport> {
     path.push(PROGRAM_TOML_FILE_NAME);
     path.set_extension(TOML_FILE_EXTENSION);
     let toml_content: String = MainToml::from(fields).into();
 
     if fs::write(&path, toml_content).is_err() {
-        return Err(Error::new(
-            ErrorKind::Other,
+        return Err(KojampReport::new(
+            ReportType::Error,
+            "Couldn't Create The TOML File",
             COULD_NOT_CREATE_TOML.to_text(),
         ));
     }
@@ -116,32 +123,27 @@ fn create_toml_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), Er
     Ok(())
 }
 
-fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) {
+fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) -> Option<KojampReport> {
     path.push(README_FILE_NAME);
     path.set_extension(MARKDOWN_FILE_EXTENSION);
     let readme_content = file_content::readme(fields);
+    let mut output: Option<KojampReport> = None;
 
     if fs::write(&path, readme_content).is_err() {
-        println!(
-            "{}{}{}{} {}",
-            "[".bright_white(),
-            "WARNING".bright_yellow(),
-            "]".bright_white(),
-            ":".bright_white(),
-            format!(
-                "Couldn't create {}.{}",
-                README_FILE_NAME, MARKDOWN_FILE_EXTENSION
-            )
-            .bright_white()
-        );
-        println!();
-        println!("This is probably due to memory issue");
-        println!("Even so, the project was created!");
+        output = Some(KojampReport::new(
+            ReportType::Warning,
+            "Couldn't Create README File",
+            "This is probablye due to memory issue
+Even so, the project was created!",
+        ));
     }
     path.pop();
+    output
 }
 
-fn initialize_git_and_create_gitignore(path: &mut PathBuf) {
+fn initialize_git_and_create_gitignore(path: &mut PathBuf) -> Option<KojampReport> {
+    let mut output: Option<KojampReport> = None;
+
     if Command::new(GIT_COMMAND)
         .args([GIT_INITIALIZATION_ARG, path.to_str().unwrap()])
         .stdout(Stdio::null())
@@ -149,38 +151,28 @@ fn initialize_git_and_create_gitignore(path: &mut PathBuf) {
         .status()
         .is_err()
     {
-        println!(
-            "{}{}{}{} {}",
-            "[".bright_white(),
-            "WARNING".bright_yellow(),
-            "]".bright_white(),
-            ":".bright_white(),
-            "Couldn't initialize a git repo".bright_white()
-        );
-        println!();
-        println!("The git program probably doesn't exists at your machine");
-        println!("Even so, the project was created!");
-        return;
+        output = Some(KojampReport::new(
+            ReportType::Warning,
+            "Couldn't Initialize A Git Repo",
+            "The git program probably doesn't exists on your machine
+Even so, the project was created!",
+        ));
+        return output;
     }
 
     path.push(GIT_IGNORE_FILE_FULLNAME);
     let gitignore_content = file_content::gitignore();
 
     if fs::write(&path, gitignore_content).is_err() {
-        println!(
-            "{}{}{}{} {}",
-            "[".bright_white(),
-            "WARNING".bright_yellow(),
-            "]".bright_white(),
-            ":".bright_white(),
-            "Couldn't create a .gitignore file".bright_white()
-        );
-        println!();
-        println!("This is probably due to memory issue");
-        println!("Even so, the project was created!");
-        return;
+        output = Some(KojampReport::new(
+            ReportType::Warning,
+            "Couldn't Create The `.gitignore` File",
+            "This is probably due to memory issue
+Even so, the project was created!",
+        ));
     }
     path.pop();
+    output
 }
 
 fn print_success(new_was_called: bool, fields: ProjectFields) {
@@ -211,12 +203,18 @@ fn print_success(new_was_called: bool, fields: ProjectFields) {
     );
 }
 
-pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
+pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
     let (path, new_called) = match (cmd, ProjectPath::try_new()) {
-        (_, Err(_)) => return Err(Error::new(ErrorKind::Other, INVALID_CUR_DIR.to_text())),
+        (_, Err(_)) => {
+            return Err(Vec::from([KojampReport::new(
+                ReportType::Error,
+                "Couldn't get the current directory",
+                INVALID_CUR_DIR.to_text(),
+            )]))
+        }
         ("new", Ok(mut x)) => {
             if x.add_from_matching(matching).is_none() {
                 x.add_from_project_name(&name);
@@ -226,14 +224,18 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
         (_, Ok(x)) => (x, false),
     };
 
-    let tests = [
+    let tests: Vec<KojampReport> = [
         fields_validation::name_validation(&name),
         fields_validation::kind_validation(&kind),
         fields_validation::path_validation(&path, new_called),
-    ];
+    ]
+    .into_iter()
+    .filter(|cond| cond.is_err())
+    .map(|e| e.unwrap_err())
+    .collect();
 
-    if let Some(x) = tests.into_iter().find(|t| t.is_err()) {
-        return x;
+    if !tests.is_empty() {
+        return Err(tests);
     }
 
     let project_fields: ProjectFields = ProjectFields::new()
@@ -247,30 +249,32 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<(), Error> {
     let mut path = project_fields.get_path().get_inner();
 
     if new_called {
-        if let Err(x) = create_project_dir(&mut path) {
-            return Err(x);
-        }
+        create_project_dir(&mut path).map_err(|e| Vec::from([e]))?;
     }
 
-    if let Err(x) = create_src_dir(&mut path) {
-        return Err(x);
-    }
+    create_src_dir(&mut path).map_err(|e| Vec::from([e]))?;
 
-    if let Err(x) = create_main_source_file(&mut path, &project_fields) {
-        return Err(x);
-    }
+    create_main_source_file(&mut path, &project_fields).map_err(|e| Vec::from([e]))?;
 
-    if let Err(x) = create_toml_file(&mut path, &project_fields) {
-        return Err(x);
-    }
+    create_toml_file(&mut path, &project_fields).map_err(|e| Vec::from([e]))?;
 
-    create_readme_file(&mut path, &project_fields);
+    let mut output: Vec<KojampReport> = Vec::new();
+
+    create_readme_file(&mut path, &project_fields).map(|r| output.push(r));
 
     if project_fields.have_repo() {
-        initialize_git_and_create_gitignore(&mut path);
+        initialize_git_and_create_gitignore(&mut path).map(|r| output.push(r));
     }
 
+    output.push(KojampReport::new(
+        ReportType::Success,
+        format!(
+            "`{}` Project Created",
+            project_fields.get_name().get_inner()
+        ),
+        "",
+    ));
     print_success(new_called, project_fields);
 
-    Ok(())
+    Ok(output)
 }

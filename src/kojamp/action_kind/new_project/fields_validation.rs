@@ -1,6 +1,8 @@
 use super::{ProjectKind, ProjectName, ProjectPath};
-use crate::utils::array::ToText;
-use std::io::{Error, ErrorKind};
+use crate::{
+    essentials::{KojampReport, ReportType},
+    utils::array::ToText,
+};
 
 const INVALID_NAME: [&str; 15] = [
     "Couldn't create a new project due to invalid name!",
@@ -74,33 +76,43 @@ const INVALID_PATH_WHEN_INIT: [&str; 7] = [
     "the program's path validation tests!",
 ];
 
-pub fn name_validation(name: &ProjectName) -> Result<(), Error> {
+pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
     if !name.is_valid() {
-        Err(Error::new(ErrorKind::InvalidInput, INVALID_NAME.to_text()))
-    } else {
-        Ok(())
-    }
-}
-
-pub fn kind_validation(kind: &ProjectKind) -> Result<(), Error> {
-    if !kind.is_valid() {
-        Err(Error::new(ErrorKind::InvalidInput, INVALID_KIND.to_text()))
-    } else {
-        Ok(())
-    }
-}
-
-pub fn path_validation(path: &ProjectPath, new_called: bool) -> Result<(), Error> {
-    if !path.is_valid(!new_called) {
-        Err(Error::new(
-            ErrorKind::Other,
-            if new_called {
-                INVALID_PATH_WHEN_NEW.to_text()
-            } else {
-                INVALID_PATH_WHEN_INIT.to_text()
-            },
+        Err(KojampReport::new(
+            ReportType::Error,
+            "Invalid Project Name",
+            INVALID_NAME.to_text(),
         ))
     } else {
         Ok(())
+    }
+}
+
+pub fn kind_validation(kind: &ProjectKind) -> Result<(), KojampReport> {
+    if !kind.is_valid() {
+        Err(KojampReport::new(
+            ReportType::Error,
+            "Invalid Project Kind",
+            INVALID_KIND.to_text(),
+        ))
+    } else {
+        Ok(())
+    }
+}
+
+pub fn path_validation(path: &ProjectPath, new_called: bool) -> Result<(), KojampReport> {
+    let invalid_path_title = "Invalid Project Path";
+    match (path.is_valid(!new_called), new_called) {
+        (true, _) => Ok(()),
+        (_, true) => Err(KojampReport::new(
+            ReportType::Error,
+            invalid_path_title,
+            INVALID_PATH_WHEN_NEW.to_text(),
+        )),
+        _ => Err(KojampReport::new(
+            ReportType::Error,
+            invalid_path_title,
+            INVALID_PATH_WHEN_INIT.to_text(),
+        )),
     }
 }
