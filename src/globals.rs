@@ -16,6 +16,7 @@ pub const FAILURE_EXIT_STATUS: i32 = 1;
 
 pub const ERROR_BADGE: &str = "error";
 pub const WARNING_BADGE: &str = "warning";
+pub const SUCCESS_BADGE: &str = "success";
 
 pub const SRC_DIR: &str = "src";
 pub const JAVA_FILE_EXTENSION: &str = "java";
