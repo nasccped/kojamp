@@ -1,7 +1,8 @@
 use clap::Command;
+use colored::Colorize;
 
 pub fn cmd() -> Command {
     Command::new("run")
         .alias("r")
-        .about("(Build and) run the project bytecode from the current directory")
+        .about("Being developed".bright_red().to_string())
 }
