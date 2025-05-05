@@ -212,11 +212,11 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     let kind = ProjectKind::from(matching);
     let (path, new_called) = match (cmd, ProjectPath::try_new()) {
         (_, Err(_)) => {
-            return Err(Vec::from([KojampReport::new(
+            return Err(vec![KojampReport::new(
                 ReportType::Error,
                 "Couldn't get the current directory",
                 messages::invalid_cur_dir(),
-            )]))
+            )])
         }
         ("new", Ok(mut x)) => {
             if x.add_from_matching(matching).is_none() {
