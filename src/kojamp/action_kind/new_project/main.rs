@@ -3,7 +3,7 @@ use super::{
     ProjectName, ProjectPath,
 };
 use crate::{
-    essentials::report_types::{KojampReport, ReportType},
+    essentials::report::types::{KojampReport, ReportType},
     globals::{
         GIT_COMMAND, GIT_IGNORE_FILE_FULLNAME, GIT_INITIALIZATION_ARG, JAVA_FILE_EXTENSION,
         KOTLIN_FILE_EXTENSION, MARKDOWN_FILE_EXTENSION, PROGRAM_REPO_URL, PROGRAM_TOML_FILE_NAME,

@@ -1,6 +1,6 @@
 use super::action;
 use crate::{
-    essentials::report_types::{KojampReport, ReportType},
+    essentials::report::types::{KojampReport, ReportType},
     globals::{FAILURE_EXIT_STATUS, PROGRAM_REPO_URL, SUCCESS_EXIT_STATUS},
     utils::array::ToText,
 };

@@ -1,8 +1,8 @@
 use super::{ProjectKind, ProjectName, ProjectPath};
 use crate::{
-    essentials::{
-        report_messages,
-        report_types::{KojampReport, ReportType},
+    essentials::report::{
+        messages,
+        types::{KojampReport, ReportType},
     },
     utils::array::ToText,
 };
@@ -66,7 +66,7 @@ pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
         Err(KojampReport::new(
             ReportType::Error,
             "Invalid Project Name",
-            report_messages::invalid_project_name(name.get_inner()),
+            messages::invalid_project_name(name.get_inner()),
         ))
     } else {
         Ok(())
