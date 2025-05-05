@@ -3,7 +3,10 @@ use super::{
     ProjectName, ProjectPath,
 };
 use crate::{
-    essentials::report::types::{KojampReport, ReportType},
+    essentials::report::{
+        messages,
+        types::{KojampReport, ReportType},
+    },
     globals::{
         GIT_COMMAND, GIT_IGNORE_FILE_FULLNAME, GIT_INITIALIZATION_ARG, JAVA_FILE_EXTENSION,
         KOTLIN_FILE_EXTENSION, MARKDOWN_FILE_EXTENSION, PROGRAM_REPO_URL, PROGRAM_TOML_FILE_NAME,
@@ -212,7 +215,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
             return Err(Vec::from([KojampReport::new(
                 ReportType::Error,
                 "Couldn't get the current directory",
-                INVALID_CUR_DIR.to_text(),
+                messages::invalid_cur_dir(),
             )]))
         }
         ("new", Ok(mut x)) => {
