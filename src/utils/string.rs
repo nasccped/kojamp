@@ -27,7 +27,7 @@ impl<T: AsRef<str>> StringTransformation for T {
             .map(|c| if c.is_digit(36) { c } else { ' ' })
             .collect();
 
-        let camel_case: String = valid_radix
+        let mut camel_case: String = valid_radix
             .split_whitespace()
             .map(|word| word[..1].to_uppercase() + word[1..].to_lowercase().as_str())
             .collect();
@@ -45,6 +45,16 @@ impl<T: AsRef<str>> StringTransformation for T {
             .chars()
             .position(|c| !('0'..='9').contains(&c))
             .unwrap_or(0);
+
+        if start_index > 0 {
+            let charac = camel_case
+                .chars()
+                .nth(start_index)
+                .unwrap()
+                .to_uppercase()
+                .to_string();
+            camel_case.replace_range(start_index..(start_index + 1), charac.as_ref());
+        }
 
         camel_case[start_index..].into()
     }
