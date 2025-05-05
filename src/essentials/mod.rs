@@ -1,3 +1,4 @@
-mod kojamp_report;
+pub mod kojamp_report;
 
-pub use kojamp_report::{KojampReport, ReportType};
+pub mod report_messages;
+pub use kojamp_report as report_types;
