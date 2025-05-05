@@ -18,7 +18,7 @@ impl ProjectName {
         let next = self_chars.next().unwrap();
 
         // the first char should be uppercase
-        if next.is_lowercase() {
+        if next.is_lowercase() || ('1'..='9').contains(&next) {
             return false;
         }
 
