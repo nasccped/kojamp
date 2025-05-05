@@ -12,7 +12,8 @@ where
         "\
         The `{}` project name isn't allowed!\n\n\
         The project name should be {} and have no {}.\n\
-        {}{} numeric start isn't allowed too\n\n\
+        {}{} numeric start isn't allowed too\n\
+        \n\
         Consider using `{}` instead!",
         name.bright_red(),
         "Camel Case".bright_cyan(),
