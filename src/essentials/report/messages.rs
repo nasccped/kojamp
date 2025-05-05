@@ -33,7 +33,8 @@ where
 
     format!(
         "\
-        The `{}` project name isn't allowed!\n\n\
+        The `{}` project name isn't allowed!\n\
+        \n\
         The project name should be {} and have no {}.\n\
         {}{} numeric start isn't allowed too\n\
         \n\
