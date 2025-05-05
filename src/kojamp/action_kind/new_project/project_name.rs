@@ -15,10 +15,10 @@ impl ProjectName {
         let mut self_chars = self.0.as_ref().chars();
 
         // NOTE: unwrap is safe here 'cause we have already checked if inner value is empty
-        let next = self_chars.next().unwrap();
+        let begin = self_chars.next().unwrap();
 
         // the first char should be uppercase
-        if next.is_lowercase() || ('1'..='9').contains(&next) {
+        if !('A'..='Z').contains(&begin) {
             return false;
         }
 
