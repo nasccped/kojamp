@@ -1,26 +1,11 @@
 use super::{ProjectKind, ProjectName, ProjectPath};
 use crate::{
-    essentials::{KojampReport, ReportType},
+    essentials::{
+        report_messages,
+        report_types::{KojampReport, ReportType},
+    },
     utils::array::ToText,
 };
-
-const INVALID_NAME: [&str; 15] = [
-    "Couldn't create a new project due to invalid name!",
-    "",
-    "Accordingly to Java/Kotlin rules, a file/class name should",
-    "be &&",
-    "\x1b[3;96mCamelCased\x1b[0m &&",
-    "and only alpha numeric. So, your project name",
-    "should start with an uppercase letter and have no",
-    "special chars. &&",
-    "\x1b[3;90m(accents, whitespaces, ... you get it)\x1b[0m",
-    "",
-    "Still, you can specify the path name by using `&&",
-    "\x1b[92m--path\x1b[0m \x1b[93m<PATH_HERE>\x1b[0m` &&",
-    "flag.",
-    "\x1b[3;96mNOTE:\x1b[0m &&",
-    "\x1b[3;90m(`--path` flag is only available for the `new` subcommand)\x1b[0m",
-];
 
 const INVALID_KIND: [&str; 15] = [
     "Couldn't create a new project due to invalid project kind!",
@@ -81,7 +66,7 @@ pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
         Err(KojampReport::new(
             ReportType::Error,
             "Invalid Project Name",
-            INVALID_NAME.to_text(),
+            report_messages::invalid_project_name(name.get_inner()),
         ))
     } else {
         Ok(())
