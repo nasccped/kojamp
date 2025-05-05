@@ -21,41 +21,15 @@ impl<T: AsRef<str>> StringTransformation for T {
     }
 
     fn to_valid_camel_case(self) -> String {
-        let valid_radix: String = self
-            .as_ref()
-            .chars()
-            .map(|c| if c.is_digit(36) { c } else { ' ' })
-            .collect();
+        let original = self.as_ref();
 
-        let mut camel_case: String = valid_radix
-            .split_whitespace()
-            .map(|word| word[..1].to_uppercase() + word[1..].to_lowercase().as_str())
-            .collect();
+        let re = Regex::new(r"([A-Z][a-z]+|\d+|[a-z]+)").unwrap();
 
-        let early_returning_conditions = [
-            camel_case.is_empty(),
-            camel_case.chars().all(|c| ('0'..='9').contains(&c)),
-        ];
+        let parts: Vec<&str> = re.find_iter(original).map(|i| i.as_str()).collect();
 
-        if early_returning_conditions.iter().any(|&c| c) {
-            return "SomeCoolProject".into();
-        }
-
-        let start_index: usize = camel_case
-            .chars()
-            .position(|c| !('0'..='9').contains(&c))
-            .unwrap_or(0);
-
-        if start_index > 0 {
-            let charac = camel_case
-                .chars()
-                .nth(start_index)
-                .unwrap()
-                .to_uppercase()
-                .to_string();
-            camel_case.replace_range(start_index..(start_index + 1), charac.as_ref());
-        }
-
-        camel_case[start_index..].into()
+        parts
+            .into_iter()
+            .map(|word| word[..1].to_uppercase() + &word[1..])
+            .collect()
     }
 }
