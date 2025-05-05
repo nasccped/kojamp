@@ -1,6 +1,29 @@
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
 
+pub fn invalid_cur_dir() -> String {
+    format!(
+        "\
+        The `{}` function returned an error!\n\
+        \n\
+        The reason may be:\n\
+        ... {} The current path doesn't exists\n\
+        ... {} You doesn't have enough permissions {}",
+        format!(
+            "{}{}{}{}{}{}",
+            "std".bright_red(),
+            "::".bright_white(),
+            "env".bright_red(),
+            "::".bright_white(),
+            "current_dir".bright_red(),
+            "()".bright_white()
+        ),
+        "a)".bright_cyan(),
+        "b)".bright_cyan(),
+        "(no sudo or admin)".bright_black()
+    )
+}
+
 pub fn invalid_project_name<T>(name: T) -> String
 where
     T: AsRef<str>,
