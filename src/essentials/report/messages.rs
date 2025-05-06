@@ -35,15 +35,19 @@ where
         "\
         The `{}` project name isn't allowed!\n\
         \n\
-        The project name should be {} and have no {}.\n\
-        {}{} numeric start isn't allowed too\n\
+        The project name:\n\
+        ... {} Should be {}\n\
+        ... {} Have no {}\n\
+        ... {} Start with a letter {}\n\
         \n\
         Consider using `{}` instead!",
         name.bright_red(),
+        "a)".bright_cyan(),
         "Camel Case".bright_cyan(),
-        "Special Chars".bright_cyan(),
-        "note".bright_cyan(),
-        ":".bright_white(),
+        "a)".bright_cyan(),
+        "special chars".bright_cyan(),
+        "c)".bright_cyan(),
+        "(A-Z)".bright_cyan(),
         fixed_name.bright_green()
     )
 }
