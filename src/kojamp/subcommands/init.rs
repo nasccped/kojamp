@@ -33,5 +33,11 @@ pub fn cmd() -> Command {
             .required(false)
             .action(ArgAction::SetFalse)
             .help("No git repo initialization when starting new project"),
+        Arg::new("force")
+            .long("force")
+            .short('F')
+            .required(false)
+            .action(ArgAction::SetTrue)
+            .help("Force project initialization in a non empty dir"),
     ])
 }
