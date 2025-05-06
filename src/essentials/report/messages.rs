@@ -51,3 +51,28 @@ where
         fixed_name.bright_green()
     )
 }
+
+pub fn could_not_read_dir_content() -> String {
+    format!(
+        "\
+        This can be due to {} issues!",
+        "no permission".bright_cyan()
+    )
+}
+
+pub fn non_empty_dir_initializing() -> String {
+    format!(
+        "\
+        You're trying to initialize the project \n\
+        in a '{}' directory.\n\
+        \n\
+        You can still force the initialization by \n\
+        using the `{}` flag. All the files at current\n\
+        dir will be preserved!\n\
+        \n\
+        {}: `src/` and `Kojamp.toml` shouldn't be present",
+        "non empty".bright_red(),
+        "--force".bright_yellow(),
+        "note".bright_cyan(),
+    )
+}
