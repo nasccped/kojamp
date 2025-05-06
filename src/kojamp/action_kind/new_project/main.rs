@@ -22,16 +22,6 @@ use std::{
     process::{Command, Stdio},
 };
 
-const INVALID_CUR_DIR: [&str; 7] = [
-    "\x1b[91mstd\x1b[97m::\x1b[91menv\x1b[97m::\x1b[91mcurrent_dir()\x1b[0m &&",
-    "returned an error!",
-    "",
-    "The reasons may be:",
-    "  \x1b[96ma)\x1b[0m The current path doesn't exists",
-    "  \x1b[96mb)\x1b[0m You don't have enough permissions &&",
-    "\x1b[3;90m(no sudo or Admin)\x1b[0m",
-];
-
 const COULD_NOT_CREATE_PROJECT_DIR: [&str; 2] = [
     "Couldn't create the project directory! (\x1b[92m`kojamp new`\x1b[0m called)",
     "The reason can be due to memory issue.",
