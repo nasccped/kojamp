@@ -168,6 +168,10 @@ Even so, the project was created!",
     output
 }
 
+fn dir_is_empty(path: &PathBuf) -> Result<bool, ()> {
+    Ok(fs::read_dir(path).map_err(|_| ())?.next().is_none())
+}
+
 fn print_success(new_was_called: bool, fields: ProjectFields) {
     println!("{}!", "Success".bright_green());
     println!();
@@ -236,12 +240,35 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         .set_path(path)
         .set_authors(ProjectAuthors::from(matching))
         .set_repo(matching.get_flag("no-git"))
+        .set_force_mode(if new_called {
+            None
+        } else {
+            Some(matching.get_flag("force"))
+        })
         .build();
 
     let mut path = project_fields.get_path().get_inner();
 
     if new_called {
-        create_project_dir(&mut path).map_err(|e| Vec::from([e]))?;
+        create_project_dir(&path).map_err(|e| Vec::from([e]))?;
+    }
+
+    match (dir_is_empty(&path), project_fields.is_forced()) {
+        (Err(_), _) => {
+            return Err(vec![KojampReport::new(
+                ReportType::Error,
+                "Couldn't Read Project Folder",
+                messages::could_not_read_dir_content(),
+            )])
+        }
+        (Ok(false), false) => {
+            return Err(vec![KojampReport::new(
+                ReportType::Error,
+                "Non Empty Dir",
+                messages::non_empty_dir_initializing(),
+            )])
+        }
+        _ => {}
     }
 
     create_src_dir(&mut path).map_err(|e| Vec::from([e]))?;
