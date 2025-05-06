@@ -10,6 +10,7 @@ pub struct ProjectFieldsInnerBuilder {
     project_path: Option<ProjectPath>,
     project_authors: Option<ProjectAuthors>,
     project_repo: Option<bool>,
+    force_mode: Option<Option<bool>>,
 }
 
 impl ProjectFieldsInnerBuilder {
@@ -38,6 +39,11 @@ impl ProjectFieldsInnerBuilder {
         self
     }
 
+    pub fn set_force_mode(mut self, forced: Option<bool>) -> Self {
+        self.force_mode = Some(forced);
+        self
+    }
+
     pub fn build(self) -> ProjectFields {
         let project_name = self.project_name.expect(
             "Couldn't take ProjectName. You probably missed the ProjectFieldsPrivateBuilder.set_name function",
@@ -54,6 +60,9 @@ impl ProjectFieldsInnerBuilder {
         let project_repo = self.project_repo.expect(
             "Couldn't take bool for project_repo. You probably missed the ProjectFieldsPrivateBuilder.set_repo function",
         );
+        let force_mode = self.force_mode.expect(
+            "Couldn't take Option<bool> for force_mode. You probably missed the ProjectFieldsPrivateBuilder.set_force_mode function",
+        );
 
         ProjectFields {
             project_name,
@@ -61,6 +70,7 @@ impl ProjectFieldsInnerBuilder {
             project_path,
             project_authors,
             project_repo,
+            force_mode,
         }
     }
 }
@@ -71,6 +81,7 @@ pub struct ProjectFields {
     project_path: ProjectPath,
     project_authors: ProjectAuthors,
     project_repo: bool,
+    force_mode: Option<bool>,
 }
 
 impl ProjectFields {
@@ -96,5 +107,9 @@ impl ProjectFields {
 
     pub fn have_repo(&self) -> bool {
         self.project_repo
+    }
+
+    pub fn is_forced(&self) -> bool {
+        matches!(self.force_mode, Some(true))
     }
 }
