@@ -69,7 +69,7 @@ impl ProjectPath {
     pub fn get_inner(&self) -> PathBuf {
         let path = match &self.specified_path {
             Some(x) => x.as_ref(),
-            _ => "",
+            _ => ".",
         };
         PathBuf::from(path)
     }
