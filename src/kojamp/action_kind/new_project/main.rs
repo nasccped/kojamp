@@ -211,13 +211,13 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
-    let (path, new_called) = if cmd == "new" {
+    let new_called = if cmd == "new" {
         if path.add_from_matching(matching).is_none() {
             path.add_from_project_name(&name);
         }
-        (path, true)
+        true
     } else {
-        (path, false)
+        false
     };
 
     let tests: Vec<KojampReport> = [
