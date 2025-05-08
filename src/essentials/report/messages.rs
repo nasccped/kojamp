@@ -56,7 +56,7 @@ pub fn could_not_read_dir_content() -> String {
     format!(
         "\
         This can be due to {} issues!",
-        "no permission".bright_cyan()
+        "permission".bright_cyan()
     )
 }
 
