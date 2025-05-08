@@ -88,3 +88,14 @@ where
         "memory".bright_cyan()
     )
 }
+
+pub fn invalid_project_kind(kind_name: &str) -> String {
+    format!(
+        "\
+        `{}` or `{}` kind was expected\n\
+        but `{}` was found!",
+        "Java".bright_cyan(),
+        "Kotlin".bright_cyan(),
+        kind_name.bright_red()
+    )
+}
