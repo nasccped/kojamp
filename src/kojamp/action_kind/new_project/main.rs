@@ -49,14 +49,14 @@ fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
         .unwrap_or("");
 
     if fs::create_dir(path).is_err() {
-        Err(KojampReport::new(
+        return Err(KojampReport::new(
             ReportType::Error,
             "Couldn't Create The Directory",
             messages::could_not_create_dir_file(optional_path),
-        ))
-    } else {
-        Ok(())
+        ));
     }
+
+    Ok(())
 }
 
 fn create_src_dir(path: &mut PathBuf) -> Result<(), KojampReport> {
