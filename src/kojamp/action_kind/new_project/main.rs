@@ -22,11 +22,6 @@ use std::{
     process::{Command, Stdio},
 };
 
-const COULD_NOT_CREATE_PROJECT_DIR: [&str; 2] = [
-    "Couldn't create the project directory! (\x1b[92m`kojamp new`\x1b[0m called)",
-    "The reason can be due to memory issue.",
-];
-
 const COULD_NOT_CREATE_SRC_DIR: [&str; 2] = [
     "Couldn't create src directory!",
     "The reason can be due to memory issue.",
@@ -48,11 +43,16 @@ const COULD_NOT_CREATE_TOML: [&str; 6] = [
 ];
 
 fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
+    let optional_path: &str = path
+        .file_name()
+        .map(|f| f.to_str().unwrap_or(""))
+        .unwrap_or("");
+
     if fs::create_dir(path).is_err() {
         Err(KojampReport::new(
             ReportType::Error,
-            "Couldn't Create The Project Directory",
-            COULD_NOT_CREATE_PROJECT_DIR.to_text(),
+            "Couldn't Create The Directory",
+            messages::could_not_create_dir_file(optional_path),
         ))
     } else {
         Ok(())
