@@ -7,24 +7,6 @@ use crate::{
     utils::array::ToText,
 };
 
-const INVALID_KIND: [&str; 15] = [
-    "Couldn't create a new project due to invalid project kind!",
-    "",
-    "This is a Java/Kotlin project manager, so these",
-    "kinds are expected, but an invalid one was found!",
-    "",
-    "You can specify a project kind by using",
-    "the `\x1b[92m--kind \x1b[93m<PROJECT_KIND>\x1b[0m` &&",
-    "flag.",
-    "",
-    "\x1b[3;96mNOTE:\x1b[0m &&",
-    "\x1b[3;93m<PROJECT_KIND>\x1b[0m\x1b[3m &&",
-    "can only be &&",
-    "`\x1b[3;94mJava\x1b[0m`\x1b[3m or &&",
-    "`\x1b[3;94mKotlin\x1b[0m\x1b[3m` &&",
-    "\x1b[90m(No case sensitive)\x1b[0m",
-];
-
 const INVALID_PATH_WHEN_NEW: [&str; 23] = [
     "Couldn't create a project due to invalid path!",
     "The path returned fail when doing validation tests.",
@@ -75,10 +57,11 @@ pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
 
 pub fn kind_validation(kind: &ProjectKind) -> Result<(), KojampReport> {
     if !kind.is_valid() {
+        let kind_value: &str = From::from(kind);
         return Err(KojampReport::new(
             ReportType::Error,
             "Invalid Project Kind",
-            INVALID_KIND.to_text(),
+            messages::invalid_project_kind(kind_value),
         ));
     }
 
