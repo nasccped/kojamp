@@ -63,26 +63,26 @@ const INVALID_PATH_WHEN_INIT: [&str; 7] = [
 
 pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
     if !name.is_valid() {
-        Err(KojampReport::new(
+        return Err(KojampReport::new(
             ReportType::Error,
             "Invalid Project Name",
             messages::invalid_project_name(name.get_inner()),
-        ))
-    } else {
-        Ok(())
+        ));
     }
+
+    Ok(())
 }
 
 pub fn kind_validation(kind: &ProjectKind) -> Result<(), KojampReport> {
     if !kind.is_valid() {
-        Err(KojampReport::new(
+        return Err(KojampReport::new(
             ReportType::Error,
             "Invalid Project Kind",
             INVALID_KIND.to_text(),
-        ))
-    } else {
-        Ok(())
+        ));
     }
+
+    Ok(())
 }
 
 pub fn path_validation(path: &ProjectPath, new_called: bool) -> Result<(), KojampReport> {
