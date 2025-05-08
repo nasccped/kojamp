@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
 
@@ -97,5 +99,28 @@ pub fn invalid_project_kind(kind_name: &str) -> String {
         "Java".bright_cyan(),
         "Kotlin".bright_cyan(),
         kind_name.bright_red()
+    )
+}
+
+pub fn invalid_project_path(path: &PathBuf) -> String {
+    format!(
+        "\
+        The `{}` path\n\
+        returned fail when testing validation.\n\
+        \n\
+        This can be due to some reasons like:\n\
+        ... {} You're near to the root of your file storage\n\
+        ... {} The path already exists (when {} a new project)\n\
+        ... {} The path doesn't exists (when {} a new project)\n\
+        \n\
+        If you're creating a new project, consider specify another\n\
+        path by using the `{}` flag",
+        format!("{:?}", path).bright_red(),
+        "a)".bright_cyan(),
+        "b)".bright_cyan(),
+        "creating".bright_cyan(),
+        "c)".bright_cyan(),
+        "initializing".bright_cyan(),
+        "--path".bright_yellow()
     )
 }
