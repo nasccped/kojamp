@@ -1,3 +1,5 @@
+use std::{ffi::OsStr, path::PathBuf};
+
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
 
@@ -74,5 +76,17 @@ pub fn non_empty_dir_initializing() -> String {
         "non empty".bright_red(),
         "--force".bright_yellow(),
         "note".bright_cyan(),
+    )
+}
+
+pub fn could_not_create_dir_file(target: &str) -> String
+where
+{
+    format!(
+        "\
+        Error trying to create `{}`.\n\
+        Probably due to {} issue!",
+        target.bright_red(),
+        "memory".bright_cyan()
     )
 }
