@@ -8,7 +8,7 @@ use toml;
 #[derive(Serialize)]
 struct ProjectToml<'a> {
     name: &'a str,
-    kind: &'static str,
+    kind: &'a str,
     authors: Option<Vec<Rc<str>>>,
 }
 
@@ -23,7 +23,7 @@ impl<'a> From<&'a ProjectFields> for MainToml<'a> {
         Self {
             values: ProjectToml {
                 name: value.get_name().get_inner(),
-                kind: value.get_kind().as_str(),
+                kind: From::from(value.get_kind()),
                 authors: value.get_authors().get_inner(),
             },
         }
