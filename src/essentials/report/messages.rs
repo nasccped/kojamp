@@ -6,7 +6,7 @@ use colored::Colorize;
 pub fn invalid_cur_dir() -> String {
     format!(
         "\
-        The `{}` function returned an error!\n\
+        The `{}` function returned an error\n\
         \n\
         The reason may be:\n\
         ... {} The current path doesn't exists\n\
@@ -35,14 +35,14 @@ where
 
     format!(
         "\
-        The `{}` project name isn't allowed!\n\
+        The `{}` project name isn't allowed\n\
         \n\
         The project name:\n\
         ... {} Should be {}\n\
         ... {} Have no {}\n\
         ... {} Start with a letter {}\n\
         \n\
-        Consider using `{}` instead!",
+        Consider using `{}` instead",
         name.bright_red(),
         "a)".bright_cyan(),
         "Camel Case".bright_cyan(),
@@ -57,7 +57,7 @@ where
 pub fn could_not_read_dir_content() -> String {
     format!(
         "\
-        This can be due to {} issues!",
+        This can be due to {} issues",
         "permission".bright_cyan()
     )
 }
@@ -66,11 +66,11 @@ pub fn non_empty_dir_initializing() -> String {
     format!(
         "\
         You're trying to initialize the project \n\
-        in a '{}' directory.\n\
+        in a '{}' directory\n\
         \n\
         You can still force the initialization by \n\
         using the `{}` flag. All the files at current\n\
-        dir will be preserved!\n\
+        dir will be preserved\n\
         \n\
         {}: `src/` and `Kojamp.toml` shouldn't be present",
         "non empty".bright_red(),
@@ -84,8 +84,8 @@ where
 {
     format!(
         "\
-        Error trying to create `{}`.\n\
-        Probably due to {} issue!",
+        Error trying to create `{}`\n\
+        Probably due to {} issue",
         target.bright_red(),
         "memory".bright_cyan()
     )
@@ -95,7 +95,7 @@ pub fn invalid_project_kind(kind_name: &str) -> String {
     format!(
         "\
         `{}` or `{}` kind was expected\n\
-        but `{}` was found!",
+        but `{}` was found",
         "Java".bright_cyan(),
         "Kotlin".bright_cyan(),
         kind_name.bright_red()
@@ -106,7 +106,7 @@ pub fn invalid_project_path(path: &PathBuf) -> String {
     format!(
         "\
         The `{}` path\n\
-        returned fail when testing validation.\n\
+        returned fail when testing validation\n\
         \n\
         This can be due to some reasons like:\n\
         ... {} You're near to the root of your file storage\n\
