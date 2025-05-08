@@ -1,5 +1,3 @@
-use std::{ffi::OsStr, path::PathBuf};
-
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
 
