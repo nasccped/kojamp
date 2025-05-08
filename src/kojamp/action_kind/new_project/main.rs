@@ -22,11 +22,6 @@ use std::{
     process::{Command, Stdio},
 };
 
-const COULD_NOT_CREATE_SRC_DIR: [&str; 2] = [
-    "Couldn't create src directory!",
-    "The reason can be due to memory issue.",
-];
-
 const COULD_NOT_CREATE_MAIN_SOURCE_FILE: [&str; 3] = [
     "Couldn't create the main file &&",
     "\x1b[97m(\x1b[91m.java\x1b[97m/\x1b[91m.kt\x1b[97m)\x1b[0m!",
@@ -60,14 +55,22 @@ fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
 }
 
 fn create_src_dir(path: &mut PathBuf) -> Result<(), KojampReport> {
+    let optional_path: String = path
+        .file_name()
+        .and_then(|f| f.to_str())
+        .unwrap_or("")
+        .to_owned();
+
     path.push(SRC_DIR);
+
     if fs::create_dir(&path).is_err() {
         return Err(KojampReport::new(
             ReportType::Error,
             "Couldn't Create The `src` Directory",
-            COULD_NOT_CREATE_SRC_DIR.to_text(),
+            messages::could_not_create_dir_file(&optional_path),
         ));
     }
+
     path.pop();
     Ok(())
 }
