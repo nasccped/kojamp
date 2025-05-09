@@ -8,7 +8,7 @@ impl<const N: usize> IntoReasons for [String; N] {
     fn into_reasons(self) -> impl Iterator<Item = String> {
         self.into_iter()
             .zip('a'..='z')
-            .map(|(ind, r)| format!("... {} {}", (ind.to_string() + ")").bright_cyan(), r))
+            .map(|(r, ind)| format!("... {} {}", (ind.to_string() + ")").bright_cyan(), r))
             .into_iter()
     }
 }
