@@ -1,28 +1,38 @@
-use std::path::PathBuf;
-
+use super::util::IntoReasons;
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
+use std::path::PathBuf;
 
 pub fn invalid_cur_dir() -> String {
+    let function_name = format!(
+        "{}{}{}{}{}{}",
+        "std".bright_red(),
+        "::".bright_white(),
+        "env".bright_red(),
+        "::".bright_white(),
+        "current_dir".bright_red(),
+        "()".bright_white(),
+    );
+
+    let mut reasons = [
+        String::from("The current path doesn't exists"),
+        format!(
+            "You doesn't have enough permissions {}",
+            "(no sudo or admin)".bright_black()
+        ),
+    ]
+    .into_reasons();
+
     format!(
         "\
         The `{}` function returned an error\n\
         \n\
         The reason may be:\n\
-        ... {} The current path doesn't exists\n\
-        ... {} You doesn't have enough permissions {}",
-        format!(
-            "{}{}{}{}{}{}",
-            "std".bright_red(),
-            "::".bright_white(),
-            "env".bright_red(),
-            "::".bright_white(),
-            "current_dir".bright_red(),
-            "()".bright_white()
-        ),
-        "a)".bright_cyan(),
-        "b)".bright_cyan(),
-        "(no sudo or admin)".bright_black()
+        {}\n\
+        {}",
+        function_name,
+        reasons.next().unwrap(),
+        reasons.next().unwrap(),
     )
 }
 
@@ -33,23 +43,27 @@ where
     let name = name.as_ref();
     let fixed_name = name.to_valid_camel_case();
 
+    let mut reasons = [
+        format!("Should be {}", "camel case".bright_cyan()),
+        format!("Have no {}", "special chars".bright_cyan()),
+        format!("Start with a letter {}", "(A-Z)".bright_cyan()),
+    ]
+    .into_reasons();
+
     format!(
         "\
         The `{}` project name isn't allowed\n\
         \n\
         The project name:\n\
-        ... {} Should be {}\n\
-        ... {} Have no {}\n\
-        ... {} Start with a letter {}\n\
+        {}\n\
+        {}\n\
+        {}\n\
         \n\
         Consider using `{}` instead",
         name.bright_red(),
-        "a)".bright_cyan(),
-        "Camel Case".bright_cyan(),
-        "a)".bright_cyan(),
-        "special chars".bright_cyan(),
-        "c)".bright_cyan(),
-        "(A-Z)".bright_cyan(),
+        reasons.next().unwrap(),
+        reasons.next().unwrap(),
+        reasons.next().unwrap(),
         fixed_name.bright_green()
     )
 }
@@ -63,19 +77,21 @@ pub fn could_not_read_dir_content() -> String {
 }
 
 pub fn non_empty_dir_initializing() -> String {
+    let non_empty = "non empty".bright_red();
+    let force = "--force".bright_yellow();
+    let note = "note".bright_cyan();
+
     format!(
         "\
         You're trying to initialize the project \n\
-        in a '{}' directory\n\
+        in a {} directory\n\
         \n\
         You can still force the initialization by \n\
         using the `{}` flag. All the files at current\n\
         dir will be preserved\n\
         \n\
         {}: `src/` and `Kojamp.toml` shouldn't be present",
-        "non empty".bright_red(),
-        "--force".bright_yellow(),
-        "note".bright_cyan(),
+        non_empty, force, note
     )
 }
 
@@ -92,35 +108,53 @@ where
 }
 
 pub fn invalid_project_kind(kind_name: &str) -> String {
+    let java = "Java".bright_blue();
+    let kotlin = "Kotlin".bright_blue();
+    let kind_name = kind_name.bright_blue();
+
     format!(
         "\
         `{}` or `{}` kind was expected\n\
         but `{}` was found",
-        "Java".bright_cyan(),
-        "Kotlin".bright_cyan(),
+        java,
+        kotlin,
         kind_name.bright_red()
     )
 }
 
 pub fn invalid_project_path(path: &PathBuf) -> String {
+    let path = format!("{:?}", path).bright_red();
+    let path_flag = "--path".bright_yellow();
+
+    let mut reasons = [
+        String::from("You're near to the root of your file storage"),
+        format!(
+            "The path already exists (when {} a new project)",
+            "creating".bright_cyan()
+        ),
+        format!(
+            "The path doesn't exists (when {} a new project)",
+            "initializing".bright_cyan()
+        ),
+    ]
+    .into_reasons();
+
     format!(
         "\
         The `{}` path\n\
         returned fail when testing validation\n\
         \n\
         This can be due to some reasons like:\n\
-        ... {} You're near to the root of your file storage\n\
-        ... {} The path already exists (when {} a new project)\n\
-        ... {} The path doesn't exists (when {} a new project)\n\
+        {}\n\
+        {}\n\
+        {}\n\
         \n\
         If you're creating a new project, consider specify another\n\
         path by using the `{}` flag",
-        format!("{:?}", path).bright_red(),
-        "a)".bright_cyan(),
-        "b)".bright_cyan(),
-        "creating".bright_cyan(),
-        "c)".bright_cyan(),
-        "initializing".bright_cyan(),
-        "--path".bright_yellow()
+        path,
+        reasons.next().unwrap(),
+        reasons.next().unwrap(),
+        reasons.next().unwrap(),
+        path_flag
     )
 }
