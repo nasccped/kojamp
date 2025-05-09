@@ -8,7 +8,7 @@ pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
     if !name.is_valid() {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Invalid Project Name",
+            "Invalid project name",
             messages::invalid_project_name(name.get_inner()),
         ));
     }
@@ -21,7 +21,7 @@ pub fn kind_validation(kind: &ProjectKind) -> Result<(), KojampReport> {
         let kind_value: &str = From::from(kind);
         return Err(KojampReport::new(
             ReportType::Error,
-            "Invalid Project Kind",
+            "Invalid project kind",
             messages::invalid_project_kind(kind_value),
         ));
     }
@@ -33,7 +33,7 @@ pub fn path_validation(path: &ProjectPath, new_called: bool) -> Result<(), Kojam
     if !path.is_valid(!new_called) {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Invalid Project Path",
+            "Invalid project path",
             messages::invalid_project_path(&path.get_absolute_path()),
         ));
     }
