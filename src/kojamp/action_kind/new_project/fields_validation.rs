@@ -4,11 +4,15 @@ use crate::essentials::report::{
     types::{KojampReport, ReportType},
 };
 
+const INVALID_PROJECT_NAME_TITLE: &str = "Invalid project name";
+const INVALID_PROJECT_KIND_TITLE: &str = "Invalid project kind";
+const INVALID_PROJECT_PATH_TITLE: &str = "Invalid project path";
+
 pub fn name_validation(name: &ProjectName) -> Result<(), KojampReport> {
     if !name.is_valid() {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Invalid project name",
+            INVALID_PROJECT_NAME_TITLE,
             messages::invalid_project_name(name.get_inner()),
         ));
     }
@@ -21,7 +25,7 @@ pub fn kind_validation(kind: &ProjectKind) -> Result<(), KojampReport> {
         let kind_value: &str = From::from(kind);
         return Err(KojampReport::new(
             ReportType::Error,
-            "Invalid project kind",
+            INVALID_PROJECT_KIND_TITLE,
             messages::invalid_project_kind(kind_value),
         ));
     }
@@ -33,7 +37,7 @@ pub fn path_validation(path: &ProjectPath, new_called: bool) -> Result<(), Kojam
     if !path.is_valid(!new_called) {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Invalid project path",
+            INVALID_PROJECT_PATH_TITLE,
             messages::invalid_project_path(&path.get_absolute_path()),
         ));
     }
