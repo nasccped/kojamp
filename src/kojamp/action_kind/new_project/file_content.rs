@@ -2,132 +2,147 @@ use super::{ProjectFields, ProjectKind};
 use crate::globals::{PROGRAM_REPO_URL, PROGRAM_VERSION};
 
 pub fn java(class_name: &str) -> String {
-    [
-        "/**",
-        " * This file was generated using kojamp CLI-app",
-        format!(
-            " * Take a look at the official repository at {}",
-            PROGRAM_REPO_URL
-        )
-        .as_str(),
-        " */",
-        "",
-        format!("public class {} {{", class_name).as_str(),
-        "",
+    let comment_section = [
+        format!("/**"),
+        format!(" * This file was generated using kojamp CLI-app"),
+        format!(" * Take a look at the official repository at") + PROGRAM_REPO_URL,
+        format!(" */"),
+    ]
+    .join("\n");
+    let class_begin = format!("public class {} {{", class_name);
+    let turn_green_function = [
         "    private static String turnGreen(String text) {",
         "        return \"\\u001b[92m\" + text + \"\\u001b[0m\";",
         "    }",
-        "",
+    ]
+    .join("\n");
+    let println_function = [
         "    private static void println(Object o) {",
         "        System.out.println(o);",
         "    }",
-        "",
-        "    private static void println() {",
-        "        System.out.println();",
-        "    }",
-        "",
+    ]
+    .join("\n");
+    let print_function = [
         "    private static void print(Object o) {",
         "        System.out.print(o);",
         "    }",
-        "",
-        "    public String greeting() {",
+    ]
+    .join("\n");
+    let greeting_function = [
+        format!("    public String greeting() {{"),
         format!(
             "        return \"This is a hello from \" + turnGreen(\"'{}'\") + \" project!\";",
             class_name
-        )
-        .as_str(),
-        "    }",
-        "",
-        "    public static void main(String[] args) {",
-        "        print(\"Hi\");",
-        "        print(\" \");",
-        "        println(\"there!\");",
-        "",
-        format!("        println(new {}().greeting());", class_name).as_str(),
-        "    }",
-        "}",
+        ),
+        format!("}}"),
     ]
-    .join("\n")
+    .join("\n");
+    let main_function = [
+        format!("    public static void main(String[] args) {{"),
+        format!("        print(\"Hi\");"),
+        format!("        print(\" \");"),
+        format!("        println(\"there!\");"),
+        format!(""),
+        format!("        println(new {}().greeting());", class_name),
+        format!("    }}"),
+    ]
+    .join("\n");
+    let class_end: String = "}".into();
+
+    [
+        comment_section,
+        class_begin,
+        turn_green_function,
+        println_function,
+        print_function,
+        greeting_function,
+        main_function,
+        class_end,
+    ]
+    .join("\n\n")
 }
 
 pub fn kotlin(file_name: &str) -> String {
-    [
-        "/**",
-        " * This file was generated using kojamp CLI-app,",
-        format!(
-            " * Take a look at the official repository at {}",
-            PROGRAM_REPO_URL
-        )
-        .as_str(),
-        " */",
-        "",
+    let comment_section = [
+        format!("/**"),
+        format!(" * This file was generated using kojamp CLI-app"),
+        format!(" * Take a look at the official repository at") + PROGRAM_REPO_URL,
+        format!(" */"),
+    ]
+    .join("\n");
+    let turn_green_function = [
         "fun turnGreen(value: String): String {",
         "    return \"\\u001b[92m$value\\u001b[0m\"",
         "}",
-        "",
-        "fun greeting(): String {",
+    ]
+    .join("\n");
+    let greeeting_function = [
+        format!("fun greeting(): String{{"),
         format!(
-            "     return \"Hello from ${{turnGreen(\"'{}'\")}} project\"",
+            "    return \"Hello from ${{turnGreen(\"'{}'\")}} project\"",
             file_name
-        )
-        .as_str(),
-        "}",
-        "",
+        ),
+        format!("}}"),
+    ]
+    .join("\n");
+    let main_function = [
         "fun main() {",
         "    print(\"Hi\")",
         "    print(\" \")",
         "    println(\"there\")",
-        "",
+        " ",
         "    println(greeting())",
         "}",
     ]
-    .join("\n")
+    .join("\n");
+
+    [
+        comment_section,
+        turn_green_function,
+        greeeting_function,
+        main_function,
+    ]
+    .join("\n\n")
 }
 
 pub fn readme(project_fields: &ProjectFields) -> String {
     let name = project_fields.get_name().get_inner();
-    let kind = project_fields.get_kind();
+    let kind = match project_fields.get_kind() {
+        ProjectKind::Java => "java-orange",
+        _ => "kotlin-blue",
+    };
     let authors = project_fields.get_authors().get_inner();
-
-    let mut begin = vec![
-        String::from("<div align=\"center\">"),
-        String::new(),
+    let head = [
+        format!("<div align=\"center\">"),
+        format!(""),
         format!("{}", name),
-        format!("{}", "=".repeat(name.len())),
-        String::new(),
+        "=".repeat(name.len()),
+        format!(""),
         format!("[![built in](https://img.shields.io/badge/built_in-kojamp_{}-blue?)](https://github.com/nasccped/kojamp)", PROGRAM_VERSION),
-        format!(
-            "[![project kind](https://img.shields.io/badge/project_kind-{}?)](#)", match kind {
-                ProjectKind::Java => "java-orange",
-                _ => "kotlin-blue",
-            }
-        ),
-        String::new(),
-        String::from("</div>"),
-        String::new(),
-        format!(
-            "Welcome to the **{}** project{}",
-            name,
-            if authors.is_some() {
-                " by:\n"
-            } else {
-                "!"
-            }
-        ),
-    ];
+            format!("[![project kind](https://img.shields.io/badge/project_kind-{}?)](#)", kind),
+        format!(""),
+        format!("</div>"),
+    ]
+    .join("\n");
 
-    let authors = if let Some(aut) = authors {
-        aut.iter()
+    let description = format!("Welcome to the **{}** project", name);
+    let may_authors: String = if let Some(ref aut) = authors {
+        let begin: String = " by:\n\n".into();
+        let author_list = aut
+            .iter()
             .map(|a| format!("- {}", a))
             .collect::<Vec<_>>()
-            .join("\n")
+            .join("\n");
+        begin + author_list.as_ref()
     } else {
-        String::from("")
+        "!".into()
     };
-    begin.push(authors);
-    begin.join("\n")
+
+    [head, description + may_authors.as_ref()].join("\n\n")
 }
 
-pub fn gitignore() -> String {
-    ["# Ignore only the output bytecode content", "out/"].join("\n")
+pub fn gitignore() -> &'static str {
+    "\
+    # Ignore only the output bytecode content\n\
+    out/"
 }
