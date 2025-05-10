@@ -158,3 +158,20 @@ pub fn invalid_project_path(path: &PathBuf) -> String {
         path_flag
     )
 }
+
+pub fn could_not_initialize_git_repo() -> String {
+    let mut reasons = [
+        format!("You doesn't have {} program", "git".bright_cyan()),
+        format!("{} issues, though", "Mem.".bright_red()),
+    ]
+    .into_reasons();
+
+    format!(
+        "\
+        This can be due the following reasons:\n\
+        {}\n\
+        {}",
+        reasons.next().unwrap(),
+        reasons.next().unwrap()
+    )
+}
