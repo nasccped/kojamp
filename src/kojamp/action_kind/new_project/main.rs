@@ -22,20 +22,14 @@ use std::{
     process::{Command, Stdio},
 };
 
-const COULD_NOT_CREATE_MAIN_SOURCE_FILE: [&str; 3] = [
-    "Couldn't create the main file &&",
-    "\x1b[97m(\x1b[91m.java\x1b[97m/\x1b[91m.kt\x1b[97m)\x1b[0m!",
-    "The reason can be due to memory issue.",
-];
-
-const COULD_NOT_CREATE_TOML: [&str; 6] = [
-    "Couldn't create the toml file &&",
-    "\x1b[97m(\x1b[91m.java\x1b[97m/\x1b[91m.kt\x1b[97m)\x1b[0m!",
-    "The reason can be due to memory issue or error when trying to",
-    "unwrap the project fields as TOML String &&",
-    "\x1b[3;90m(This last is a lot unexpected, opening an issue &&",
-    "is highly encouraged)\x1b[0m",
-];
+const COULD_NOT_GET_THE_CURRENT_DIRECTORY: &str = "Couldn't get the current directory";
+const COULD_NOT_READ_PROJECT_FOLDER: &str = "Couldn't read project folder";
+const NON_EMPTY_DIR: &str = "Non empty dir";
+const PROJECT_CREATED: &str = "`$$$` project created";
+const COULD_NOT_CREATE_PROJECT_DIR: &str = "Couldn't create the project directory";
+const COULD_NOT_CREATE_SRC_DIR: &str = "Couldn't create the `src` directory";
+const COULD_NOT_CREATE_MAIN_SRC_FILE: &str = "Couldn't create the main source file";
+const COULD_NOT_CREATE_TOML_FILE: &str = "Couldn't create the .toml file";
 
 fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
     let optional_path: &str = path
@@ -46,7 +40,7 @@ fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
     if fs::create_dir(path).is_err() {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Couldn't Create The Directory",
+            COULD_NOT_CREATE_PROJECT_DIR,
             messages::could_not_create_dir_file(optional_path),
         ));
     }
@@ -55,18 +49,18 @@ fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
 }
 
 fn create_src_dir(path: &mut PathBuf) -> Result<(), KojampReport> {
+    path.push(SRC_DIR);
+
     let optional_path: String = path
         .file_name()
         .and_then(|f| f.to_str())
         .unwrap_or("")
         .to_owned();
 
-    path.push(SRC_DIR);
-
     if fs::create_dir(&path).is_err() {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Couldn't Create The `src` Directory",
+            COULD_NOT_CREATE_SRC_DIR,
             messages::could_not_create_dir_file(&optional_path),
         ));
     }
@@ -89,11 +83,8 @@ fn create_main_source_file(path: &mut PathBuf, fields: &ProjectFields) -> Result
     if fs::write(&path, content).is_err() {
         return Err(KojampReport::new(
             ReportType::Error,
-            format!(
-                "Couldn't Create The Main Source File ({:?})",
-                path.file_name().unwrap()
-            ),
-            COULD_NOT_CREATE_MAIN_SOURCE_FILE.to_text(),
+            COULD_NOT_CREATE_MAIN_SRC_FILE,
+            messages::could_not_create_dir_file(path.to_str().unwrap_or("???")),
         ));
     }
 
@@ -110,8 +101,8 @@ fn create_toml_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), Ko
     if fs::write(&path, toml_content).is_err() {
         return Err(KojampReport::new(
             ReportType::Error,
-            "Couldn't Create The TOML File",
-            COULD_NOT_CREATE_TOML.to_text(),
+            COULD_NOT_CREATE_TOML_FILE,
+            messages::could_not_create_dir_file(path.to_str().unwrap_or("???")),
         ));
     }
 
@@ -206,7 +197,7 @@ fn print_success(new_was_called: bool, fields: ProjectFields) {
 pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
     let path_error = KojampReport::new(
         ReportType::Error,
-        "Couldn't get the current directory",
+        COULD_NOT_GET_THE_CURRENT_DIRECTORY,
         messages::invalid_cur_dir(),
     );
     let mut path = ProjectPath::try_new().map_err(|_| vec![path_error])?;
@@ -259,14 +250,14 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         (Err(_), _) => {
             return Err(vec![KojampReport::new(
                 ReportType::Error,
-                "Couldn't Read Project Folder",
+                COULD_NOT_READ_PROJECT_FOLDER,
                 messages::could_not_read_dir_content(),
             )])
         }
         (Ok(false), false) => {
             return Err(vec![KojampReport::new(
                 ReportType::Error,
-                "Non Empty Dir",
+                NON_EMPTY_DIR,
                 messages::non_empty_dir_initializing(),
             )])
         }
@@ -289,10 +280,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
 
     output.push(KojampReport::new(
         ReportType::Success,
-        format!(
-            "`{}` Project Created",
-            project_fields.get_name().get_inner()
-        ),
+        PROJECT_CREATED.replace("$$$", project_fields.get_name().get_inner()),
         "",
     ));
     print_success(new_called, project_fields);
