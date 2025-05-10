@@ -95,9 +95,7 @@ pub fn non_empty_dir_initializing() -> String {
     )
 }
 
-pub fn could_not_create_dir_file(target: &str) -> String
-where
-{
+pub fn could_not_create_dir_file(target: &str) -> String {
     format!(
         "\
         Error trying to create `{}`\n\
