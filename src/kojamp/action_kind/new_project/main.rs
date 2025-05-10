@@ -253,7 +253,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     let mut path = project_fields.get_path().get_inner();
 
     if new_called {
-        create_project_dir(&path).map_err(|e| Vec::from([e]))?;
+        create_project_dir(&path).map_err(|e| vec![e])?;
     }
 
     match (dir_is_empty(&path), project_fields.is_forced()) {
@@ -274,11 +274,11 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         _ => {}
     }
 
-    create_src_dir(&mut path).map_err(|e| Vec::from([e]))?;
+    create_src_dir(&mut path).map_err(|e| vec![e])?;
 
-    create_main_source_file(&mut path, &project_fields).map_err(|e| Vec::from([e]))?;
+    create_main_source_file(&mut path, &project_fields).map_err(|e| vec![e])?;
 
-    create_toml_file(&mut path, &project_fields).map_err(|e| Vec::from([e]))?;
+    create_toml_file(&mut path, &project_fields).map_err(|e| vec![e])?;
 
     let mut output: Vec<KojampReport> = Vec::new();
 
