@@ -23,6 +23,12 @@ pub fn invalid_cur_dir() -> String {
     ]
     .into_reasons();
 
+    let mut next = || {
+        reasons
+            .next()
+            .unwrap_or("UNEXPECTED UNWRAPING".bright_red().to_string())
+    };
+
     format!(
         "\
         The `{}` function returned an error\n\
@@ -31,8 +37,8 @@ pub fn invalid_cur_dir() -> String {
         {}\n\
         {}",
         function_name,
-        reasons.next().unwrap(),
-        reasons.next().unwrap(),
+        next(),
+        next(),
     )
 }
 
@@ -50,6 +56,12 @@ where
     ]
     .into_reasons();
 
+    let mut next = || {
+        reasons
+            .next()
+            .unwrap_or("UNEXPECTED UNWRAPING".bright_red().to_string())
+    };
+
     format!(
         "\
         The `{}` project name isn't allowed\n\
@@ -61,9 +73,9 @@ where
         \n\
         Consider using `{}` instead",
         name.bright_red(),
-        reasons.next().unwrap(),
-        reasons.next().unwrap(),
-        reasons.next().unwrap(),
+        next(),
+        next(),
+        next(),
         fixed_name.bright_green()
     )
 }
@@ -137,6 +149,12 @@ pub fn invalid_project_path(path: &PathBuf) -> String {
     ]
     .into_reasons();
 
+    let mut next = || {
+        reasons
+            .next()
+            .unwrap_or("UNEXPECTED UNWRAPING".bright_red().to_string())
+    };
+
     format!(
         "\
         The `{}` path\n\
@@ -150,9 +168,9 @@ pub fn invalid_project_path(path: &PathBuf) -> String {
         If you're creating a new project, consider specify another\n\
         path by using the `{}` flag",
         path,
-        reasons.next().unwrap(),
-        reasons.next().unwrap(),
-        reasons.next().unwrap(),
+        next(),
+        next(),
+        next(),
         path_flag
     )
 }
@@ -164,12 +182,18 @@ pub fn could_not_initialize_git_repo() -> String {
     ]
     .into_reasons();
 
+    let mut next = || {
+        reasons
+            .next()
+            .unwrap_or("UNEXPECTED UNWRAPING".bright_red().to_string())
+    };
+
     format!(
         "\
         This can be due the following reasons:\n\
         {}\n\
         {}",
-        reasons.next().unwrap(),
-        reasons.next().unwrap()
+        next(),
+        next()
     )
 }
