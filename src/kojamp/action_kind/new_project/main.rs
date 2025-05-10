@@ -29,6 +29,9 @@ const COULD_NOT_CREATE_PROJECT_DIR: &str = "Couldn't create the project director
 const COULD_NOT_CREATE_SRC_DIR: &str = "Couldn't create the `src` directory";
 const COULD_NOT_CREATE_MAIN_SRC_FILE: &str = "Couldn't create the main source file";
 const COULD_NOT_CREATE_TOML_FILE: &str = "Couldn't create the .toml file";
+const COULD_NOT_CREATE_README_FILE: &str = "Couldn't create README file";
+const COULD_NOT_INITIALIZE_GIT_REPO: &str = "Couldn't initialize a git repo";
+const COULD_NOT_CREATE_GITIGNORE: &str = "Couldn't create .gitignore";
 
 fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
     let optional_path: &str = path
@@ -118,9 +121,8 @@ fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) -> Option<Koja
     if fs::write(&path, readme_content).is_err() {
         output = Some(KojampReport::new(
             ReportType::Warning,
-            "Couldn't Create README File",
-            "This is probablye due to memory issue
-Even so, the project was created!",
+            COULD_NOT_CREATE_README_FILE,
+            messages::could_not_create_dir_file(path.to_str().unwrap_or("")),
         ));
     }
     path.pop();
@@ -139,9 +141,8 @@ fn initialize_git_and_create_gitignore(path: &mut PathBuf) -> Option<KojampRepor
     {
         output = Some(KojampReport::new(
             ReportType::Warning,
-            "Couldn't Initialize A Git Repo",
-            "The git program probably doesn't exists on your machine
-Even so, the project was created!",
+            COULD_NOT_INITIALIZE_GIT_REPO,
+            messages::could_not_initialize_git_repo(),
         ));
         return output;
     }
@@ -152,9 +153,8 @@ Even so, the project was created!",
     if fs::write(&path, gitignore_content).is_err() {
         output = Some(KojampReport::new(
             ReportType::Warning,
-            "Couldn't Create The `.gitignore` File",
-            "This is probably due to memory issue
-Even so, the project was created!",
+            COULD_NOT_CREATE_GITIGNORE,
+            messages::could_not_create_dir_file(path.to_str().unwrap_or("???")),
         ));
     }
     path.pop();
