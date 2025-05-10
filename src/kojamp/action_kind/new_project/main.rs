@@ -21,6 +21,9 @@ use std::{
     process::{Command, Stdio},
 };
 
+const INVALID_PROJECT_NAME: &str = "Invalid project name";
+const INVALID_PROJECT_KIND: &str = "Invalid project kind";
+const INVALID_PROJECT_PATH: &str = "Invalid project path";
 const COULD_NOT_GET_THE_CURRENT_DIRECTORY: &str = "Couldn't get the current directory";
 const COULD_NOT_READ_PROJECT_FOLDER: &str = "Couldn't read project folder";
 const NON_EMPTY_DIR: &str = "Non empty dir";
@@ -227,12 +230,34 @@ fn gen_success_message(new_called: bool, path: &PathBuf) -> String {
 }
 
 pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
-    let path_error = KojampReport::new(
+    let path_error1 = KojampReport::new(
         ReportType::Error,
         COULD_NOT_GET_THE_CURRENT_DIRECTORY,
         messages::invalid_cur_dir(),
     );
-    let mut path = ProjectPath::try_new().map_err(|_| vec![path_error])?;
+    let name_error = |name: &ProjectName| {
+        KojampReport::new(
+            ReportType::Error,
+            INVALID_PROJECT_NAME,
+            messages::invalid_project_name(name.get_inner()),
+        )
+    };
+    let kind_error = |kind: &ProjectKind| {
+        KojampReport::new(
+            ReportType::Error,
+            INVALID_PROJECT_KIND,
+            messages::invalid_project_kind(From::from(kind)),
+        )
+    };
+    let path_error2 = |path: &ProjectPath| {
+        KojampReport::new(
+            ReportType::Error,
+            INVALID_PROJECT_PATH,
+            messages::invalid_project_path(&path.get_absolute_path()),
+        )
+    };
+
+    let mut path = ProjectPath::try_new().map_err(|_| vec![path_error1])?;
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
@@ -245,18 +270,18 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         (false, matching.get_flag("force"))
     };
 
-    let tests: Vec<KojampReport> = [
-        fields_validation::name_validation(&name),
-        fields_validation::kind_validation(&kind),
-        fields_validation::path_validation(&path, new_called),
+    let tests_n_errors: Vec<KojampReport> = [
+        (name.is_valid(), name_error(&name)),
+        (kind.is_valid(), kind_error(&kind)),
+        (path.is_valid(!new_called), path_error2(&path)),
     ]
     .into_iter()
-    .filter(|cond| cond.is_err())
-    .map(|e| e.unwrap_err())
+    .filter(|(cond, _)| *cond)
+    .map(|(_, e)| e)
     .collect();
 
-    if !tests.is_empty() {
-        return Err(tests);
+    if !tests_n_errors.is_empty() {
+        return Err(tests_n_errors);
     }
 
     let project_fields: ProjectFields = ProjectFields::new()
