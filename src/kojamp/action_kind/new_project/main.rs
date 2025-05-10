@@ -204,13 +204,12 @@ fn print_success(new_was_called: bool, fields: ProjectFields) {
 }
 
 pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
-    let mut path = ProjectPath::try_new().map_err(|_| {
-        vec![KojampReport::new(
-            ReportType::Error,
-            "Couldn't get the current directory",
-            messages::invalid_cur_dir(),
-        )]
-    })?;
+    let path_error = KojampReport::new(
+        ReportType::Error,
+        "Couldn't get the current directory",
+        messages::invalid_cur_dir(),
+    );
+    let mut path = ProjectPath::try_new().map_err(|_| vec![path_error])?;
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
