@@ -1,6 +1,5 @@
 use super::{
-    fields_validation, file_content, MainToml, ProjectAuthors, ProjectFields, ProjectKind,
-    ProjectName, ProjectPath,
+    file_content, MainToml, ProjectAuthors, ProjectFields, ProjectKind, ProjectName, ProjectPath,
 };
 use crate::{
     essentials::report::{
