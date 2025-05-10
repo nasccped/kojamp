@@ -1,8 +1,10 @@
 use super::action;
 use crate::{
-    essentials::report::types::{KojampReport, ReportType},
-    globals::{FAILURE_EXIT_STATUS, PROGRAM_REPO_URL, SUCCESS_EXIT_STATUS},
-    utils::array::ToText,
+    essentials::report::{
+        messages,
+        types::{KojampReport, ReportType},
+    },
+    globals::{FAILURE_EXIT_STATUS, SUCCESS_EXIT_STATUS},
 };
 use clap::{builder::Styles, ArgMatches, Command};
 use std::{process, rc::Rc};
@@ -11,17 +13,6 @@ type StrAlias = &'static str;
 type MatchingAlias = Option<(Rc<str>, ArgMatches)>;
 
 const CREATE_PROJECT_COMMANDS: [&str; 3] = ["new", "init", "ini"];
-
-const UNDEFINED_ERROR: [&str; 8] = [
-    "This message serves to alert that the program has",
-    "fallen into an \x1b[91munexpected behavior\x1b[0m.",
-    "",
-    "Please, consider opening an &&",
-    "\x1b[91missue\x1b[0m at \x1b[92m&&",
-    PROGRAM_REPO_URL,
-    "\x1b[0m",
-    "Describe your steps to get here.",
-];
 
 #[derive(Default)]
 pub struct KojampBuilder {
@@ -116,8 +107,8 @@ impl KojampApp for Command {
             _ => {
                 output = Err(Vec::from([KojampReport::new(
                     ReportType::Error,
-                    "Undefined Error",
-                    UNDEFINED_ERROR.to_text(),
+                    "Undefined error",
+                    messages::main_app_undefined_error(),
                 )]));
             }
         }
