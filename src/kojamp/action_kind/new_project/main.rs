@@ -33,6 +33,8 @@ const COULD_NOT_CREATE_README_FILE: &str = "Couldn't create README file";
 const COULD_NOT_INITIALIZE_GIT_REPO: &str = "Couldn't initialize a git repo";
 const COULD_NOT_CREATE_GITIGNORE: &str = "Couldn't create .gitignore";
 
+const NOT_ALLOWED_CONTENT: [&str; 3] = ["src", "Kojamp.toml", "out"];
+
 fn create_project_dir(path: &PathBuf) -> Result<(), KojampReport> {
     let optional_path: &str = path
         .file_name()
@@ -115,6 +117,14 @@ fn create_toml_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), Ko
 fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) -> Option<KojampReport> {
     path.push(README_FILE_NAME);
     path.set_extension(MARKDOWN_FILE_EXTENSION);
+
+    let abspath = std::env::current_dir().unwrap().join(&path);
+
+    if abspath.exists() {
+        path.pop();
+        return None;
+    }
+
     let readme_content = file_content::readme(fields);
     let mut output: Option<KojampReport> = None;
 
@@ -131,6 +141,13 @@ fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) -> Option<Koja
 
 fn initialize_git_and_create_gitignore(path: &mut PathBuf) -> Option<KojampReport> {
     let mut output: Option<KojampReport> = None;
+
+    let mut git_abspath = std::env::current_dir().unwrap();
+    git_abspath.push(".git");
+
+    if git_abspath.exists() {
+        return None;
+    }
 
     if Command::new(GIT_COMMAND)
         .args([GIT_INITIALIZATION_ARG, path.to_str().unwrap()])
@@ -165,32 +182,48 @@ fn dir_is_empty(path: &PathBuf) -> Result<bool, ()> {
     Ok(fs::read_dir(path).map_err(|_| ())?.next().is_none())
 }
 
-fn print_success(new_was_called: bool, fields: ProjectFields) {
-    println!("{}!", "Success".bright_green());
-    println!();
-    println!(
-        "The `{}` project was successfully created at the {} directory!",
-        fields.get_name().get_inner().bright_green(),
-        if new_was_called {
-            format!(
-                "`{}`",
-                fields
-                    .get_path()
-                    .get_inner()
-                    .to_str()
-                    .unwrap()
-                    .bright_yellow()
-            )
-        } else {
-            String::from("current")
-        }
-    );
-    println!();
-    println!("You can get help about kojamp at");
-    println!(
-        "it's official repository: {}",
-        PROGRAM_REPO_URL.bright_cyan()
-    );
+fn dir_contains<const N: usize>(path: &PathBuf, items: [&str; N]) -> Result<bool, ()> {
+    Ok(fs::read_dir(path)
+        .map_err(|_| ())?
+        .filter_map(|entry| entry.ok())
+        .any(|entry| {
+            entry
+                .file_name()
+                .to_str()
+                .map(|name| items.contains(&name))
+                .unwrap_or(false)
+        }))
+}
+
+fn gen_success_message(new_called: bool, path: &PathBuf) -> String {
+    let mut may_goto = if new_called {
+        vec![format!(
+            "cd to your project ({})",
+            path.to_str().unwrap_or("???").bright_green()
+        )]
+    } else {
+        vec![]
+    };
+
+    may_goto.push(format!("use `{}`", "kojamp run".bright_green()));
+
+    let actions = may_goto
+        .into_iter()
+        .map(|row| format!("... {} ", "*".bright_green()) + row.as_str())
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    format!(
+        "\
+        You can now:\n\
+        {}
+        \n\
+        {}: check the official repo ({})\n\
+        for more details.",
+        actions,
+        "note".bright_cyan(),
+        PROGRAM_REPO_URL
+    )
 }
 
 pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
@@ -203,13 +236,13 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
-    let new_called = if cmd == "new" {
+    let (new_called, force) = if cmd == "new" {
         if path.add_from_matching(matching).is_none() {
             path.add_from_project_name(&name);
         }
-        true
+        (true, false)
     } else {
-        false
+        (false, matching.get_flag("force"))
     };
 
     let tests: Vec<KojampReport> = [
@@ -245,22 +278,33 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         create_project_dir(&path).map_err(|e| vec![e])?;
     }
 
-    match (dir_is_empty(&path), project_fields.is_forced()) {
-        (Err(_), _) => {
-            return Err(vec![KojampReport::new(
-                ReportType::Error,
-                COULD_NOT_READ_PROJECT_FOLDER,
-                messages::could_not_read_dir_content(),
-            )])
-        }
-        (Ok(false), false) => {
-            return Err(vec![KojampReport::new(
-                ReportType::Error,
-                NON_EMPTY_DIR,
-                messages::non_empty_dir_initializing(),
-            )])
-        }
-        _ => {}
+    let (empty_dir, not_allowed_content) = if let (Ok(c1), Ok(c2)) = (
+        dir_is_empty(&path),
+        dir_contains(&path, NOT_ALLOWED_CONTENT),
+    ) {
+        (c1, c2)
+    } else {
+        return Err(vec![KojampReport::new(
+            ReportType::Error,
+            COULD_NOT_READ_PROJECT_FOLDER,
+            messages::could_not_read_dir_content(),
+        )]);
+    };
+
+    if !empty_dir && !force {
+        return Err(vec![KojampReport::new(
+            ReportType::Error,
+            NON_EMPTY_DIR,
+            messages::non_empty_dir_initializing(),
+        )]);
+    }
+
+    if !empty_dir && not_allowed_content {
+        return Err(vec![KojampReport::new(
+            ReportType::Error,
+            NON_EMPTY_DIR,
+            messages::non_empty_dir_initializing(),
+        )]);
     }
 
     create_src_dir(&mut path).map_err(|e| vec![e])?;
@@ -280,9 +324,8 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     output.push(KojampReport::new(
         ReportType::Success,
         PROJECT_CREATED.replace("$$$", project_fields.get_name().get_inner()),
-        "",
+        gen_success_message(new_called, &path),
     ));
-    print_success(new_called, project_fields);
 
     Ok(output)
 }
