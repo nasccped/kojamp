@@ -102,7 +102,7 @@ pub fn non_empty_dir_initializing() -> String {
         using the `{}` flag. All the files at current\n\
         dir will be preserved\n\
         \n\
-        {}: `src/` and `Kojamp.toml` shouldn't be present",
+        {}: `src/`, `Kojamp.toml` and `out/` shouldn't be present",
         non_empty, force, note
     )
 }
