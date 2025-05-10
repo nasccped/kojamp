@@ -265,11 +265,6 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         .set_path(path)
         .set_authors(ProjectAuthors::from(matching))
         .set_repo(matching.get_flag("no-git"))
-        .set_force_mode(if new_called {
-            None
-        } else {
-            Some(matching.get_flag("force"))
-        })
         .build();
 
     let mut path = project_fields.get_path().get_inner();
