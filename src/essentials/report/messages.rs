@@ -1,5 +1,5 @@
 use super::util::IntoReasons;
-use crate::utils::string::StringTransformation;
+use crate::{globals::PROGRAM_REPO_URL, utils::string::StringTransformation};
 use colored::Colorize;
 use std::path::PathBuf;
 
@@ -195,5 +195,20 @@ pub fn could_not_initialize_git_repo() -> String {
         {}",
         next(),
         next()
+    )
+}
+
+pub fn main_app_undefined_error() -> String {
+    format!(
+        "\
+        This message serves to alert that the program has\n\
+        fallen into an {}\n\
+        \n\
+        Please, consider opening an {} at {}\n\
+        \n\
+        Describe your steps to get here",
+        "unexpected behavior".bright_red(),
+        "issue".bright_cyan(),
+        PROGRAM_REPO_URL
     )
 }
