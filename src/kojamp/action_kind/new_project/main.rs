@@ -12,7 +12,6 @@ use crate::{
         KOTLIN_FILE_EXTENSION, MARKDOWN_FILE_EXTENSION, PROGRAM_REPO_URL, PROGRAM_TOML_FILE_NAME,
         README_FILE_NAME, SRC_DIR, TOML_FILE_EXTENSION,
     },
-    utils::array::ToText,
 };
 use clap::ArgMatches;
 use colored::Colorize;
