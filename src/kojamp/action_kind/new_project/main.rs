@@ -275,8 +275,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         (path.is_valid(!new_called), path_error2(&path)),
     ]
     .into_iter()
-    .filter(|(cond, _)| *cond)
-    .map(|(_, e)| e)
+    .filter_map(|(cond, er)| if cond { Some(er) } else { None })
     .collect();
 
     if !tests_n_errors.is_empty() {
