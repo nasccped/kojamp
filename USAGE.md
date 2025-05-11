@@ -64,7 +64,7 @@ Due to Java conventions, file and class names should be camel cased.
 The name of the project main file (file that contains the
 [`main`](https://www.digitalocean.com/community/tutorials/public-static-void-main-string-args-java-main-method)
 function) will be the same as the project name, so if you run
-`kojamp new NameTesting`, the output will be a project which contains
+`kojamp new NameTesting --kind java`, the output will be a project which contains
 a `NameTesting.java` file:
 
 ```java
