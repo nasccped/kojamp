@@ -1,14 +1,8 @@
 use super::content;
-use crate::{
-    core::{
-        contracts::{GetInner, Unpack},
-        models::ProjectFields,
-    },
-    globals::{
-        GIT_COMMAND, GIT_IGNORE_FILE_FULLNAME, GIT_INITIALIZATION_ARG, JAVA_FILE_EXTENSION,
-        KOTLIN_FILE_EXTENSION, MARKDOWN_FILE_EXTENSION, PROGRAM_TOML_FILE_NAME, README_FILE_NAME,
-        SRC_DIR, TOML_FILE_EXTENSION,
-    },
+use crate::core::{
+    consts::{commands::*, files_and_dirs::*},
+    contracts::{GetInner, Unpack},
+    models::ProjectFields,
 };
 use std::{
     fs,

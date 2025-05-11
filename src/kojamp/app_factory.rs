@@ -1,7 +1,7 @@
 use super::action;
-use crate::{
-    core::reporting::{messages, KojampReport, ReportType},
-    globals::{FAILURE_EXIT_STATUS, SUCCESS_EXIT_STATUS},
+use crate::core::{
+    consts::exit_status::{FAILURE_EXIT_STATUS, SUCCESS_EXIT_STATUS},
+    reporting::{messages, KojampReport, ReportType},
 };
 use clap::{builder::Styles, ArgMatches, Command};
 use std::{process, rc::Rc};

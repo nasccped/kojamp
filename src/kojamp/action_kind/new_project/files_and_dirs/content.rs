@@ -1,4 +1,4 @@
-use crate::globals::{PROGRAM_REPO_URL, PROGRAM_VERSION};
+use crate::core::consts::program::{PROGRAM_REPO_URL, PROGRAM_VERSION};
 
 pub fn java(class_name: &str) -> String {
     let comment_section = [

@@ -1,6 +1,8 @@
 use super::utils::pathbuf_to_str;
-use crate::core::reporting::{messages, KojampReport, ReportType};
-use crate::globals::PROGRAM_REPO_URL;
+use crate::core::{
+    consts::program::PROGRAM_REPO_URL,
+    reporting::{messages, KojampReport, ReportType},
+};
 use colored::Colorize;
 use std::path::PathBuf;
 
