@@ -1,5 +1,6 @@
+use super::super::consts::program::PROGRAM_REPO_URL;
 use super::IntoReasons;
-use crate::{globals::PROGRAM_REPO_URL, utils::string::StringTransformation};
+use crate::utils::string::StringTransformation;
 use colored::Colorize;
 use std::path::PathBuf;
 

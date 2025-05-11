@@ -1,8 +1,7 @@
+use super::super::consts::report_badges::{ERROR_BADGE, SUCCESS_BADGE, WARNING_BADGE};
 use colored::Colorize;
 use std::fmt;
 use std::rc::Rc;
-
-use crate::globals::{ERROR_BADGE, SUCCESS_BADGE, WARNING_BADGE};
 
 pub enum ReportType {
     Error,
