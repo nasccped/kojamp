@@ -1,24 +1,18 @@
-use super::{
-    file_content, MainToml, ProjectAuthors, ProjectFields, ProjectKind, ProjectName, ProjectPath,
-};
+use super::files_and_dirs::creators;
 use crate::{
+    core::{
+        contracts::{AddFrom, GetInner, IsValid},
+        models::{ProjectAuthors, ProjectFields, ProjectKind, ProjectName, ProjectPath},
+    },
     essentials::report::{
         messages,
         types::{KojampReport, ReportType},
     },
-    globals::{
-        GIT_COMMAND, GIT_IGNORE_FILE_FULLNAME, GIT_INITIALIZATION_ARG, JAVA_FILE_EXTENSION,
-        KOTLIN_FILE_EXTENSION, MARKDOWN_FILE_EXTENSION, PROGRAM_REPO_URL, PROGRAM_TOML_FILE_NAME,
-        README_FILE_NAME, SRC_DIR, TOML_FILE_EXTENSION,
-    },
+    globals::PROGRAM_REPO_URL,
 };
 use clap::ArgMatches;
 use colored::Colorize;
-use std::{
-    fs,
-    path::PathBuf,
-    process::{Command, Stdio},
-};
+use std::{fs, path::PathBuf};
 
 const INVALID_PROJECT_NAME: &str = "Invalid project name";
 const INVALID_PROJECT_KIND: &str = "Invalid project kind";
@@ -36,84 +30,6 @@ const COULD_NOT_INITIALIZE_GIT_REPO: &str = "Couldn't initialize a git repo";
 const COULD_NOT_CREATE_GITIGNORE: &str = "Couldn't create .gitignore";
 
 const NOT_ALLOWED_CONTENT: [&str; 3] = ["src", "Kojamp.toml", "out"];
-
-fn create_project_dir(path: &PathBuf) -> Result<(), ()> {
-    fs::create_dir(path).map_err(|_| ())
-}
-
-fn create_src_dir(path: &mut PathBuf) -> Result<(), PathBuf> {
-    path.push(SRC_DIR);
-    fs::create_dir(&path).map_err(|_| path.clone())?;
-    path.pop();
-    Ok(())
-}
-
-fn create_main_source_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), PathBuf> {
-    let (name, kind) = (fields.get_name().get_inner(), fields.get_kind());
-    let (ext, content) = match kind {
-        ProjectKind::Java => (JAVA_FILE_EXTENSION, file_content::java(name)),
-        _ => (KOTLIN_FILE_EXTENSION, file_content::kotlin(name)),
-    };
-
-    path.push(SRC_DIR);
-    path.push(name);
-    path.set_extension(ext);
-    fs::write(&path, content).map_err(|_| path.clone())?;
-    path.pop();
-    path.pop();
-    Ok(())
-}
-
-fn create_toml_file(path: &mut PathBuf, fields: &ProjectFields) -> Result<(), PathBuf> {
-    path.push(PROGRAM_TOML_FILE_NAME);
-    path.set_extension(TOML_FILE_EXTENSION);
-    let toml_content: String = MainToml::from(fields).into();
-    fs::write(&path, toml_content).map_err(|_| path.clone())?;
-    path.pop();
-    Ok(())
-}
-
-fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) -> Option<PathBuf> {
-    path.push(README_FILE_NAME);
-    path.set_extension(MARKDOWN_FILE_EXTENSION);
-
-    let abspath = std::env::current_dir().unwrap().join(&path);
-
-    if abspath.exists() {
-        path.pop();
-        return None;
-    }
-
-    let readme_content = file_content::readme(fields);
-    let output = fs::write(&path, readme_content).err().map(|_| path.clone());
-    path.pop();
-    output
-}
-
-fn initialize_git(path: &PathBuf) -> Option<()> {
-    let mut git_abspath = std::env::current_dir().unwrap();
-    git_abspath.push(".git");
-    if git_abspath.exists() {
-        return None;
-    }
-    Command::new(GIT_COMMAND)
-        .args([GIT_INITIALIZATION_ARG, path.to_str().unwrap()])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .err()
-        .map(|_| ())
-}
-
-fn create_git_ignore(path: &mut PathBuf) -> Option<PathBuf> {
-    path.push(GIT_IGNORE_FILE_FULLNAME);
-    let gitignore_content = file_content::gitignore();
-    let output = fs::write(&path, gitignore_content)
-        .err()
-        .map(|_| path.clone());
-    path.pop();
-    output
-}
 
 fn dir_is_empty(path: &PathBuf) -> Result<bool, ()> {
     Ok(fs::read_dir(path).map_err(|_| ())?.next().is_none())
@@ -174,25 +90,25 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         COULD_NOT_GET_THE_CURRENT_DIRECTORY,
         messages::invalid_cur_dir(),
     );
-    let name_error = |name: &ProjectName| {
+    let name_error = |name: &str| {
         KojampReport::new(
             ReportType::Error,
             INVALID_PROJECT_NAME,
-            messages::invalid_project_name(name.get_inner()),
+            messages::invalid_project_name(name),
         )
     };
-    let kind_error = |kind: &ProjectKind| {
+    let kind_error = |kind: &str| {
         KojampReport::new(
             ReportType::Error,
             INVALID_PROJECT_KIND,
-            messages::invalid_project_kind(From::from(kind)),
+            messages::invalid_project_kind(kind),
         )
     };
-    let path_error2 = |path: &ProjectPath| {
+    let path_error2 = |path: &PathBuf| {
         KojampReport::new(
             ReportType::Error,
             INVALID_PROJECT_PATH,
-            messages::invalid_project_path(&path.get_absolute_path()),
+            messages::invalid_project_path(path),
         )
     };
     let dir_file_creation_error = |title: &str, path: &PathBuf| {
@@ -240,23 +156,34 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         )
     };
 
-    let mut path = ProjectPath::try_new().map_err(|_| vec![path_error1])?;
     let (cmd, matching) = (pair.0, &pair.1);
+
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
-    let (new_called, force) = if cmd == "new" {
-        if path.add_from_matching(matching).is_none() {
-            path.add_from_project_name(&name);
+    let git_repo = !matching.get_flag("no-git");
+    let (new_called, path, force) = if cmd == "new" {
+        match (ProjectPath::try_from(matching), ProjectPath::try_new(false)) {
+            (Ok(x), _) => (true, Ok(x), false),
+            (_, Ok(y)) => {
+                let mut path = y;
+                path.add_from(&name);
+                (true, Ok(path), false)
+            }
+            _ => (true, Err(()), false),
         }
-        (true, false)
     } else {
-        (false, matching.get_flag("force"))
+        (
+            false,
+            ProjectPath::try_new(true),
+            matching.get_flag("force"),
+        )
     };
+    let path = path.map_err(|_| vec![path_error1])?;
 
     let tests_n_errors: Vec<KojampReport> = [
-        (name.is_valid(), name_error(&name)),
-        (kind.is_valid(), kind_error(&kind)),
-        (path.is_valid(!new_called), path_error2(&path)),
+        (name.is_valid(), name_error(name.get_inner())),
+        (kind.is_valid(), kind_error(From::from(&kind))),
+        (path.is_valid(), path_error2(&path.get_absolute_path())),
     ]
     .into_iter()
     .filter_map(|(cond, er)| if !cond { Some(er) } else { None })
@@ -266,24 +193,23 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         return Err(tests_n_errors);
     }
 
-    let project_fields: ProjectFields = ProjectFields::new()
-        .set_name(name)
-        .set_kind(kind)
-        .set_path(path)
-        .set_authors(ProjectAuthors::from(matching))
-        .set_repo(matching.get_flag("no-git"))
-        .build();
+    let project_fields: ProjectFields =
+        ProjectFields::new(name, kind, ProjectAuthors::try_from(matching).ok());
 
-    let mut path = project_fields.get_path().get_inner();
+    let mut mut_path = path.get_inner();
 
     if new_called {
-        create_project_dir(&path)
-            .map_err(|_| vec![dir_file_creation_error(COULD_NOT_CREATE_PROJECT_DIR, &path)])?;
+        creators::create_project_dir(&mut_path).map_err(|_| {
+            vec![dir_file_creation_error(
+                COULD_NOT_CREATE_PROJECT_DIR,
+                &mut_path,
+            )]
+        })?;
     }
 
     let (empty_dir, not_allowed_content) = match (
-        dir_is_empty(&path),
-        dir_contains(&path, NOT_ALLOWED_CONTENT),
+        dir_is_empty(&mut_path),
+        dir_contains(&mut_path, NOT_ALLOWED_CONTENT),
     ) {
         (Ok(x), Ok(y)) => (x, y),
         _ => return Err(vec![could_not_read_dir_error()]),
@@ -293,38 +219,38 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         return Err(vec![non_empty_dir_error()]);
     }
 
-    create_src_dir(&mut path)
+    creators::create_src_dir(&mut mut_path)
         .map_err(|x| vec![dir_file_creation_error(COULD_NOT_CREATE_SRC_DIR, &x)])?;
 
-    create_main_source_file(&mut path, &project_fields)
+    creators::create_main_source_file(&mut mut_path, &project_fields)
         .map_err(|x| vec![dir_file_creation_error(COULD_NOT_CREATE_MAIN_SRC_FILE, &x)])?;
 
-    create_toml_file(&mut path, &project_fields)
+    creators::create_toml_file(&mut mut_path, &project_fields)
         .map_err(|x| vec![dir_file_creation_error(COULD_NOT_CREATE_TOML_FILE, &x)])?;
 
     let mut output: Vec<KojampReport> = Vec::new();
 
-    create_readme_file(&mut path, &project_fields)
+    creators::create_readme_file(&mut mut_path, &project_fields)
         .map(|x| output.push(dir_file_creation_warning(COULD_NOT_CREATE_README_FILE, &x)));
 
     'git_repository: {
-        if !project_fields.have_repo() {
+        if !git_repo {
             break 'git_repository;
         }
 
-        if let Some(_) = initialize_git(&path) {
+        if let Some(_) = creators::initialize_git(&mut_path) {
             output.push(git_init_warning());
             break 'git_repository;
         }
 
-        create_git_ignore(&mut path)
+        creators::create_git_ignore(&mut mut_path)
             .map(|x| output.push(dir_file_creation_warning(COULD_NOT_CREATE_GITIGNORE, &x)));
     }
 
     output.push(success_report(
         project_fields.get_name().get_inner(),
         new_called,
-        &path,
+        &mut_path,
     ));
 
     Ok(output)

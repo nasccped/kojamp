@@ -1,4 +1,3 @@
-use super::{ProjectFields, ProjectKind};
 use crate::globals::{PROGRAM_REPO_URL, PROGRAM_VERSION};
 
 pub fn java(class_name: &str) -> String {
@@ -105,13 +104,11 @@ pub fn kotlin(file_name: &str) -> String {
     .join("\n\n")
 }
 
-pub fn readme(project_fields: &ProjectFields) -> String {
-    let name = project_fields.get_name().get_inner();
-    let kind = match project_fields.get_kind() {
-        ProjectKind::Java => "java-orange",
+pub fn readme(name: &str, kind: &str, authors: Option<Vec<String>>) -> String {
+    let kind = match kind {
+        "java" => "java-orange",
         _ => "kotlin-blue",
     };
-    let authors = project_fields.get_authors().get_inner();
     let head = [
         format!("<div align=\"center\">"),
         format!(""),
@@ -145,4 +142,27 @@ pub fn gitignore() -> &'static str {
     "\
     # Ignore only the output bytecode content\n\
     out/"
+}
+
+pub fn toml(name: &str, kind: &str, authors: Option<Vec<String>>) -> String {
+    format!(
+        "\
+        # This file was created using the kojamp-CLI app.\n\
+        # Manual changes aren't encouraged!\n\
+        # If you found any error or have trouble using it, consider\n\
+        # opening the official repository:\n\
+        #      https://github.com/nasccped/kojamp\n\
+        \n\
+        [project]\n\
+        name = \"{}\"\n\
+        kind = \"{}\"\n\
+        {}",
+        name,
+        kind,
+        if let Some(aut) = authors {
+            format!("authors = [{}]", aut.join(", "))
+        } else {
+            "".into()
+        }
+    )
 }
