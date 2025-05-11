@@ -1,2 +1,4 @@
 mod content;
-pub mod creators;
+mod creators;
+
+pub use creators::*;

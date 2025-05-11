@@ -1,4 +1,4 @@
-use super::files_and_dirs::creators;
+use super::files_and_dirs::*;
 use crate::{
     core::{
         contracts::{AddFrom, GetInner, IsValid},
@@ -196,7 +196,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     let mut mut_path = path.get_inner();
 
     if new_called {
-        creators::create_project_dir(&mut_path).map_err(|_| {
+        create_project_dir(&mut_path).map_err(|_| {
             vec![dir_file_creation_error(
                 COULD_NOT_CREATE_PROJECT_DIR,
                 &mut_path,
@@ -216,18 +216,18 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
         return Err(vec![non_empty_dir_error()]);
     }
 
-    creators::create_src_dir(&mut mut_path)
+    create_src_dir(&mut mut_path)
         .map_err(|x| vec![dir_file_creation_error(COULD_NOT_CREATE_SRC_DIR, &x)])?;
 
-    creators::create_main_source_file(&mut mut_path, &project_fields)
+    create_main_source_file(&mut mut_path, &project_fields)
         .map_err(|x| vec![dir_file_creation_error(COULD_NOT_CREATE_MAIN_SRC_FILE, &x)])?;
 
-    creators::create_toml_file(&mut mut_path, &project_fields)
+    create_toml_file(&mut mut_path, &project_fields)
         .map_err(|x| vec![dir_file_creation_error(COULD_NOT_CREATE_TOML_FILE, &x)])?;
 
     let mut output: Vec<KojampReport> = Vec::new();
 
-    creators::create_readme_file(&mut mut_path, &project_fields)
+    create_readme_file(&mut mut_path, &project_fields)
         .map(|x| output.push(dir_file_creation_warning(COULD_NOT_CREATE_README_FILE, &x)));
 
     'git_repository: {
@@ -235,12 +235,12 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
             break 'git_repository;
         }
 
-        if let Some(_) = creators::initialize_git(&mut_path) {
+        if let Some(_) = initialize_git(&mut_path) {
             output.push(git_init_warning());
             break 'git_repository;
         }
 
-        creators::create_git_ignore(&mut mut_path)
+        create_git_ignore(&mut mut_path)
             .map(|x| output.push(dir_file_creation_warning(COULD_NOT_CREATE_GITIGNORE, &x)));
     }
 
