@@ -1,9 +1,6 @@
 use super::action;
 use crate::{
-    essentials::report::{
-        messages,
-        types::{KojampReport, ReportType},
-    },
+    core::reporting::{messages, KojampReport, ReportType},
     globals::{FAILURE_EXIT_STATUS, SUCCESS_EXIT_STATUS},
 };
 use clap::{builder::Styles, ArgMatches, Command};

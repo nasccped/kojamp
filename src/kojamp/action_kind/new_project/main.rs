@@ -3,10 +3,7 @@ use crate::{
     core::{
         contracts::{AddFrom, GetInner, IsValid},
         models::{ProjectAuthors, ProjectFields, ProjectKind, ProjectName, ProjectPath},
-    },
-    essentials::report::{
-        messages,
-        types::{KojampReport, ReportType},
+        reporting::{messages, KojampReport, ReportType},
     },
     globals::PROGRAM_REPO_URL,
 };
