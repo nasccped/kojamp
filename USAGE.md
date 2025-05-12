@@ -13,6 +13,9 @@ Here you'll find infos about subcommands and flags usage.
     - [project path](#new-project-path)
     - [project authors](#new-project-authors)
     - [no git](#new-no-git)
+- [init](#init)
+  - [rules, usage and examples](#init-rules-usage-and-examples)
+    - [force](#init-force)
 
 ## Help
 
@@ -169,3 +172,42 @@ e. g.);
 # will create a foo-bar directory without git repo initialization (also no .gitignore)
 kojamp new FooBar --kind java --no-git
 ```
+
+## Init
+
+Creates a Java/Kotlin project in the current directory. (Can also be called with `ini`)
+
+| name      | alias        | position index     | usage                                        | description                                                         | required |
+| :-------- | :----------- | :----------------- | :------------------------------------------- | :------------------------------------------------------------------ | :------- |
+| `name`    | **no alias** | 1                  | `<CAMEL_CASED_NAME>`                         | Specifies the project name                                          | Yes ✅   |
+| `kind`    | `K`          | (called with flag) | `--kind [-K] <PROJECT_KIND>`                 | Specifies the project kind (Java or Kotlin)                         | Yes ✅   |
+| `authors` | `A`          | (called with flag) | `--authors [-A] "<COMMA_SEPARATED_AUTHORS>"` | Specifies the authors for the project being created                 | No ❌    |
+| `no-git`  | **no alias** | (called with flag) | `--no-git`                                   | Disable git repository initialization for the project being created | No ❌    |
+| `force`   | **no alias** | (called with flag) | `--force`                                    | Forces the project initializing (even if isn't an empty dir)        | No ❌    |
+| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `new` subcommand                       | No ❌    |
+
+<h3 id="init-rules-usage-and-examples">Rules, usage and examples</h3>
+
+A bunch of fields was already explained at [new section](#new).
+Bellow, you'll find infos about
+
+<h4 id="init-force">Force:</h4>
+
+Project initializing at **non empty dirs** isn't allowed, but you can
+still force it by using the `force` flag.
+
+```sh
+# You'll need to be in a non empty dir to test it
+kojamp init Avaj -K java --force
+```
+
+It will will ignore the empty dir rule and initialize the project.
+It'll also preserve some auto-generated project files/dirs such as
+`README.md` and `.git` folder (cancel git initialization).
+
+> [!IMPORTANT]
+>
+> The directory shouldn't have a `src` dir or a `Kojamp.toml` file.
+> These components are mandatory to the program build and run.
+> Otherwise, the process will fail and the program will print an
+> error message.
