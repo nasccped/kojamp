@@ -2,7 +2,7 @@ WARN MESSAGE
 ============
 
 This project is under some changes (stack, design pattern, publishing
-concept). You can use it to have fun but isn't recommended to use for
+concept). You can use it to have fun but isn't recommended for
 commercial use!
 
 So far we have the following implementations:
