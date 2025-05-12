@@ -1,7 +1,20 @@
 [package]
 name = "kojamp"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2021"
+authors = ["nasccped <pdb.contact@gmail.com>"]
+description = "Some kind of basic 'n academic Java/Kotlin project-manager tool"
+documentation = "https://github.com/nasccped/kojamp"
+readme = "README.md"
+homepage = "https://github.com/nasccped/kojamp"
+license = "Apache-2.0"
+keywords = ["kotlin", "java", "rust", "cli", "project-manager"]
+categories = ["command-line-utilities"]
+exclude = ["target/", ".*", "WARN_MESSAGE.md", "USAGE.md", "INSTALL.md"]
+publish = ["kojamp"]
+
+[badges]
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 clap = "4.5.34"
