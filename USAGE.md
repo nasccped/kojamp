@@ -43,7 +43,7 @@ kojamp subcommand_name --help
 
 ## New
 
-Creates a Java/Kotlin project in a new folder.
+Creates a Java/Kotlin project in a new directory.
 
 | name      | alias        | position index     | usage                                        | description                                                          | required |
 | :-------- | :----------- | :----------------- | :------------------------------------------- | :------------------------------------------------------------------- | :------- |
