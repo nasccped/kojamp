@@ -12,41 +12,36 @@ Kojamp
 
 This is Kojamp, a Java/Kotlin project manager tool 📦
 
-## Requirements
-
-This tool targets Java/Kotlin projects and requires:
-
-<div align="center">
-
-| Tool(s)           | Description                       | Link                                                                                 | Required?                                           |
-| :---------------- | :-------------------------------- | :----------------------------------------------------------------------------------- | :-------------------------------------------------- |
-| `rustc` + `cargo` | Rust compiler and package manager | [rust-lang.org](https://www.rust-lang.org)                                           | Yes ✅ (source is in Rust)                           |
-| `javac` + `java`  | Java compiler and runtime         | [oracle.com](https://www.oracle.com/java/technologies/downloads/)                    | No ❌ (required only for Java compilation/execution) |
-| `kotlinc`         | Kotlin compiler                   | [kotlinlang.org](https://kotlinlang.org/docs/command-line.html#install-the-compiler) | No ❌ (same as Java)                                 |
-
-
-</div>
+> [!NOTE]
+>
+> On this page you'll find the basics of the program. If you want to
+> check the app guide more deeply, you can read the official
+> repository files:
+>
+> - [INSTALL.md](https://github.com/nasccped/kojamp/blob/main/INSTALL.md):
+> important info about the requirements and installation ⬇️
+> - [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md):
+> important info about the program usage 👨‍💻
+>
+> ---
+>
+> The project is under active development. You can check the updates
+> and the warnings by reading the
+> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md)
+> 😉
 
 ## Installation
 
-> [!IMPORTANT]
->
-> Requires [Git](https://git-scm.com/)
-
-1. Clone the repository ⬇️
+1. Clone the repository 🏷️
 
 ```sh
 git clone --depth 1 https://github.com/nasccped/kojamp
-rm -rf kojamp/.git
-# If you're at Windows Powershell, use this:
-# Remove-Item kojamp/.git -Recurse -Force
 ```
 
 2. Build and install 🪛
 
 ```sh
-cd kojamp
-cargo install --path .
+cargo install --path kojamp
 ```
 
 3. Verify installation 🔭
@@ -55,13 +50,32 @@ cargo install --path .
 kojamp --help
 ```
 
-> [!CAUTION]
+## Usage
+
+> [!WARNING]
 >
-> `Kojamp` is under active development!
->
-> For current progress, see
-> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md)
-> 😉
+> Not all operations have been implemented. Check the
+> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md).
+
+### Create a project in a new folder
+
+We can use the `new` subcommand, like this:
+
+```sh
+kojamp new ProjectExample --kind java
+```
+
+This will create a new Java project called `ProjectExample`. We can
+also create a Kotlin project and specify a path by using:
+
+```sh
+kojamp new OtherExample --kind kotlin --path specified-path
+```
+
+## License
+
+This project is under the
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) license.
 
 <div align=center>
 

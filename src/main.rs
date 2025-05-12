@@ -1,4 +1,4 @@
-mod globals;
+mod core;
 mod kojamp;
 mod utils;
 

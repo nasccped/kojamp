@@ -1,5 +1,4 @@
 use clap::{Arg, ArgAction, Command};
-use colored::Colorize;
 
 pub fn cmd() -> Command {
     Command::new("init")
@@ -7,13 +6,10 @@ pub fn cmd() -> Command {
         .about("Create a Java/Kotlin project in the current directory")
         .args([
             Arg::new("name")
-                .value_name("NAME")
+                .value_name("CAMEL_CASED_NAME")
                 .action(ArgAction::Set)
                 .required(true)
-                .help(format!(
-                    "Specify the project name {}",
-                    "(Should be CamelCased)".bright_red().italic()
-                ))
+                .help("Specifies the project name")
                 .index(1),
             Arg::new("kind")
                 .long("kind")
@@ -21,26 +17,24 @@ pub fn cmd() -> Command {
                 .required(false)
                 .value_name("JAVA|KOTLIN")
                 .action(ArgAction::Set)
-                .help(format!(
-                    "Specify the project kind {}",
-                    "(Java or Kotlin)".bright_black().italic()
-                )),
+                .help("Specifies the project kind"),
             Arg::new("authors")
                 .long("authors")
                 .short('A')
                 .required(false)
-                .value_name("AUTHORS")
+                .value_name("QUOTED_LIST")
                 .action(ArgAction::Set)
-                .help(format!(
-                    "Specify the project authors {}",
-                    "(In quotes + comma separated)".bright_red().italic()
-                )),
+                .help("Specifies the project authors"),
             Arg::new("no-git")
                 .long("no-git")
                 .required(false)
                 .action(ArgAction::SetFalse)
-                .help(format!(
-                    "Don't create a git repo when starting a new project"
-                )),
+                .help("No git repo initialization when starting new project"),
+            Arg::new("force")
+                .long("force")
+                .short('F')
+                .required(false)
+                .action(ArgAction::SetTrue)
+                .help("Force project initialization in a non empty dir"),
         ])
 }

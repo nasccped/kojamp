@@ -1,5 +1,7 @@
 use super::{subcommands as subcmds, KojampApp};
-use crate::globals::{PROGRAM_ABOUT, PROGRAM_AUTHOR, PROGRAM_NAME, PROGRAM_STYLE, PROGRAM_VERSION};
+use crate::core::consts::program::{
+    PROGRAM_ABOUT, PROGRAM_AUTHOR, PROGRAM_NAME, PROGRAM_STYLE, PROGRAM_VERSION,
+};
 use clap::Command;
 
 pub fn kojamp_app() -> Command {
