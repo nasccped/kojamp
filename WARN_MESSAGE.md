@@ -8,7 +8,7 @@ commercial use!
 So far we have the following implementations:
 
 - [x] `kojamp new`
-- [ ] `kojamp init (ini)` _(missing features such as `--force`)_
+- [x] `kojamp init (ini)`
 - [ ] `kojamp build (b)`
 - [ ] `kojamp run (r)`
 - [x] `kojamp help`
