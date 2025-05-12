@@ -11,7 +11,6 @@ license = "Apache-2.0"
 keywords = ["kotlin", "java", "rust", "cli", "project-manager"]
 categories = ["command-line-utilities"]
 exclude = ["target/", ".*", "WARN_MESSAGE.md", "USAGE.md", "INSTALL.md"]
-publish = ["kojamp"]
 
 [badges]
 maintenance = { status = "actively-developed" }
