@@ -70,9 +70,3 @@ you can still specify a path by using the `--path` flag.
 
 This project is under the
 [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) license.
-
-<div align=center>
-
-[![license: Apache](https://img.shields.io/badge/License-Apache_2.0-blue?)](#)
-
-</div>
