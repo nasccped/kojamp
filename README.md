@@ -11,17 +11,6 @@ Kojamp
 
 This is Kojamp, a Java/Kotlin project manager tool 📦
 
-> [!NOTE]
->
-> On this page you'll find the basics of the program. If you want to
-> check the app guide more deeply, you can read the official
-> repository files:
->
-> - [INSTALL.md](https://github.com/nasccped/kojamp/blob/main/INSTALL.md):
-> important info about the requirements and installation;
-> - [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md):
-> important info about the program usage.
-
 ## Installation
 
 The following command will install **Kojamp** at your machine ⬇️
