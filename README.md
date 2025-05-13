@@ -3,9 +3,8 @@
 Kojamp
 ======
 
-[![based on](https://img.shields.io/badge/based_on-rust-orange?)](https://www.rust-lang.org/)
-[![clap version](https://img.shields.io/badge/clap_crate-v4.5.34-orange?)](https://docs.rs/clap/4.5.34/clap/index.html)
-[![latest stable)](https://img.shields.io/github/v/tag/nasccped/kojamp?label=latest%20stable&color=31b564)](#)
+[![built in](https://img.shields.io/badge/built_in-rust-orange?)](https://www.rust-lang.org/)
+[![crates io](https://img.shields.io/crates/v/kojamp.svg)](https://crates.io/crates/kojamp)
 [![license: Apache](https://img.shields.io/badge/License-Apache_2.0-blue?)](#)
 
 </div>
