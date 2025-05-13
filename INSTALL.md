@@ -10,7 +10,7 @@ program and it's requirements:
 >
 > Here are global requirements which you'll must have to build and
 > run your kojamp projects:
-> - `Java` development tools, such as ([java and javac](https://www.oracle.com/java/technologies/downloads/))
+> - `Java` development tools _([java and javac](https://www.oracle.com/java/technologies/downloads/))_
 > - `Kotlin` compiler, aka [kotlinc](https://kotlinlang.org/docs/command-line.html#install-the-compiler)
 >   _(only required for **Kotlin** projects)_
 
