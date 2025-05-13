@@ -66,6 +66,13 @@ you can still specify a path by using the `--path` flag.
 > You can find all features guide at
 > [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md).
 
+## Inspirations
+
+- **[bacon](https://github.com/Canop/bacon) by [Denys Séguret](https://github.com/Canop):**
+  good crate documentation 🐷
+- **[jargo](https://github.com/Marlon-Sbardelatti/jargo) by [Marlon Sbardelatti](https://github.com/Marlon-Sbardelatti):**
+  similar project 🏝️
+
 ## License
 
 This project is under the
