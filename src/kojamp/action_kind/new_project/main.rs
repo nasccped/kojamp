@@ -90,7 +90,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
             break 'git_repository;
         }
 
-        if let Some(_) = initialize_git(&mut_path) {
+        if initialize_git(&mut_path).is_some() {
             output.push(git_init_warning());
             break 'git_repository;
         }
