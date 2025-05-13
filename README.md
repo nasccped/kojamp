@@ -31,22 +31,23 @@ This is Kojamp, a Java/Kotlin project manager tool 📦
 
 ## Installation
 
-1. Clone the repository 🏷️
+The following command will install **Kojamp** at your machine ⬇️
 
 ```sh
-git clone --depth 1 https://github.com/nasccped/kojamp
+cargo install kojamp
 ```
 
-2. Build and install 🪛
+> [!TIP]
+>
+> [`cargo`](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+> program is required to run the program above, but you can find
+> other ways of installation at
+> [INSTALL.md](https://github.com/nasccped/kojamp/blob/main/INSTALL.md).
+
+And now, you can test if the program runs 🔬
 
 ```sh
-cargo install --path kojamp
-```
-
-3. Verify installation 🔭
-
-```sh
-kojamp --help
+kojamp # A help panel is expected
 ```
 
 ## Usage
@@ -56,20 +57,21 @@ kojamp --help
 > Not all operations have been implemented. Check the
 > [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md).
 
-### Create a project in a new folder
-
-We can use the `new` subcommand, like this:
+### Create a new project
 
 ```sh
-kojamp new ProjectExample --kind java
+kojamp new CodeDude --kind java
 ```
 
-This will create a new Java project called `ProjectExample`. We can
-also create a Kotlin project and specify a path by using:
+This will create a new Java project called `CodeDude`. The project
+will be inside an auto-generated directory called `code-dude`, but
+you can still specify a path by using the `--path` flag.
 
-```sh
-kojamp new OtherExample --kind kotlin --path specified-path
-```
+> [!NOTE]
+>
+> The subcommand(s) above are just a sample of the `kojamp` features.
+> You can find all features guide at
+> [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md).
 
 ## License
 
