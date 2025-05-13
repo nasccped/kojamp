@@ -11,6 +11,11 @@ Kojamp
 
 This is Kojamp, a Java/Kotlin project manager tool 📦
 
+> [!CAUTION]
+>
+> Not all operations have been implemented. Check the
+> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md).
+
 ## Installation
 
 The following command will install **Kojamp** at your machine ⬇️
@@ -33,11 +38,6 @@ kojamp # A help panel is expected
 ```
 
 ## Usage
-
-> [!WARNING]
->
-> Not all operations have been implemented. Check the
-> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md).
 
 ### Create a new project
 
