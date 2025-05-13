@@ -12,7 +12,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
     let (cmd, matching) = (pair.0, &pair.1);
     let name = ProjectName::from(matching);
     let kind = ProjectKind::from(matching);
-    let git_repo = !matching.get_flag("no-git");
+    let git_repo = matching.get_flag("no-git");
     let (new_called, path, force) = if cmd == "new" {
         match (ProjectPath::try_from(matching), ProjectPath::try_new(false)) {
             (Ok(x), _) => (true, Ok(x), false),
@@ -90,7 +90,7 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
             break 'git_repository;
         }
 
-        if let Some(_) = initialize_git(&mut_path) {
+        if initialize_git(&mut_path).is_some() {
             output.push(git_init_warning());
             break 'git_repository;
         }

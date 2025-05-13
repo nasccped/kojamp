@@ -1,7 +1,7 @@
 use clap::builder::{styling, Styles};
 
 pub const PROGRAM_NAME: &str = "kojamp";
-pub const PROGRAM_VERSION: &str = "0.0.4";
+pub const PROGRAM_VERSION: &str = "0.0.5";
 pub const PROGRAM_ABOUT: &str = "Some kind of basic 'n academic Java/Kotlin project-manager tool";
 pub const PROGRAM_AUTHOR: &str = "nasccped, pdbt.contact@gmail.com";
 pub const PROGRAM_STYLE: Styles = Styles::styled()
