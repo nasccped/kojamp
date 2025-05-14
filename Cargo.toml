@@ -10,7 +10,7 @@ homepage = "https://github.com/nasccped/kojamp"
 license = "Apache-2.0"
 keywords = ["kotlin", "java", "rust", "cli", "project-manager"]
 categories = ["command-line-utilities"]
-exclude = ["target/", ".*", "WARN_MESSAGE.md", "USAGE.md", "INSTALL.md", "Dockerfile"]
+exclude = ["target/", ".git/", ".gitignore", "WARN_MESSAGE.md", "USAGE.md", "INSTALL.md", "Dockerfile", "scripts/"]
 
 [badges]
 maintenance = { status = "actively-developed" }
