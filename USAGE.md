@@ -91,7 +91,7 @@ at the terminal.
 <h4 id="new-project-kind">Project kind:</h4>
 
 You should specify the project kind by using the `--kind` flag (`-K`
-as alias). The project kind value can only be `"java"` or `"kotlin"`
+as alias). The project kind value can only be `java` or `kotlin`
 _(no case sensitive)_. Any different value will result in an
 `invalid project kind` error that will be reported at the terminal.
 Here's an example:
