@@ -51,7 +51,7 @@ you can still specify a path by using the `--path` flag.
 
 > [!NOTE]
 >
-> The subcommand(s) above are just a sample of the `kojamp` features.
+> The subcommand(s) above are just a sample of the `Kojamp` features.
 > You can find all features guide at
 > [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md).
 
