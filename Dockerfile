@@ -12,6 +12,12 @@ COPY src ./src
 
 RUN cargo build --release
 
+WORKDIR /kojamp_helper
+COPY scripts/kojamp-docker/Cargo.* .
+COPY scripts/kojamp-docker/src ./src
+
+RUN cargo build --release
+
 # define a separated runner image -------------------------------------------------------
 FROM alpine:3.21.3 AS runner
 RUN apk upgrade && apk add git openjdk17 bash
@@ -36,6 +42,7 @@ RUN chown -R kojampuser:kojampuser /home/kojampuser
 USER kojampuser
 WORKDIR /home/kojampuser
 COPY --chown=kojampuser:kojampuser --from=builder /kojamp_app/target/release/kojamp /bin/
+COPY --chown=kojampuser:kojampuser --from=builder /kojamp_helper/target/release/kojamp-docker /bin/
 
 # Default command (optional)
 CMD ["bash", "-l"]
