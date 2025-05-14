@@ -91,7 +91,7 @@ at the terminal.
 <h4 id="new-project-kind">Project kind:</h4>
 
 You should specify the project kind by using the `--kind` flag (`-K`
-as alias). The project kind value can only be `"java"` or `"kotlin"`
+as alias). The project kind value can only be `java` or `kotlin`
 _(no case sensitive)_. Any different value will result in an
 `invalid project kind` error that will be reported at the terminal.
 Here's an example:
@@ -184,7 +184,7 @@ Creates a Java/Kotlin project in the current directory. (Can also be called with
 | `authors` | `A`          | (called with flag) | `--authors [-A] "<COMMA_SEPARATED_AUTHORS>"` | Specifies the authors for the project being created                 | No ❌    |
 | `no-git`  | **no alias** | (called with flag) | `--no-git`                                   | Disable git repository initialization for the project being created | No ❌    |
 | `force`   | **no alias** | (called with flag) | `--force`                                    | Forces the project initializing (even if isn't an empty dir)        | No ❌    |
-| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `new` subcommand                       | No ❌    |
+| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `init` subcommand                       | No ❌    |
 
 <h3 id="init-rules-usage-and-examples">Rules, usage and examples</h3>
 
@@ -207,7 +207,7 @@ It'll also preserve some auto-generated project files/dirs such as
 
 > [!IMPORTANT]
 >
-> The directory shouldn't have a `src` dir or a `Kojamp.toml` file.
-> These components are mandatory to the program build and run.
+> The directory shouldn't have a `src`, `out` dirs or a `Kojamp.toml`
+> file. These components are created whithin the program logic.
 > Otherwise, the process will fail and the program will print an
 > error message.
