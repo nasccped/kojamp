@@ -3,7 +3,6 @@
 Kojamp
 ======
 
-[![built in](https://img.shields.io/badge/built_in-rust-orange?)](https://www.rust-lang.org/)
 [![crates io](https://img.shields.io/crates/v/kojamp.svg)](https://crates.io/crates/kojamp)
 [![license: Apache](https://img.shields.io/badge/License-Apache_2.0-blue?)](#)
 
