@@ -3,8 +3,8 @@
 Welcome to the install page. Here you'll find ways to install this
 program and it's requirements:
 
-- by [cargo and crates.io 🦀](#cargo-and-cratesio-) _(recommended)_
-- by [cargo, git and github 🐙](#cargo-git-and-github-)
+- by [cargo and crates.io](#cargo-and-cratesio-) 🦀 _(recommended)_
+- by [cargo, git and github](#cargo-git-and-github-) 🐙
 
 > [!NOTE]
 >
