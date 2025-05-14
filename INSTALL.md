@@ -5,6 +5,7 @@ program and it's requirements:
 
 - by [cargo and crates.io](#cargo-and-cratesio-) 🦀 _(recommended)_
 - by [cargo, git and github](#cargo-git-and-github-) 🐙
+- by [docker](#docker-) 🐳
 
 > [!NOTE]
 >
@@ -62,3 +63,18 @@ cargo install --path .
 ```sh
 kojamp # a help panel is expected
 ```
+
+## Docker 🐳
+
+> [!WARNING]
+>
+> [`docker`](https://www.docker.com/) _(^27.5.1)_ is required!
+
+Just run this:
+
+```sh
+docker run --rm -it nasccped/kojamp
+```
+
+It'll download the image from DockerHub, run the container in a TTY
+and drop all the content when logging out.
