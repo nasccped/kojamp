@@ -38,6 +38,7 @@ RUN sed -i 's/\r$//' /tmp/.bashrc && \
     chown kojampuser:kojampuser /home/kojampuser/.bashrc
 
 RUN chown -R kojampuser:kojampuser /home/kojampuser
+RUN chown -R kojampuser:kojampuser /home/kojampuser/projects
 
 USER kojampuser
 WORKDIR /home/kojampuser
