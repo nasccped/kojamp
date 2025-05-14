@@ -16,11 +16,9 @@ program and it's requirements:
 
 ## Cargo and crates.io 🦀
 
-### List of requirements
-
-- [cargo package manager](https://www.rust-lang.org/tools/install) _`(^1.83.0)`_
-
-### Step by step
+> [!WARNING]
+>
+> [`cargo`](https://www.rust-lang.org/tools/install) _(^1.83.0)_ is required!
 
 1. Install using the `cargo` command line tool:
 
@@ -36,12 +34,10 @@ kojamp # a help panel is expected
 
 ## Cargo, Git and GitHub 🐙
 
-### List of requirements
-
-- [git](https://git-scm.com/)
-- [cargo package manager](https://www.rust-lang.org/tools/install) _`(^1.83.0)`_
-
-### Step by step
+> [!WARNING]
+>
+> [`cargo`](https://www.rust-lang.org/tools/install) _(^1.83.0)_ and
+> [`git`](https://git-scm.com/) is required!
 
 1. Clone the remote repository:
 
