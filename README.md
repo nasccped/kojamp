@@ -3,13 +3,12 @@
 Kojamp
 ======
 
-[![built in](https://img.shields.io/badge/built_in-rust-orange?)](https://www.rust-lang.org/)
 [![crates io](https://img.shields.io/crates/v/kojamp.svg)](https://crates.io/crates/kojamp)
 [![license: Apache](https://img.shields.io/badge/License-Apache_2.0-blue?)](#)
 
 </div>
 
-This is Kojamp, a Java/Kotlin project manager tool 📦
+This is **Kojamp**, a Java/Kotlin project manager tool 📦
 
 > [!CAUTION]
 >
@@ -51,7 +50,7 @@ you can still specify a path by using the `--path` flag.
 
 > [!NOTE]
 >
-> The subcommand(s) above are just a sample of the `kojamp` features.
+> The subcommand(s) above are just a sample of the `Kojamp` features.
 > You can find all features guide at
 > [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md).
 
