@@ -184,7 +184,7 @@ Creates a Java/Kotlin project in the current directory. (Can also be called with
 | `authors` | `A`          | (called with flag) | `--authors [-A] "<COMMA_SEPARATED_AUTHORS>"` | Specifies the authors for the project being created                 | No ❌    |
 | `no-git`  | **no alias** | (called with flag) | `--no-git`                                   | Disable git repository initialization for the project being created | No ❌    |
 | `force`   | **no alias** | (called with flag) | `--force`                                    | Forces the project initializing (even if isn't an empty dir)        | No ❌    |
-| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `new` subcommand                       | No ❌    |
+| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `init` subcommand                       | No ❌    |
 
 <h3 id="init-rules-usage-and-examples">Rules, usage and examples</h3>
 
