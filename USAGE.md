@@ -207,7 +207,7 @@ It'll also preserve some auto-generated project files/dirs such as
 
 > [!IMPORTANT]
 >
-> The directory shouldn't have a `src` dir or a `Kojamp.toml` file.
-> These components are mandatory to the program build and run.
+> The directory shouldn't have a `src`, `out` dirs or a `Kojamp.toml`
+> file. These components are mandatory to the program build and run.
 > Otherwise, the process will fail and the program will print an
 > error message.
