@@ -117,21 +117,20 @@ pub fn gitignore() -> &'static str {
 
 pub fn toml(name: &str, kind: &str, authors: Option<Vec<String>>) -> String {
     format!(
-        "\
-        # This file was created using the kojamp-CLI app.\n\
-        # Manual changes aren't encouraged!\n\
-        # If you found any error or have trouble using it, consider\n\
-        # opening the official repository:\n\
-        #      https://github.com/nasccped/kojamp\n\
-        \n\
-        [project]\n\
-        name = \"{}\"\n\
-        kind = \"{}\"\n\
-        {}",
+        r#"# This file was created using the kojamp-CLI app.
+# Manual changes aren't encouraged!
+# If you found any error or have trouble using it, consider
+# opening the official repository: {}
+
+[project]
+name = "{}"
+kind = "{}"{}"#,
+        PROGRAM_REPO_URL,
         name,
         kind,
         if let Some(aut) = authors {
-            format!("authors = [{}]", aut.join(", "))
+            let quoted_authors: Vec<String> = aut.iter().map(|a| format!("\"{}\"", a)).collect();
+            format!("\nauthors = [{}]", quoted_authors.join(", "))
         } else {
             "".into()
         }
