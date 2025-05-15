@@ -4,7 +4,10 @@ pub fn java(class_name: &str) -> String {
     let comment_section = [
         format!("/**"),
         format!(" * This file was generated using kojamp CLI-app"),
-        format!(" * Take a look at the official repository at") + PROGRAM_REPO_URL,
+        format!(
+            " * Take a look at the official repository at {}",
+            PROGRAM_REPO_URL
+        ),
         format!(" */"),
     ]
     .join("\n");
