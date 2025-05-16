@@ -1,3 +1,5 @@
+from colors import RESET_ESCAPE, YELLOW_NONE
+
 class BaseError:
     """
     All error classes in this program are derived from `BaseError`
@@ -8,7 +10,7 @@ class BaseError:
     error messages!
     """
 
-    def __init__(self, message: str | list[str], exit_stts: int = 1) -> None:
+    def __init__(self, message: str | list[str], exit_stts: int = 1):
         """
         Used only by the `super().__init__()` function from child
         classes.
@@ -17,7 +19,7 @@ class BaseError:
         self.error_message = message
         self.exit_status   = exit_stts
 
-    def print_message(self) -> None:
+    def print_content(self):
         """
         Turn the error message into 'printable' type (into `str` if
         `list[str]`), and then, prints it.
@@ -25,15 +27,14 @@ class BaseError:
         message = self.error_message
         if isinstance(message, list):
             message = "\n".join(message)
-        print(message)
+        title = self.__class__.__name__
+        print(
+            f"{YELLOW_NONE}{title}.{RESET_ESCAPE}",
+            end="\n\n"
+        )
+        print(message, end="\n\n")
 
-    def exit_with_status(self) -> None:
+    @staticmethod
+    def exit_with_status(status: int):
         import sys
-        sys.exit(self.exit_status)
-
-    def raise_err(self):
-        """
-        Do the error termination job (print message + kill program).
-        """
-        self.print_message()
-        self.exit_with_status()
+        sys.exit(status)
