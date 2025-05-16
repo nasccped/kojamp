@@ -46,8 +46,4 @@ get_ps1() {
   echo -e "${WHITE_ESCAPE}[$luser${WHITE_ESCAPE}.\$(get_cur_dir) \$(get_branch)${WHITE_ESCAPE}]\$${RESET_ESCAPE}"
 }
 
-echo -e "Welcome to the ${YELLOW_ESCAPE}Kojamp${RESET_ESCAPE} container!"
-echo -e "If you're new here, type \`${GREEN_ESCAPE}kojamp-docker${RESET_ESCAPE}\` or"
-echo -e "check out the official repository (${CYAN_ESCAPE}https://github.com/nasccped/kojamp${RESET_ESCAPE})"
-
 export PS1="$(get_ps1) "
