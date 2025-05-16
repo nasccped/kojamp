@@ -1,2 +1,2 @@
-from .base_error import BaseError
-from .derived_errors import FileNotFound
+# Avoid using local __init__ imports
+# the interpreter is arguing about recursive imports :^(
