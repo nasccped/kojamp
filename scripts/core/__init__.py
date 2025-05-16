@@ -1,1 +1,2 @@
-from .target_files import CARGO_TOML
+# Avoid using local __init__ imports
+# the interpreter is arguing about recursive imports :^(
