@@ -59,4 +59,5 @@ if __name__ == "__main__":
         BaseError.exit_with_status(1)
 
     # else, call main
+    clear()
     main()
