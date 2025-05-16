@@ -1,5 +1,6 @@
 from error_types.base_error import BaseError
-from error_types.derived_errors import FileNotFound
+from models.file import File
+from models.dockerhub_bridge import DockerHubBridge
 
 class Project:
     """
@@ -20,22 +21,15 @@ class Project:
         - ...
     """
 
-    def __init__(self) -> None:
-        from core import target_files
-        from .file import File
-
-        # load File object + error obj list
-        file_obj = File(target_files.CARGO_TOML)
-        error_list: list[tuple[bool, BaseError]] = [
-            (not file_obj.it_exists(), FileNotFound.from_file(file_obj))
-        ]
-
+    def __init__(self, file: File, dockerhub_bridge: DockerHubBridge) -> None:
         # set them to Project fields
-        self.file: File = file_obj
-        self.error_queue = error_list
+        errors = [file.unwrap_err(), dockerhub_bridge.unwrap_err()]
+        errors = [e for e in errors if e]
+        self.file: File = file
+        self.dhub = dockerhub_bridge
+        self.errors = errors \
+            if len(errors) > 0 \
+            else None
 
-    # get the first error (if it exists)
-    def unwrap_err(self) -> None | BaseError:
-        for cond, obj in self.error_queue:
-            if cond: return obj
-        return None
+    def get_error_list(self) -> None | list[BaseError]:
+        return self.errors
