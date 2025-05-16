@@ -1,6 +1,5 @@
 from colors import RED_NONE, RESET_ESCAPE, CYAN_NONE
 from error_types.base_error import BaseError
-from models.file import File
 
 class FileNotFound(BaseError):
     """
@@ -8,19 +7,16 @@ class FileNotFound(BaseError):
     doesn't exists.
     """
 
-    def __init__(self, message: str | list[str], exit: int = 1) -> None:
-        super().__init__(message, exit)
-
-    @classmethod
-    def from_file(cls, file: File):
-        """
-        Create the FileNotFound Object from a File Object.
-        """
-        red_file = RED_NONE + file.get_file_name() + RESET_ESCAPE
+    def __init__(self, file_name: str) -> None:
+        red_file = RED_NONE + file_name + RESET_ESCAPE
+        repository_root_path = CYAN_NONE + "repository root path" + RESET_ESCAPE
+        wrong_branch = RED_NONE + "wrong branch" + RESET_ESCAPE
+        permission_issues = RED_NONE + "permission issues" + RESET_ESCAPE
         message = [
             f"Couldn't find the `{red_file}` file!",
             "",
-            f"You should run this script in the {CYAN_NONE}repository root path{RESET_ESCAPE}.",
-            f"You may be on the {RED_NONE}wrong branch{RESET_ESCAPE} too.",
+            f"You should run this script in the {repository_root_path}.",
+            f"You may be on the {wrong_branch} too.",
+            f"This can be due to {permission_issues}, btw."
         ]
-        return cls(message)
+        super().__init__(message)
