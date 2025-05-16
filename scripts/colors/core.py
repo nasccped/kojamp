@@ -1,0 +1,6 @@
+RESET_ESCAPE = "\x1b[0m"
+RED_NONE     = "\x1b[91m"
+GREEN_NONE   = "\x1b[92m"
+WHITE_NONE   = "\x1b[97m"
+CYAN_NONE    = "\x1b[96m"
+YELLOW_NONE  = "\x1b[93m"
