@@ -2,7 +2,7 @@ use clap::{Arg, ArgAction, Command};
 
 pub fn cmd() -> Command {
     Command::new("init")
-        .alias("ini")
+        .visible_alias("ini")
         .about("Create a Java/Kotlin project in the current directory")
         .args([
             Arg::new("name")
