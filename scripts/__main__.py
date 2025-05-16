@@ -1,3 +1,11 @@
+"""
+This is the publish script main file!
+
+It should be ran in the repository root path.
+You don't need to specify the file entry. Just use
+`python <PATH_NAME> (scripts for this case)`
+"""
+
 def print_banner():
     from panel import banner
     print()
