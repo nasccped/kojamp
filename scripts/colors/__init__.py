@@ -3,4 +3,5 @@ from .core import \
     RED_NONE,     \
     GREEN_NONE,   \
     WHITE_NONE,   \
-    CYAN_NONE
+    CYAN_NONE,    \
+    YELLOW_NONE
