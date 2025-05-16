@@ -27,12 +27,12 @@ RUN adduser -D -s /bin/bash -h /home/kojampuser kojampuser && \
     mkdir -p /home/kojampuser/projects;
 
 
-COPY scripts/.bash_profile /tmp/.bash_profile
+COPY docker/dot-bash/.bash_profile /tmp/.bash_profile
 RUN sed -i 's/\r$//' /tmp/.bash_profile && \
     mv /tmp/.bash_profile /home/kojampuser/.bash_profile && \
     chown kojampuser:kojampuser /home/kojampuser/.bash_profile
 
-COPY scripts/.bashrc /tmp/.bashrc
+COPY docker/dot-bash/.bashrc /tmp/.bashrc
 RUN sed -i 's/\r$//' /tmp/.bashrc && \
     mv /tmp/.bashrc /home/kojampuser/.bashrc && \
     chown kojampuser:kojampuser /home/kojampuser/.bashrc
