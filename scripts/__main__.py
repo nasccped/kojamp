@@ -12,8 +12,8 @@ from error_types.base_error import BaseError
 from models.dockerhub_bridge import DockerHubBridge
 from models.file import File
 from models.project import Project
-from panel.banner import program_begin, program_errors
-from panel.screen import clear
+from visual.banner import program_begin, program_errors
+from visual.screen import clear
 
 def waiting_alert():
     cyan_files = CYAN_NONE + "files" + RESET_ESCAPE
