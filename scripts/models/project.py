@@ -1,6 +1,7 @@
 from error_types.base_error import BaseError
 from models.file import File
 from models.dockerhub_bridge import DockerHubBridge
+from models.crates_io_bridge import CratesIOBridge
 
 class Project:
     """
@@ -21,15 +22,29 @@ class Project:
         - ...
     """
 
-    def __init__(self, file: File, dockerhub_bridge: DockerHubBridge) -> None:
-        # set them to Project fields
-        errors = [file.unwrap_err(), dockerhub_bridge.unwrap_err()]
+    def __init__(
+        self,
+        file: File,
+        dockerhub_bridge: DockerHubBridge,
+        crates_io_bridge: CratesIOBridge
+    ) -> None:
+        # unwrap errors in a list
+        errors = [
+            file.unwrap_err(),
+            dockerhub_bridge.unwrap_err(),
+            crates_io_bridge.unwrap_err()
+        ]
+        # filter only when not None
         errors = [e for e in errors if e]
-        self.file: File = file
-        self.dhub = dockerhub_bridge
-        self.errors = errors \
+        # set None if empty list
+        errors = errors \
             if len(errors) > 0 \
             else None
+
+        self.file = file
+        self.dhub = dockerhub_bridge
+        self.crate = crates_io_bridge
+        self.errors = errors
 
     def get_error_list(self) -> None | list[BaseError]:
         return self.errors
