@@ -6,9 +6,10 @@ You don't need to specify the file entry. Just use
 `python <PATH_NAME> (scripts for this case)`
 """
 from colors import CYAN_NONE, RESET_ESCAPE, RED_NONE, GREEN_NONE
-from core.env import IMAGE_NAME
+from core.env import CRATE_NAME, IMAGE_NAME
 from core.target_files import CARGO_TOML
 from error_types.base_error import BaseError
+from models.crates_io_bridge import CratesIOBridge
 from models.dockerhub_bridge import DockerHubBridge
 from models.file import File
 from models.project import Project
@@ -24,8 +25,9 @@ def waiting_alert():
     print(f"This can {take_a_while}...")
 
 def load_models():
-    global docker_bridge, cargo_file
+    global docker_bridge, crates_bridge, cargo_file
     docker_bridge = DockerHubBridge(IMAGE_NAME)
+    crates_bridge = CratesIOBridge(CRATE_NAME)
     cargo_file = File(CARGO_TOML)
 
 def print_script_banner():
@@ -48,9 +50,8 @@ if __name__ == "__main__":
     print()
 
     load_models()
-
     # load project from global fields
-    project = Project(cargo_file, docker_bridge)
+    project = Project(cargo_file, docker_bridge, crates_bridge)
     # if any error found (exit with status)
     if errs := project.get_error_list():
         print_error_banner()
