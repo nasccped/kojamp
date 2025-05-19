@@ -36,6 +36,20 @@ class ProgramVersion:
 
         # separate each version field into parsed values
         maj, min, pat = [int(v) for v in vers.split(".")]
+        # crate json (dict) object
+        json_value: dict[str, str | dict] = {
+            "value": value
+        }
+        fields_binding: dict[str, int | str] = {
+            "major": maj,
+            "minor": min,
+            "patch": pat
+        }
+        # set optional prefix
+        if prefix:
+            fields_binding["prefix"] = prefix
+
+        json_value["fields"] = fields_binding
 
         # set all values to inner attributes
         self.value = value
@@ -43,17 +57,7 @@ class ProgramVersion:
         self.major = maj
         self.minor = min
         self.patch = pat
-        self.json = {
-            "value": value,
-            "fields": {
-                "major": maj,
-                "minor": min,
-                "patch": pat,
-            }
-        }
-        # set optional prefix
-        if prefix:
-            self.json["fields"]["prefix"] = prefix
+        self.json = json_value
 
     def __lt__(self, other) -> bool:
         """
