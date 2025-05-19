@@ -22,7 +22,7 @@ def get_package_version_from_toml(
     if not (result := pattern_in_liststr_sentence(pat, toml_file)):
         return None
 
-    pat = r'version[\s\S]=[\s\S]"[^"]*"'
+    pat = r'version[\s\S]*?=[\s\S]*?"[^"]*"'
 
     if not (result := pattern_in_str_sentence(pat, result)):
         return None
