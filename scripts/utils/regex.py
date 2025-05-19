@@ -29,4 +29,17 @@ def pattern_in_liststr_sentence(
     to the `pattern_in_str_sentence`. Consider reading this function
     help/doc.
     """
-    return pattern_in_str_sentence(pattern, "\n".join(sentence), target_index)
+    return pattern_in_str_sentence(
+        pattern,
+        "\n".join(sentence),
+        target_index
+    )
+
+def patternlist_in_str(
+    pattern: str,
+    sentence: str
+) -> list[str]:
+    """
+    Take a given str and returns all matches (list) from a pattern.
+    """
+    return re.findall(pattern, sentence)
