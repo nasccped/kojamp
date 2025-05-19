@@ -24,23 +24,17 @@ def load_models():
     cargo_file = File(CARGO_TOML)
 
 def print_script_banner():
-    print()
     program_begin()
-    print()
 
 def print_error_banner():
-    print()
     program_errors()
-    print()
 
 def main():
     # TODO: to implement
     print(GREEN_NONE + "To implement..." + RESET_ESCAPE)
 
 if __name__ == "__main__":
-    print()
     waiting_alert()
-    print()
 
     load_models()
     # load project from global fields
