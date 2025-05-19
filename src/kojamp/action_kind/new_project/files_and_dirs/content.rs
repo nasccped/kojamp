@@ -30,7 +30,7 @@ public class {} {{
 
     public static void main(String[] args) {{
         String projectName = "{}";
-        println(greenGreeting(programName));
+        println(greenGreeting(projectName));
     }}
 
 }}
