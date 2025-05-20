@@ -2,6 +2,7 @@ import json
 import base64
 from core.urls import CRATES_IO_URL
 from error_types.derived_errors import UnfetchableURL
+from models.program_version import ProgramVersion
 import requests
 
 def get_versions_from_cratesio_ghub(target_crate: str) -> list[str] | UnfetchableURL:
@@ -51,14 +52,17 @@ class CratesIOBridge:
 
     def __init__(self, crate_name: str) -> None:
         versions = get_versions_from_cratesio_ghub(crate_name)
-        error = None
 
         if isinstance(versions, UnfetchableURL):
+            latest = None
             error = versions
-            versions = None
+        else:
+            versions.sort()
+            latest = ProgramVersion(versions[-1])
+            error = None
 
-        self.crate_name = crate_name
-        self.versions = versions
+        self.crate_name: str = crate_name
+        self.latest = latest
         self.error = error
 
     def unwrap_err(self) -> None | UnfetchableURL:
