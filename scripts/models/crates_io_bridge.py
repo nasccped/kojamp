@@ -1,11 +1,12 @@
 import json
 import base64
 from core.urls import CRATES_IO_URL
-from core.env import CRATE_NAME
+from core.env import CRATE_NAME, GITHUB_TOKEN_PATH
 from error_types.derived_errors import UnfetchableURL
 from error_types.derived_errors import UnfetchableFileData
 from models.program_version import ProgramVersion
 import requests
+from utils.file import read_file_else_none
 
 def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
     """
@@ -28,6 +29,13 @@ def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
         target_crate[i : i + 2] \
             for i in range(0, len(target_crate), 2)
     ]
+    my_token = "" \
+        if (content := read_file_else_none(GITHUB_TOKEN_PATH)) is None \
+        else content[0].replace("\n", "")
+    headers = {
+        "Authorization": f"token {my_token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
 
     # while there's items within url parts
     while len(url_parts) > 0:
@@ -35,7 +43,7 @@ def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
         full_crate_url = "/".join(
             [contents_url, path_url, target_crate]
         )
-        conn = requests.get(full_crate_url)
+        conn = requests.get(full_crate_url, headers = headers)
 
         # if url returned OK
         if conn.status_code == 200:
