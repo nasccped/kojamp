@@ -1,7 +1,9 @@
 from core.urls import DOCKERHUB_URL
 from models.program_version import ProgramVersion
 from error_types.derived_errors import UnfetchableURL
+from error_types.derived_errors import DockerEngineError
 from utils.regex import pattern_in_str_sentence
+from utils.cmdline import command_is_ok
 import requests
 
 def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
@@ -44,9 +46,12 @@ class DockerHubBridge:
             error = latest
             latest = None
 
+        if not command_is_ok("docker", ["images"]):
+            error = DockerEngineError()
+
         self.image_name = image_name
         self.latest = latest
         self.error = error
 
-    def unwrap_err(self) -> None | UnfetchableURL:
+    def unwrap_err(self) -> None | UnfetchableURL | DockerEngineError:
         return self.error
