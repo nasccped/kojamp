@@ -15,7 +15,6 @@ from models.file import File
 from models.project import Project
 from visual.alerts import waiting_alert
 from visual.banner import program_begin, program_errors
-from visual.screen import clear
 
 def load_models():
     global docker_bridge, crates_bridge, cargo_file
@@ -46,6 +45,4 @@ if __name__ == "__main__":
         print_errors(errs)
         BaseError.exit_with_status(1)
 
-    # else, call main
-    clear()
     main()
