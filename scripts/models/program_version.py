@@ -1,4 +1,3 @@
-import json
 from colors import RED_NONE, RESET_ESCAPE, GREEN_NONE
 from utils.regex import patternlist_in_str
 
@@ -36,20 +35,6 @@ class ProgramVersion:
 
         # separate each version field into parsed values
         maj, min, pat = [int(v) for v in vers.split(".")]
-        # crate json (dict) object
-        json_value: dict[str, str | dict] = {
-            "value": value
-        }
-        fields_binding: dict[str, int | str] = {
-            "major": maj,
-            "minor": min,
-            "patch": pat
-        }
-        # set optional prefix
-        if prefix:
-            fields_binding["prefix"] = prefix
-
-        json_value["fields"] = fields_binding
 
         # set all values to inner attributes
         self.value = value
@@ -57,7 +42,6 @@ class ProgramVersion:
         self.major = maj
         self.minor = min
         self.patch = pat
-        self.json = json_value
 
     def __lt__(self, other) -> bool:
         """
@@ -89,8 +73,9 @@ class ProgramVersion:
         return False
 
 
-    def __str__(self) -> str:
-        """
-        Pretty printing with json
-        """
-        return json.dumps(self.json, indent=4)
+    def __str__(self, outher_class: str | None = None) -> str:
+        result = "ProgramVersion"
+        if outher_class:
+            result += f"<{outher_class}>"
+        result += f"({self.value})"
+        return result
