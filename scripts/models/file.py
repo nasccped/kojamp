@@ -1,4 +1,3 @@
-import re
 from error_types.base_error import BaseError
 from error_types.derived_errors import FileNotFound
 from error_types.derived_errors import UnfetchableFileData
