@@ -1,7 +1,7 @@
 import re
 from error_types.base_error import BaseError
 from error_types.derived_errors import FileNotFound
-from error_types.derived_errors import UnfetchableDataFile
+from error_types.derived_errors import UnfetchableFileData
 from models.program_version import ProgramVersion
 from utils.file import read_file_else_none
 from utils.regex import pattern_in_liststr_sentence, pattern_in_str_sentence
@@ -48,7 +48,7 @@ class File:
 
         error = FileNotFound(file_name) \
             if content is None \
-            else UnfetchableDataFile(file_name, "package[\"version\"]") \
+            else UnfetchableFileData(file_name, "package[\"version\"]") \
                 if version is None \
                 else None
 

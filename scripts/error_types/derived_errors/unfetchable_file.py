@@ -1,7 +1,7 @@
 from colors import RED_NONE, RESET_ESCAPE, GREEN_NONE
 from error_types.base_error import BaseError
 
-class UnfetchableDataFile(BaseError):
+class UnfetchableFileData(BaseError):
     """
     Base error when trying to fetch data field from a given file path
     and it returns an error (file/field doesn't exists)

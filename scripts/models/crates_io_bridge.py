@@ -3,7 +3,7 @@ import base64
 from core.urls import CRATES_IO_URL
 from core.env import CRATE_NAME
 from error_types.derived_errors import UnfetchableURL
-from error_types.derived_errors import UnfetchableDataFile
+from error_types.derived_errors import UnfetchableFileData
 from models.program_version import ProgramVersion
 import requests
 
@@ -52,7 +52,7 @@ def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
 
 def get_versionlist_from_crateghub_url(
     url: str
-) -> list[str] | UnfetchableURL | UnfetchableDataFile:
+) -> list[str] | UnfetchableURL | UnfetchableFileData:
     """
     Extract `list[str]` of an crates.io json content.
 
@@ -80,7 +80,7 @@ def get_versionlist_from_crateghub_url(
     try:
         returnable = [row[target_json_field] for row in data_rows]
     except:
-        returnable = UnfetchableDataFile(
+        returnable = UnfetchableFileData(
             f"{url}[\"{target_conn_field}\"]",
             f"{{ {target_json_field} }}"
         )
@@ -111,7 +111,7 @@ class CratesIOBridge:
         result = get_versionlist_from_crateghub_url(final_url)
 
         # if is error
-        if isinstance(result, UnfetchableURL | UnfetchableDataFile):
+        if isinstance(result, UnfetchableURL | UnfetchableFileData):
             self.error = result
             return
 
@@ -120,5 +120,5 @@ class CratesIOBridge:
         versions.sort()
         self.latest = versions[-1]
 
-    def unwrap_err(self) -> None | UnfetchableURL | UnfetchableDataFile:
+    def unwrap_err(self) -> None | UnfetchableURL | UnfetchableFileData:
         return self.error
