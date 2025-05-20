@@ -8,6 +8,5 @@ def waiting_alert():
     print()
     print(f"Fetching data from {cyan_files} and {cyan_urls}!")
     print(f"This can {take_a_while}...")
-    print()
 
 
