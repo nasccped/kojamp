@@ -26,8 +26,10 @@ def load_models():
 def print_script_banner():
     program_begin()
 
-def print_error_banner():
+def print_errors(errors: list[BaseError]):
     program_errors()
+    for e in errors:
+        e.print_content()
 
 def main():
     # TODO: to implement
@@ -41,9 +43,7 @@ if __name__ == "__main__":
     project = Project(cargo_file, docker_bridge, crates_bridge)
     # if any error found (exit with status)
     if errs := project.get_error_list():
-        print_error_banner()
-        for e in errs:
-            e.print_content()
+        print_errors(errs)
         BaseError.exit_with_status(1)
 
     # else, call main
