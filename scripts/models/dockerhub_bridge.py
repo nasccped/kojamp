@@ -1,11 +1,12 @@
 from core.urls import DOCKERHUB_URL
+from models.program_version import ProgramVersion
 from error_types.derived_errors import UnfetchableURL
+from utils.regex import pattern_in_str_sentence
 import requests
-import re
 
-def get_docker_tags_list(url: str) -> list[str] | UnfetchableURL:
+def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
     """
-    Just take the url json info recursively to extract all tag values
+    Just take the url json info recursively to extract the tag value
     """
     next_page = url
     tags = []
@@ -17,10 +18,15 @@ def get_docker_tags_list(url: str) -> list[str] | UnfetchableURL:
         data = response.json()
         pat = r"(\d+.\d+.\d)"
         filtered = [d["name"] for d in data["results"]]
-        tags.extend(f for f in filtered if re.search(pat, f))
+        tags.extend(
+            ProgramVersion(f) \
+                for f in filtered \
+                if pattern_in_str_sentence(pat, f)
+        )
         next_page = data.get("next")
 
-    return tags
+    tags.sort()
+    return tags[-1]
 
 class DockerHubBridge:
     """
@@ -31,20 +37,16 @@ class DockerHubBridge:
     def __init__(self, image_name: str) -> None:
         full_url = DOCKERHUB_URL + "/" + image_name
         tags_url = full_url + "/tags"
-        latest_tag = get_docker_tags_list(tags_url)
+        latest = get_docker_latest_tag(tags_url)
         error = None
 
-        if isinstance(latest_tag, UnfetchableURL):
-            error = latest_tag
-            latest_tag = []
+        if isinstance(latest, UnfetchableURL):
+            error = latest
+            latest = None
 
         self.image_name = image_name
-        self.full_url = full_url
-        self.tags_url = tags_url
+        self.latest = latest
         self.error = error
-
-    def get_full_url(self) -> str:
-        return self.full_url
 
     def unwrap_err(self) -> None | UnfetchableURL:
         return self.error
