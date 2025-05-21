@@ -16,7 +16,7 @@ from models.local_git_bridge import LocalGitBridge
 from models.project import Project
 from models.remote_git_bridge import RemoteGitBridge
 from visual.alerts import waiting_alert
-from visual.banner import program_begin, program_errors
+from visual.banner import init_banner, error_banner
 
 def load_models():
     global \
@@ -32,11 +32,8 @@ def load_models():
     r_git_bridge = RemoteGitBridge(REMOTE_REPOSITORY)
     l_git_bridge = LocalGitBridge()
 
-def print_script_banner():
-    program_begin()
-
 def print_errors_and_exit(errors: list[BaseError], status: int):
-    program_errors()
+    error_banner()
     for e in errors:
         e.print_content()
     BaseError.exit_with_status(status)
@@ -61,7 +58,8 @@ if __name__ == "__main__":
     if errs := project.get_error_list():
         print_errors_and_exit(errs, 1)
 
-    print()
+    init_banner()
+
     project.print_versions()
     print()
 
