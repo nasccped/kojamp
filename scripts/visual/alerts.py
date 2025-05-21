@@ -29,3 +29,14 @@ def local_tag_conflict(git_tag: str, file_version: str):
     print(f"file version is {green_file_version}. To proceed, the")
     print(f"local git tag should be the {red_same} as the")
     print(f"{file_version} field!")
+
+def local_version_should_be_greater_than_docker(
+    local_version: str, docker_version: str
+):
+    green_local_ver = apply(local_version, GREEN_NONE)
+    green_docker_ver = apply(docker_version, GREEN_NONE)
+    print(f"The local version is {green_local_ver} but the")
+    print(f"latest docker registry is {green_docker_ver}. To proceed, the")
+    print(f"local version should be greater than the")
+    print(f"latest registry field!")
+
