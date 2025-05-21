@@ -1,3 +1,4 @@
+from typing import Optional
 from colors import GREEN_NONE, RESET_ESCAPE
 from error_types.base_error import BaseError
 from models.file import File
@@ -48,12 +49,12 @@ class Project:
             if len(errors) > 0 \
             else None
 
-        self.file = file
-        self.dhub = dockerhub_bridge
-        self.crate = crates_io_bridge
-        self.remote = r_git_bridge
-        self.local = l_git_bridge
-        self.errors = errors
+        self.file: File = file
+        self.dhub: DockerHubBridge = dockerhub_bridge
+        self.crate: CratesIOBridge = crates_io_bridge
+        self.remote: RemoteGitBridge = r_git_bridge
+        self.local: LocalGitBridge = l_git_bridge
+        self.errors: Optional[list[BaseError]] = errors
 
     def get_error_list(self) -> None | list[BaseError]:
         return self.errors

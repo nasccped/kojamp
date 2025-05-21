@@ -1,6 +1,6 @@
+from typing import Optional
 from error_types.derived_errors import CommandError
 from models.program_version import ProgramVersion
-from error_types.derived_errors import UnfetchableURL
 from utils.cmdline import command_is_ok, get_command_output
 
 def get_latest_tag() -> ProgramVersion | CommandError:
@@ -28,12 +28,12 @@ class LocalGitBridge:
         latest = get_latest_tag()
         error = None
 
-        if isinstance(latest, UnfetchableURL):
+        if isinstance(latest, CommandError):
             error = latest
             latest = None
 
-        self.latest = latest
-        self.error = error
+        self.latest: Optional[ProgramVersion] = latest
+        self.error: Optional[CommandError] = error
 
-    def unwrap_err(self) -> None | UnfetchableURL:
+    def unwrap_err(self) -> Optional[CommandError]:
         return self.error

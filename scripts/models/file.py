@@ -2,6 +2,7 @@ from error_types.base_error import BaseError
 from error_types.derived_errors import FileNotFound
 from error_types.derived_errors import UnfetchableFileData
 from models.program_version import ProgramVersion
+from typing import Optional
 from utils.file import read_file_else_none
 from utils.regex import pattern_in_liststr_sentence, pattern_in_str_sentence
 
@@ -47,16 +48,17 @@ class File:
 
         error = FileNotFound(file_name) \
             if content is None \
-            else UnfetchableFileData(file_name, "package[\"version\"]") \
-                if version is None \
-                else None
+            else UnfetchableFileData(
+                file_name,
+                "package[\"version\"]"
+            ) if version is None else None
 
         self.file_name: str = file_name
-        self.file_content: list[str] | None = content
-        self.version: ProgramVersion | None = None \
+        self.file_content: Optional[list[str]] = content
+        self.version: Optional[ProgramVersion] = None \
             if version is None \
             else ProgramVersion(version)
-        self.error = error
+        self.error: Optional[BaseError] = error
 
     def get_file_name(self) -> str:
         return self.file_name

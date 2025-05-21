@@ -1,5 +1,7 @@
+from typing import Optional
 from core.env import GITHUB_TOKEN_PATH
 from core.urls import GITHUB_API_URL
+from error_types.base_error import BaseError
 from models.program_version import ProgramVersion
 from error_types.derived_errors import UnfetchableURL
 from error_types.derived_errors import UnfetchableFileData
@@ -51,9 +53,9 @@ class RemoteGitBridge:
             error = latest
             latest = None
 
-        self.repo_name = remote_repo
-        self.latest = latest
-        self.error = error
+        self.repo_name: str = remote_repo
+        self.latest: Optional[ProgramVersion] = latest
+        self.error: Optional[BaseError] = error
 
-    def unwrap_err(self) -> None | UnfetchableURL:
+    def unwrap_err(self) -> Optional[BaseError]:
         return self.error

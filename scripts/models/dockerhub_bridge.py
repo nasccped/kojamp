@@ -1,4 +1,6 @@
+from typing import Optional
 from core.urls import DOCKERHUB_URL
+from error_types.base_error import BaseError
 from models.program_version import ProgramVersion
 from error_types.derived_errors import UnfetchableURL
 from error_types.derived_errors import CommandError
@@ -52,9 +54,9 @@ class DockerHubBridge:
         if not command_is_ok(docker_command, docker_args):
             error = CommandError(docker_command, docker_args)
 
-        self.image_name = image_name
-        self.latest = latest
-        self.error = error
+        self.image_name: str = image_name
+        self.latest: Optional[ProgramVersion] = latest
+        self.error: Optional[BaseError] = error
 
-    def unwrap_err(self) -> None | UnfetchableURL | CommandError:
+    def unwrap_err(self) -> Optional[BaseError]:
         return self.error

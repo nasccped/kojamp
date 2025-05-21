@@ -2,10 +2,12 @@ import json
 import base64
 from core.urls import CRATES_IO_URL
 from core.env import CRATE_NAME, GITHUB_TOKEN_PATH
+from error_types.base_error import BaseError
 from error_types.derived_errors import UnfetchableURL
 from error_types.derived_errors import UnfetchableFileData
 from models.program_version import ProgramVersion
 import requests
+from typing import Optional
 from utils.file import read_file_else_none
 
 def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
@@ -108,9 +110,9 @@ class CratesIOBridge:
         final_url = get_crateghub_url(CRATE_NAME)
         versions = None
 
-        self.crate_name = crate_name
-        self.latest = None
-        self.error = None
+        self.crate_name: str = crate_name
+        self.latest: Optional[ProgramVersion] = None
+        self.error: Optional[BaseError] = None
 
         # if url catching returned an error, update error field and
         # stop construction
@@ -123,7 +125,7 @@ class CratesIOBridge:
 
         # if is error
         if isinstance(result, UnfetchableURL | UnfetchableFileData):
-            self.error = result
+            self.error: Optional[BaseError] = result
             return
 
         # update `latest` field
@@ -131,5 +133,5 @@ class CratesIOBridge:
         versions.sort()
         self.latest = versions[-1]
 
-    def unwrap_err(self) -> None | UnfetchableURL | UnfetchableFileData:
+    def unwrap_err(self) -> Optional[BaseError]:
         return self.error
