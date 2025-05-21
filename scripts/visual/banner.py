@@ -7,10 +7,10 @@ def draw_title(title: str, escape: str):
     print(f"{WHITE_NONE}{'=' * 70}{RESET_ESCAPE}")
     print()
 
-def program_begin():
+def init_banner():
     title = "Kojamp Publish Script"
     draw_title(title, GREEN_NONE)
 
-def program_errors():
+def error_banner():
     title = "Errors"
     draw_title(title, RED_NONE)
