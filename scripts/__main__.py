@@ -14,7 +14,13 @@ from models.file import File
 from models.local_git_bridge import LocalGitBridge
 from models.project import Project
 from models.remote_git_bridge import RemoteGitBridge
-from visual.alerts import waiting_alert, \
+from utils.publisher import \
+    cratesio_publish,       \
+    docker_publish,         \
+    github_publish
+from visual.alerts import \
+    update_warning, \
+    waiting_alert, \
     local_tag_should_be_greater_than_remote, \
     local_tag_conflict, \
     local_version_should_be_greater_than_docker
@@ -50,27 +56,36 @@ def main():
     docker_ver = project.dhub.latest
 
     if local_ver != file_ver:
-        local_tag_conflict(str(local_ver), str(file_ver))
+        local_tag_conflict(project)
         return
 
     if local_ver <= remote_ver:
-        local_tag_should_be_greater_than_remote(
-            str(local_ver), str(remote_ver)
-        )
+        local_tag_should_be_greater_than_remote(project)
         return
 
     if file_ver <= crate_ver:
-        file_version_should_be_greater_than_crate(
-            str(file_ver), str(remote_ver)
-        )
+        file_version_should_be_greater_than_crate(project)
         return
 
     if local_ver <= docker_ver:
-        local_version_should_be_greater_than_docker(
-            str(local_ver), str(docker_ver)
-        )
+        local_version_should_be_greater_than_docker(project)
         return
-    # TODO: add extra code here vvv
+
+    update_warning(project)
+
+    input_text = "Are you sure [y/any other thing]? "
+
+    if input(input_text).lower().strip() != "y":
+        print("quitting...")
+        return
+
+    new_ver = project.extract_next_version()
+
+    github_publish()
+    cratesio_publish()
+    docker_publish(new_ver)
+
+    print("Done! (I guess)")
 
 
 if __name__ == "__main__":
