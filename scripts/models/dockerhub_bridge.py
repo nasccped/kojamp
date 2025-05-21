@@ -1,22 +1,24 @@
+from typing import Optional
 from core.urls import DOCKERHUB_URL
+from error_types.base_error import BaseError
 from models.program_version import ProgramVersion
 from error_types.derived_errors import UnfetchableURL
-from error_types.derived_errors import DockerEngineError
+from error_types.derived_errors import CommandError
 from utils.regex import pattern_in_str_sentence
 from utils.cmdline import command_is_ok
 import requests
 
 def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
     """
-    Just take the url json info recursively to extract the tag value
+    Just take the url json info recursively to extract the tag value.
     """
     next_page = url
-    tags = []
+    tags      = []
 
     while next_page:
         response = requests.get(next_page)
         if response.status_code != 200:
-            return UnfetchableURL(response.url)
+            return UnfetchableURL(response.url, response.status_code)
         data = response.json()
         pat = r"(\d+.\d+.\d)"
         filtered = [d["name"] for d in data["results"]]
@@ -33,7 +35,7 @@ def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
 class DockerHubBridge:
     """
     Store the project docker related fields (latest tag,
-    specifically)
+    specifically).
     """
 
     def __init__(self, image_name: str) -> None:
@@ -46,12 +48,15 @@ class DockerHubBridge:
             error = latest
             latest = None
 
-        if not command_is_ok("docker", ["images"]):
-            error = DockerEngineError()
+        docker_command = "docker"
+        docker_args = ["images"]
 
-        self.image_name = image_name
-        self.latest = latest
-        self.error = error
+        if not command_is_ok(docker_command, docker_args):
+            error = CommandError(docker_command, docker_args)
 
-    def unwrap_err(self) -> None | UnfetchableURL | DockerEngineError:
+        self.image_name: str = image_name
+        self.latest: Optional[ProgramVersion] = latest
+        self.error: Optional[BaseError] = error
+
+    def unwrap_err(self) -> Optional[BaseError]:
         return self.error

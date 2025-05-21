@@ -1,7 +1,11 @@
+from typing import Optional
+from colors import GREEN_NONE, RESET_ESCAPE
 from error_types.base_error import BaseError
 from models.file import File
 from models.dockerhub_bridge import DockerHubBridge
 from models.crates_io_bridge import CratesIOBridge
+from models.local_git_bridge import LocalGitBridge
+from models.remote_git_bridge import RemoteGitBridge
 
 class Project:
     """
@@ -26,13 +30,17 @@ class Project:
         self,
         file: File,
         dockerhub_bridge: DockerHubBridge,
-        crates_io_bridge: CratesIOBridge
+        crates_io_bridge: CratesIOBridge,
+        r_git_bridge: RemoteGitBridge,
+        l_git_bridge: LocalGitBridge
     ) -> None:
         # unwrap errors in a list
         errors = [
             file.unwrap_err(),
             dockerhub_bridge.unwrap_err(),
-            crates_io_bridge.unwrap_err()
+            crates_io_bridge.unwrap_err(),
+            r_git_bridge.unwrap_err(),
+            l_git_bridge.unwrap_err()
         ]
         # filter only when not None
         errors = [e for e in errors if e]
@@ -41,10 +49,33 @@ class Project:
             if len(errors) > 0 \
             else None
 
-        self.file = file
-        self.dhub = dockerhub_bridge
-        self.crate = crates_io_bridge
-        self.errors = errors
+        self.file: File = file
+        self.dhub: DockerHubBridge = dockerhub_bridge
+        self.crate: CratesIOBridge = crates_io_bridge
+        self.remote: RemoteGitBridge = r_git_bridge
+        self.local: LocalGitBridge = l_git_bridge
+        self.errors: Optional[list[BaseError]] = errors
 
     def get_error_list(self) -> None | list[BaseError]:
         return self.errors
+
+    def extract_next_version(self) -> str:
+        # need this due to LSP arguing
+        if self.file.version is None:
+            return ""
+        return self.file.version.get_version()
+
+    def print_versions(self):
+        versions = [
+            v.__str__(
+                GREEN_NONE + c.__class__.__name__ + RESET_ESCAPE
+            ) for (v, c) in [
+                (self.file.version, self.file),
+                (self.dhub.latest, self.dhub),
+                (self.crate.latest, self.crate),
+                (self.remote.latest, self.remote),
+                (self.local.latest, self.local)
+            ]
+        ]
+
+        print("\n".join(versions))

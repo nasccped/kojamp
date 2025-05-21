@@ -2,10 +2,12 @@ import json
 import base64
 from core.urls import CRATES_IO_URL
 from core.env import CRATE_NAME, GITHUB_TOKEN_PATH
+from error_types.base_error import BaseError
 from error_types.derived_errors import UnfetchableURL
 from error_types.derived_errors import UnfetchableFileData
 from models.program_version import ProgramVersion
 import requests
+from typing import Optional
 from utils.file import read_file_else_none
 
 def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
@@ -56,7 +58,10 @@ def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
         url_parts.pop()
 
     # else (no ok url)
-    return UnfetchableURL(contents_url)
+    return UnfetchableURL(contents_url, 401) # the crate url will
+                                             # surely exits, so
+                                             # return 401 status code
+                                             # (bad credentials)
 
 def get_versionlist_from_crateghub_url(
     url: str
@@ -65,15 +70,15 @@ def get_versionlist_from_crateghub_url(
     Extract `list[str]` of an crates.io json content.
 
     Will return `UnfetchableURL` if invalid url. Can also return
-    `UnfetchableDataFile` if the target field doesn't exists
+    `UnfetchableDataFile` if the target field doesn't exists.
     """
-    conn = requests.get(url)
+    conn              = requests.get(url)
     target_conn_field = "content"
     target_json_field = "vers"
-    target_encoding = "utf-8"
+    target_encoding   = "utf-8"
 
     if conn.status_code != 200:
-        return UnfetchableURL(url)
+        return UnfetchableURL(url, conn.status_code)
 
     # it comes encoded in base64. Let's decode it to utf-8
     encoded = conn.json()[target_conn_field]
@@ -98,16 +103,16 @@ def get_versionlist_from_crateghub_url(
 class CratesIOBridge:
     """
     Store the project info related fields (latest version) from
-    crates.io
+    crates.io.
     """
 
     def __init__(self, crate_name: str) -> None:
         final_url = get_crateghub_url(CRATE_NAME)
-        versions = None
+        versions  = None
 
-        self.crate_name = crate_name
-        self.latest = None
-        self.error = None
+        self.crate_name: str = crate_name
+        self.latest: Optional[ProgramVersion] = None
+        self.error: Optional[BaseError] = None
 
         # if url catching returned an error, update error field and
         # stop construction
@@ -120,7 +125,7 @@ class CratesIOBridge:
 
         # if is error
         if isinstance(result, UnfetchableURL | UnfetchableFileData):
-            self.error = result
+            self.error: Optional[BaseError] = result
             return
 
         # update `latest` field
@@ -128,5 +133,5 @@ class CratesIOBridge:
         versions.sort()
         self.latest = versions[-1]
 
-    def unwrap_err(self) -> None | UnfetchableURL | UnfetchableFileData:
+    def unwrap_err(self) -> Optional[BaseError]:
         return self.error

@@ -1,4 +1,4 @@
-from colors import RED_NONE, RESET_ESCAPE, GREEN_NONE
+from colors import apply, RED_NONE, GREEN_NONE
 from utils.regex import patternlist_in_str
 
 class ProgramVersion:
@@ -14,7 +14,7 @@ class ProgramVersion:
 
         # a single matching is expected
         if len(match_list) != 1:
-            could_not_match = RED_NONE + "Couldn't match" + RESET_ESCAPE
+            could_not_match = apply("Couldn't match", RED_NONE)
             value_error = "ValueError"
             print(f"{could_not_match} a ProgramVersion from the '{value}' value.")
             print(f"Raising a {value_error} exception.")
@@ -43,35 +43,55 @@ class ProgramVersion:
         self.minor = min
         self.patch = pat
 
+    @staticmethod
+    def _is_instance(other) -> bool:
+        return isinstance(other, ProgramVersion)
+
+    @staticmethod
+    def raise_comparing_error(other):
+        self_class = apply(ProgramVersion.__name__, GREEN_NONE)
+        other_class = apply(other.__class__.__name__, RED_NONE)
+        print(f"Passing invalid comparable object to `{self_class}`: `{other_class}`")
+        raise ValueError()
+
     def __lt__(self, other) -> bool:
         """
         Comparing (less than) between `ProgramVersion` objects.
         """
-        # alert + raise error if incompatible objects
-        if not isinstance(other, ProgramVersion):
-            self_class = GREEN_NONE + self.__class__.__name__ + RESET_ESCAPE
-            other_class = RED_NONE + other.__class__.__name__ + RESET_ESCAPE
-            print(f"Passing invalid comparable object to `{self_class}`: `{other_class}`")
-            raise ValueError()
+        if not ProgramVersion._is_instance(other):
+            ProgramVersion.raise_comparing_error(other)
 
         # separate each field
-        compare_list = [
-            (self.major, other.major),
-            (self.minor, other.minor),
-            (self.patch, other.patch)
-        ]
+        s = [self.major, self.minor, self.patch]
+        o = [other.major, other.minor, other.patch]
 
-        # compare each pair
-        for s, o in compare_list:
-            if s < o:
-                return True
-            if s > o:
-                return False
+        return (s[0], s[1], s[2]) < (o[0], o[1], o[2])
 
-        # if no returning within the loop, they both are equals
-        # (not less)
-        return False
+    def __eq__(self, other) -> bool:
+        """
+        Comparing (equals) between `ProgramVersion` objects.
+        """
+        if not ProgramVersion._is_instance(other):
+            ProgramVersion.raise_comparing_error(other)
 
+        # separate each field
+        s = [self.major, self.minor, self.patch]
+        o = [other.major, other.minor, other.patch]
+
+        return (s[0], s[1], s[2]) == (o[0], o[1], o[2])
+
+    def __le__(self, other) -> bool:
+        """
+        Comparing (less equals) between `ProgramVersion` objects.
+        """
+        if not ProgramVersion._is_instance(other):
+            ProgramVersion.raise_comparing_error(other)
+
+        # separate each field
+        s = [self.major, self.minor, self.patch]
+        o = [other.major, other.minor, other.patch]
+
+        return (s[0], s[1], s[2]) <= (o[0], o[1], o[2])
 
     def __str__(self, outher_class: str | None = None) -> str:
         result = "ProgramVersion"
@@ -79,3 +99,9 @@ class ProgramVersion:
             result += f"<{outher_class}>"
         result += f"({self.value})"
         return result
+
+    def get_version(self) -> str:
+        maj = self.major
+        min = self.minor
+        pat = self.patch
+        return f"{maj}.{min}.{pat}"

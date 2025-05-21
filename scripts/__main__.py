@@ -5,47 +5,105 @@ It should be ran in the repository root path.
 You don't need to specify the file entry. Just use
 `python <PATH_NAME> (scripts for this case)`
 """
-from colors import RESET_ESCAPE, GREEN_NONE
-from core.env import CRATE_NAME, IMAGE_NAME
+from core.env import CRATE_NAME, IMAGE_NAME, REMOTE_REPOSITORY
 from core.target_files import CARGO_TOML
 from error_types.base_error import BaseError
 from models.crates_io_bridge import CratesIOBridge
 from models.dockerhub_bridge import DockerHubBridge
 from models.file import File
+from models.local_git_bridge import LocalGitBridge
 from models.project import Project
-from visual.alerts import waiting_alert
-from visual.banner import program_begin, program_errors
-from visual.screen import clear
+from models.remote_git_bridge import RemoteGitBridge
+from utils.publisher import \
+    cratesio_publish,       \
+    docker_publish,         \
+    github_publish
+from visual.alerts import                    \
+    update_warning,                          \
+    waiting_alert,                           \
+    local_tag_should_be_greater_than_remote, \
+    local_tag_conflict,                      \
+    local_version_should_be_greater_than_docker
+from visual.banner import init_banner, error_banner
 
 def load_models():
-    global docker_bridge, crates_bridge, cargo_file
+    global             \
+        docker_bridge, \
+        crates_bridge, \
+        cargo_file,    \
+        r_git_bridge,  \
+        l_git_bridge
+
     docker_bridge = DockerHubBridge(IMAGE_NAME)
     crates_bridge = CratesIOBridge(CRATE_NAME)
-    cargo_file = File(CARGO_TOML)
+    cargo_file    = File(CARGO_TOML)
+    r_git_bridge  = RemoteGitBridge(REMOTE_REPOSITORY)
+    l_git_bridge  = LocalGitBridge()
 
-def print_script_banner():
-    program_begin()
-
-def print_errors(errors: list[BaseError]):
-    program_errors()
+def print_errors_and_exit(errors: list[BaseError], status: int):
+    error_banner()
     for e in errors:
         e.print_content()
+    BaseError.exit_with_status(status)
 
 def main():
-    # TODO: to implement
-    print(GREEN_NONE + "To implement..." + RESET_ESCAPE)
+    global project
+
+    local_ver  = project.local.latest
+    file_ver   = project.file.version
+    remote_ver = project.remote.latest
+    crate_ver  = project.crate.latest
+    docker_ver = project.dhub.latest
+
+    if local_ver != file_ver:
+        local_tag_conflict(project)
+        return
+
+    if local_ver <= remote_ver:
+        local_tag_should_be_greater_than_remote(project)
+        return
+
+    if file_ver <= crate_ver:
+        file_version_should_be_greater_than_crate(project)
+        return
+
+    if local_ver <= docker_ver:
+        local_version_should_be_greater_than_docker(project)
+        return
+
+    update_warning(project)
+
+    input_text = "Are you sure [y/any other thing]? "
+
+    if input(input_text).lower().strip() != "y":
+        print("quitting...")
+        return
+
+    new_ver = project.extract_next_version()
+
+    github_publish()
+    cratesio_publish()
+    docker_publish(new_ver)
+
+    print("Done! (I guess)")
+
 
 if __name__ == "__main__":
     waiting_alert()
 
     load_models()
     # load project from global fields
-    project = Project(cargo_file, docker_bridge, crates_bridge)
+    project = Project(
+        cargo_file,
+        docker_bridge,
+        crates_bridge,
+        r_git_bridge,
+        l_git_bridge
+    )
     # if any error found (exit with status)
     if errs := project.get_error_list():
-        print_errors(errs)
-        BaseError.exit_with_status(1)
+        print_errors_and_exit(errs, 1)
 
-    # else, call main
-    clear()
+    init_banner()
     main()
+    print()
