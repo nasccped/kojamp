@@ -1,4 +1,4 @@
-from colors import RED_NONE, RESET_ESCAPE, CYAN_NONE
+from colors import apply, RED_NONE, CYAN_NONE
 from error_types.base_error import BaseError
 
 class UnfetchableURL(BaseError):
@@ -8,8 +8,8 @@ class UnfetchableURL(BaseError):
     """
 
     def __init__(self, url: str, stts_code: int) -> None:
-        red_url = RED_NONE + url + RESET_ESCAPE
-        status_code = CYAN_NONE + str(stts_code) + RESET_ESCAPE
+        red_url = apply(url, RED_NONE)
+        status_code = apply(str(stts_code), CYAN_NONE)
         message = [
             f"Couldn't fetch data from the",
             f"'{red_url}' url!",

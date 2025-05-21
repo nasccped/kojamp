@@ -1,4 +1,4 @@
-from colors import RESET_ESCAPE, YELLOW_NONE
+from colors import apply, YELLOW_NONE
 
 class BaseError:
     """
@@ -15,7 +15,6 @@ class BaseError:
         Used only by the `super().__init__()` function from child
         classes.
         """
-
         self.error_message = message
         self.exit_status   = exit_stts
 
@@ -28,8 +27,9 @@ class BaseError:
         if isinstance(message, list):
             message = "\n".join(message)
         title = self.__class__.__name__
+        colored_title = apply(title, YELLOW_NONE)
         print(
-            f"{YELLOW_NONE}{title}.{RESET_ESCAPE}",
+            f"{colored_title}",
             end="\n\n"
         )
         print(message, end="\n\n")

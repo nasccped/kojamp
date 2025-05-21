@@ -1,4 +1,4 @@
-from colors import RED_NONE, RESET_ESCAPE, GREEN_NONE
+from colors import apply, RED_NONE, GREEN_NONE
 from error_types.base_error import BaseError
 
 class UnfetchableFileData(BaseError):
@@ -8,9 +8,9 @@ class UnfetchableFileData(BaseError):
     """
 
     def __init__(self, file_name: str, field: str) -> None:
-        red_file = RED_NONE + file_name + RESET_ESCAPE
-        green_field = GREEN_NONE + field + RESET_ESCAPE
-        missing = RED_NONE + "missing" + RESET_ESCAPE
+        red_file = apply(file_name, RED_NONE)
+        green_field = apply(field, GREEN_NONE)
+        missing = apply("missing", RED_NONE)
         message = [
             f"Couldn't fetch data from the '{red_file}' file!",
             f"The '{green_field}' field is {missing}."
