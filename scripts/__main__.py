@@ -35,10 +35,11 @@ def load_models():
 def print_script_banner():
     program_begin()
 
-def print_errors(errors: list[BaseError]):
+def print_errors_and_exit(errors: list[BaseError], status: int):
     program_errors()
     for e in errors:
         e.print_content()
+    BaseError.exit_with_status(status)
 
 def main():
     # TODO: to implement
@@ -58,8 +59,7 @@ if __name__ == "__main__":
     )
     # if any error found (exit with status)
     if errs := project.get_error_list():
-        print_errors(errs)
-        BaseError.exit_with_status(1)
+        print_errors_and_exit(errs, 1)
 
     print()
     project.print_versions()
