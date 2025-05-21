@@ -56,7 +56,10 @@ def get_crateghub_url(target_crate: str) -> str | UnfetchableURL:
         url_parts.pop()
 
     # else (no ok url)
-    return UnfetchableURL(contents_url)
+    return UnfetchableURL(contents_url, 401) # the crate url will
+                                             # surely exits, so
+                                             # return 401 status code
+                                             # (bad credentials)
 
 def get_versionlist_from_crateghub_url(
     url: str
@@ -73,7 +76,7 @@ def get_versionlist_from_crateghub_url(
     target_encoding = "utf-8"
 
     if conn.status_code != 200:
-        return UnfetchableURL(url)
+        return UnfetchableURL(url, conn.status_code)
 
     # it comes encoded in base64. Let's decode it to utf-8
     encoded = conn.json()[target_conn_field]

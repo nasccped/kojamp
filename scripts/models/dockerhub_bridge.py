@@ -16,7 +16,7 @@ def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
     while next_page:
         response = requests.get(next_page)
         if response.status_code != 200:
-            return UnfetchableURL(response.url)
+            return UnfetchableURL(response.url, response.status_code)
         data = response.json()
         pat = r"(\d+.\d+.\d)"
         filtered = [d["name"] for d in data["results"]]
