@@ -17,19 +17,17 @@ def waiting_alert():
     print(f"This can {take_a_while}...")
     print()
 
-def local_tag_should_be_greater_than_remote(
-    local_tag: str, remote_tag: str
-):
-    green_local_tag = apply(local_tag, GREEN_NONE)
-    green_remote_tag = apply(remote_tag, GREEN_NONE)
+def local_tag_should_be_greater_than_remote(project: Project):
+    green_local_tag = apply(str(project.local.latest), GREEN_NONE)
+    green_remote_tag = apply(str(project.remote.latest), GREEN_NONE)
     red_greater = apply("greater", RED_NONE)
     print(f"The local git tag is {green_local_tag} but the")
     print(f"remote is {green_remote_tag}. To proceed, the local tag")
     print(f"should be {red_greater}!")
 
-def local_tag_conflict(git_tag: str, file_version: str):
-    green_local_tag = apply(git_tag, GREEN_NONE)
-    green_file_version = apply(file_version, GREEN_NONE)
+def local_tag_conflict(project: Project):
+    green_local_tag = apply(str(project.local.latest), GREEN_NONE)
+    green_file_version = apply(str(project.file.version), GREEN_NONE)
     red_same = apply("same", RED_NONE)
     file_version = apply("file[version]", GREEN_NONE)
     print(f"The local git tag is {green_local_tag} but the")
@@ -37,11 +35,9 @@ def local_tag_conflict(git_tag: str, file_version: str):
     print(f"local git tag should be the {red_same} as the")
     print(f"{file_version} field!")
 
-def local_version_should_be_greater_than_docker(
-    local_version: str, docker_version: str
-):
-    green_local_ver = apply(local_version, GREEN_NONE)
-    green_docker_ver = apply(docker_version, GREEN_NONE)
+def local_version_should_be_greater_than_docker(project: Project):
+    green_local_ver = apply(str(project.local.latest), GREEN_NONE)
+    green_docker_ver = apply(str(project.dhub.latest), GREEN_NONE)
     print(f"The local version is {green_local_ver} but the")
     print(f"latest docker registry is {green_docker_ver}. To proceed, the")
     print(f"local version should be greater than the")
