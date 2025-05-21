@@ -26,3 +26,10 @@ def get_command_output(
     result = result.stdout.strip()
 
     return [row for row in result.split("\n")]
+
+def run_command(command: str, args: list[str] | None = None):
+    full_cmd = [command]
+    if isinstance(args, list):
+        full_cmd.extend(args)
+
+    subprocess.run(full_cmd)
