@@ -1,4 +1,11 @@
-from colors import apply, CYAN_NONE, RED_NONE, GREEN_NONE
+from colors import \
+    apply,         \
+    CYAN_NONE,     \
+    RED_NONE,      \
+    GREEN_NONE,    \
+    YELLOW_NONE,   \
+    WHITE_BLUE
+from models.project import Project
 
 def waiting_alert():
     cyan_files = apply("files", CYAN_NONE)
@@ -40,3 +47,24 @@ def local_version_should_be_greater_than_docker(
     print(f"local version should be greater than the")
     print(f"latest registry field!")
 
+def update_warning(project: Project):
+    docker_reg = apply("docker registry", GREEN_NONE)
+    crate_ver = apply("crate version", GREEN_NONE)
+    git_tag = apply("git tag", GREEN_NONE)
+    print(f"The {docker_reg}, {crate_ver} and {git_tag} is about")
+    print("to be updated:")
+
+    old_gtag = str(project.remote.latest)
+    new_gtag = str(project.local.latest)
+    old_cver = str(project.crate.latest)
+    new_cver = str(project.file.version)
+    old_dreg = str(project.dhub.latest)
+    new_dreg = str(project.file.version)
+
+    new_gtag = apply(new_gtag, YELLOW_NONE)
+    new_cver = apply(new_cver, GREEN_NONE)
+    new_dreg = apply(new_dreg, WHITE_BLUE)
+
+    print(f"github   : {old_gtag} -> {new_gtag}")
+    print(f"crates.io: {old_cver} -> {new_cver}")
+    print(f"dockerhub: {old_dreg} -> {new_dreg}")
