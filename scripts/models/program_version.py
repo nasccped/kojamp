@@ -55,24 +55,28 @@ class ProgramVersion:
             raise ValueError()
 
         # separate each field
-        compare_list = [
-            (self.major, other.major),
-            (self.minor, other.minor),
-            (self.patch, other.patch)
-        ]
+        s = [self.major, self.minor, self.patch]
+        o = [other.major, other.minor, other.patch]
 
-        # compare each pair
-        for s, o in compare_list:
-            if s < o:
-                return True
-            if s > o:
-                return False
+        return (s[0], s[1], s[2]) < (o[0], o[1], o[2])
 
-        # if no returning within the loop, they both are equals
-        # (not less)
-        return False
+    def __eq__(self, other) -> bool:
+        """
+        Comparing (equals) between `ProgramVersion` objects.
+        """
+        # alert + raise error if incompatible objects
+        if not isinstance(other, ProgramVersion):
+            self_class = GREEN_NONE + self.__class__.__name__ + RESET_ESCAPE
+            other_class = RED_NONE + other.__class__.__name__ + RESET_ESCAPE
+            print(f"Passing invalid comparable object to `{self_class}`: `{other_class}`")
+            raise ValueError()
 
+        # separate each field
+        s = [self.major, self.minor, self.patch]
+        o = [other.major, other.minor, other.patch]
 
+        return (s[0], s[1], s[2]) == (o[0], o[1], o[2])
+        
     def __str__(self, outher_class: str | None = None) -> str:
         result = "ProgramVersion"
         if outher_class:
