@@ -1,7 +1,7 @@
 from core.urls import DOCKERHUB_URL
 from models.program_version import ProgramVersion
 from error_types.derived_errors import UnfetchableURL
-from error_types.derived_errors import DockerEngineError
+from error_types.derived_errors import CommandError
 from utils.regex import pattern_in_str_sentence
 from utils.cmdline import command_is_ok
 import requests
@@ -46,12 +46,15 @@ class DockerHubBridge:
             error = latest
             latest = None
 
-        if not command_is_ok("docker", ["images"]):
-            error = DockerEngineError()
+        docker_command = "docker"
+        docker_args = ["images"]
+
+        if not command_is_ok(docker_command, docker_args):
+            error = CommandError(docker_command, docker_args)
 
         self.image_name = image_name
         self.latest = latest
         self.error = error
 
-    def unwrap_err(self) -> None | UnfetchableURL | DockerEngineError:
+    def unwrap_err(self) -> None | UnfetchableURL | CommandError:
         return self.error
