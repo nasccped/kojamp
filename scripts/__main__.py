@@ -5,7 +5,6 @@ It should be ran in the repository root path.
 You don't need to specify the file entry. Just use
 `python <PATH_NAME> (scripts for this case)`
 """
-from colors import RESET_ESCAPE, GREEN_NONE
 from core.env import CRATE_NAME, IMAGE_NAME, REMOTE_REPOSITORY
 from core.target_files import CARGO_TOML
 from error_types.base_error import BaseError
@@ -15,7 +14,10 @@ from models.file import File
 from models.local_git_bridge import LocalGitBridge
 from models.project import Project
 from models.remote_git_bridge import RemoteGitBridge
-from visual.alerts import waiting_alert
+from visual.alerts import waiting_alert, \
+    local_tag_should_be_greater_than_remote, \
+    local_tag_conflict, \
+    local_version_should_be_greater_than_docker
 from visual.banner import init_banner, error_banner
 
 def load_models():
@@ -39,8 +41,37 @@ def print_errors_and_exit(errors: list[BaseError], status: int):
     BaseError.exit_with_status(status)
 
 def main():
-    # TODO: to implement
-    print(GREEN_NONE + "To implement..." + RESET_ESCAPE)
+    global project
+
+    local_ver = project.local.latest
+    file_ver = project.file.version
+    remote_ver = project.remote.latest
+    crate_ver = project.crate.latest
+    docker_ver = project.dhub.latest
+
+    if local_ver != file_ver:
+        local_tag_conflict(str(local_ver), str(file_ver))
+        return
+
+    if local_ver <= remote_ver:
+        local_tag_should_be_greater_than_remote(
+            str(local_ver), str(remote_ver)
+        )
+        return
+
+    if file_ver <= crate_ver:
+        file_version_should_be_greater_than_crate(
+            str(file_ver), str(remote_ver)
+        )
+        return
+
+    if local_ver <= docker_ver:
+        local_version_should_be_greater_than_docker(
+            str(local_ver), str(docker_ver)
+        )
+        return
+    # TODO: add extra code here vvv
+
 
 if __name__ == "__main__":
     waiting_alert()
@@ -59,8 +90,5 @@ if __name__ == "__main__":
         print_errors_and_exit(errs, 1)
 
     init_banner()
-
-    project.print_versions()
-    print()
-
     main()
+    print()
