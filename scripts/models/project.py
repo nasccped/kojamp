@@ -59,6 +59,12 @@ class Project:
     def get_error_list(self) -> None | list[BaseError]:
         return self.errors
 
+    def extract_next_version(self) -> str:
+        # need this due to LSP arguing
+        if self.file.version is None:
+            return ""
+        return self.file.version.get_version()
+
     def print_versions(self):
         versions = [
             v.__str__(

@@ -99,3 +99,9 @@ class ProgramVersion:
             result += f"<{outher_class}>"
         result += f"({self.value})"
         return result
+
+    def get_version(self) -> str:
+        maj = self.major
+        min = self.minor
+        pat = self.patch
+        return f"{maj}.{min}.{pat}"
