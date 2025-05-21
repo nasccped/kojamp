@@ -28,10 +28,7 @@ class BaseError:
             message = "\n".join(message)
         title = self.__class__.__name__
         colored_title = apply(title, YELLOW_NONE)
-        print(
-            f"{colored_title}",
-            end="\n\n"
-        )
+        print(f"{colored_title}", end="\n\n")
         print(message, end="\n\n")
 
     @staticmethod

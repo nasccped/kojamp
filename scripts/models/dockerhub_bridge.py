@@ -10,10 +10,10 @@ import requests
 
 def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
     """
-    Just take the url json info recursively to extract the tag value
+    Just take the url json info recursively to extract the tag value.
     """
     next_page = url
-    tags = []
+    tags      = []
 
     while next_page:
         response = requests.get(next_page)
@@ -35,7 +35,7 @@ def get_docker_latest_tag(url: str) -> ProgramVersion | UnfetchableURL:
 class DockerHubBridge:
     """
     Store the project docker related fields (latest tag,
-    specifically)
+    specifically).
     """
 
     def __init__(self, image_name: str) -> None:

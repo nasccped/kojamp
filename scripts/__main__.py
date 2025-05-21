@@ -18,27 +18,27 @@ from utils.publisher import \
     cratesio_publish,       \
     docker_publish,         \
     github_publish
-from visual.alerts import \
-    update_warning, \
-    waiting_alert, \
+from visual.alerts import                    \
+    update_warning,                          \
+    waiting_alert,                           \
     local_tag_should_be_greater_than_remote, \
-    local_tag_conflict, \
+    local_tag_conflict,                      \
     local_version_should_be_greater_than_docker
 from visual.banner import init_banner, error_banner
 
 def load_models():
-    global \
+    global             \
         docker_bridge, \
         crates_bridge, \
-        cargo_file, \
-        r_git_bridge, \
+        cargo_file,    \
+        r_git_bridge,  \
         l_git_bridge
 
     docker_bridge = DockerHubBridge(IMAGE_NAME)
     crates_bridge = CratesIOBridge(CRATE_NAME)
-    cargo_file = File(CARGO_TOML)
-    r_git_bridge = RemoteGitBridge(REMOTE_REPOSITORY)
-    l_git_bridge = LocalGitBridge()
+    cargo_file    = File(CARGO_TOML)
+    r_git_bridge  = RemoteGitBridge(REMOTE_REPOSITORY)
+    l_git_bridge  = LocalGitBridge()
 
 def print_errors_and_exit(errors: list[BaseError], status: int):
     error_banner()
@@ -49,10 +49,10 @@ def print_errors_and_exit(errors: list[BaseError], status: int):
 def main():
     global project
 
-    local_ver = project.local.latest
-    file_ver = project.file.version
+    local_ver  = project.local.latest
+    file_ver   = project.file.version
     remote_ver = project.remote.latest
-    crate_ver = project.crate.latest
+    crate_ver  = project.crate.latest
     docker_ver = project.dhub.latest
 
     if local_ver != file_ver:

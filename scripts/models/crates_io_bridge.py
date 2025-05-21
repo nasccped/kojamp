@@ -70,12 +70,12 @@ def get_versionlist_from_crateghub_url(
     Extract `list[str]` of an crates.io json content.
 
     Will return `UnfetchableURL` if invalid url. Can also return
-    `UnfetchableDataFile` if the target field doesn't exists
+    `UnfetchableDataFile` if the target field doesn't exists.
     """
-    conn = requests.get(url)
+    conn              = requests.get(url)
     target_conn_field = "content"
     target_json_field = "vers"
-    target_encoding = "utf-8"
+    target_encoding   = "utf-8"
 
     if conn.status_code != 200:
         return UnfetchableURL(url, conn.status_code)
@@ -103,12 +103,12 @@ def get_versionlist_from_crateghub_url(
 class CratesIOBridge:
     """
     Store the project info related fields (latest version) from
-    crates.io
+    crates.io.
     """
 
     def __init__(self, crate_name: str) -> None:
         final_url = get_crateghub_url(CRATE_NAME)
-        versions = None
+        versions  = None
 
         self.crate_name: str = crate_name
         self.latest: Optional[ProgramVersion] = None

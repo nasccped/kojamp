@@ -4,7 +4,7 @@ from error_types.base_error import BaseError
 class UnfetchableFileData(BaseError):
     """
     Base error when trying to fetch data field from a given file path
-    and it returns an error (file/field doesn't exists)
+    and it returns an error (file/field doesn't exists).
     """
 
     def __init__(self, file_name: str, field: str) -> None:

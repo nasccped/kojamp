@@ -4,7 +4,7 @@ from error_types.base_error import BaseError
 class UnfetchableURL(BaseError):
     """
     Base error when trying to fetch data from a given url and it
-    returns an error (`status_code` != 200)
+    returns an error (`status_code` != 200).
     """
 
     def __init__(self, url: str, stts_code: int) -> None:

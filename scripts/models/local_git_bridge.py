@@ -6,7 +6,7 @@ from utils.cmdline import command_is_ok, get_command_output
 def get_latest_tag() -> ProgramVersion | CommandError:
     """
     Get the `git tag` command output and returns the latest
-    tag from the list
+    tag from the list.
     """
     git_command = "git"
     tag_arg = ["tag"]
@@ -21,7 +21,7 @@ def get_latest_tag() -> ProgramVersion | CommandError:
 
 class LocalGitBridge:
     """
-    Store the project data fields from the local repository
+    Store the project data fields from the local repository.
     """
 
     def __init__(self) -> None:

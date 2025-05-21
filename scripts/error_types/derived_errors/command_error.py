@@ -2,6 +2,9 @@ from colors import apply, GREEN_NONE
 from error_types.base_error import BaseError
 
 class CommandError(BaseError):
+    """
+    Base error when trying to run a command and it returns an error.
+    """
 
     def __init__(self, command: str, args: list[str]):
         green_command = apply(command, GREEN_NONE)
