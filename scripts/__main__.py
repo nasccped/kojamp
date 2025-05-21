@@ -12,6 +12,7 @@ from error_types.base_error import BaseError
 from models.crates_io_bridge import CratesIOBridge
 from models.dockerhub_bridge import DockerHubBridge
 from models.file import File
+from models.local_git_bridge import LocalGitBridge
 from models.project import Project
 from models.remote_git_bridge import RemoteGitBridge
 from visual.alerts import waiting_alert
@@ -22,12 +23,14 @@ def load_models():
         docker_bridge, \
         crates_bridge, \
         cargo_file, \
-        r_git_bridge
+        r_git_bridge, \
+        l_git_bridge
 
     docker_bridge = DockerHubBridge(IMAGE_NAME)
     crates_bridge = CratesIOBridge(CRATE_NAME)
     cargo_file = File(CARGO_TOML)
     r_git_bridge = RemoteGitBridge(REMOTE_REPOSITORY)
+    l_git_bridge = LocalGitBridge()
 
 def print_script_banner():
     program_begin()
@@ -46,10 +49,20 @@ if __name__ == "__main__":
 
     load_models()
     # load project from global fields
-    project = Project(cargo_file, docker_bridge, crates_bridge, r_git_bridge)
+    project = Project(
+        cargo_file,
+        docker_bridge,
+        crates_bridge,
+        r_git_bridge,
+        l_git_bridge
+    )
     # if any error found (exit with status)
     if errs := project.get_error_list():
         print_errors(errs)
         BaseError.exit_with_status(1)
+
+    print()
+    project.print_versions()
+    print()
 
     main()
