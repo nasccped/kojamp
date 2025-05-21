@@ -64,3 +64,11 @@ def update_warning(project: Project):
     print(f"github   : {old_gtag} -> {new_gtag}")
     print(f"crates.io: {old_cver} -> {new_cver}")
     print(f"dockerhub: {old_dreg} -> {new_dreg}")
+
+def command_running_alert(command: str, args: list[str] | None = None):
+    full_cmd = [command]
+    if isinstance(args, list):
+        full_cmd.extend(args)
+
+    full_call = " ".join([apply(p, GREEN_NONE) for p in full_cmd])
+    print(f"Running `{full_call}`")
