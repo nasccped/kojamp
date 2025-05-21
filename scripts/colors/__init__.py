@@ -5,3 +5,6 @@ from .core import \
     WHITE_NONE,   \
     CYAN_NONE,    \
     YELLOW_NONE
+
+def apply(message, color_escape: str) -> str:
+    return color_escape + message + RESET_ESCAPE
