@@ -43,10 +43,7 @@ pub fn invalid_cur_dir() -> String {
     )
 }
 
-pub fn invalid_project_name<T>(name: T) -> String
-where
-    T: AsRef<str>,
-{
+pub fn invalid_project_name<T: AsRef<str>>(name: T) -> String {
     let name = name.as_ref();
     let fixed_name = name.to_valid_camel_case();
 
