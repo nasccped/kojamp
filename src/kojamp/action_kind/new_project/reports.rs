@@ -70,6 +70,7 @@ pub fn dir_file_creation_warning(title: &str, path: &PathBuf) -> KojampReport {
         messages::could_not_create_dir_file(as_str),
     )
 }
+
 pub fn could_not_read_dir_error() -> KojampReport {
     KojampReport::new(
         ReportType::Error,
@@ -101,7 +102,7 @@ pub fn success_report(project_name: &str, new_called: bool, path: &PathBuf) -> K
     )
 }
 
-pub fn gen_success_message(new_called: bool, path: &PathBuf) -> String {
+fn gen_success_message(new_called: bool, path: &PathBuf) -> String {
     let mut may_goto = if new_called {
         vec![format!(
             "cd to your project ({})",
