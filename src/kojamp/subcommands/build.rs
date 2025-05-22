@@ -1,8 +1,13 @@
-use clap::Command;
-use colored::Colorize;
+use clap::{Arg, ArgAction, Command};
 
 pub fn cmd() -> Command {
     Command::new("build")
         .visible_alias("b")
-        .about("Being developed".bright_red().to_string())
+        .about("Build the project bytecode (.class/.jar)")
+        .args([Arg::new("polished")
+            .long("polished")
+            .short('p')
+            .action(ArgAction::SetTrue)
+            .required(false)
+            .help("Build only the changed source, preserving the old .class(es)")])
 }
