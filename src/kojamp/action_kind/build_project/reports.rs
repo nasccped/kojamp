@@ -3,6 +3,8 @@ use crate::core::reporting::{messages, KojampReport, ReportType};
 const COULD_NOT_READ_PROJECT_FOLDER: &str = "Couldn't read project folder";
 const COULD_NOT_GET_THE_CURRENT_DIRECTORY: &str = "Couldn't get the current directory";
 const PROBABLY_A_NON_KOJAMP_PROJECT: &str = "Probably a non kojamp project";
+const COULD_NOT_FIND_SRC_DIR: &str = "Couldn't find src dir";
+const COULD_NOT_READ_TOML_FILE: &str = "Couldn't read toml file";
 
 pub fn could_not_get_curdir() -> KojampReport {
     KojampReport::new(
@@ -25,5 +27,21 @@ pub fn could_not_read_dir() -> KojampReport {
         ReportType::Error,
         COULD_NOT_READ_PROJECT_FOLDER,
         messages::could_not_read_dir_content(),
+    )
+}
+
+pub fn src_dir_is_missing() -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        COULD_NOT_FIND_SRC_DIR,
+        messages::empty_message(),
+    )
+}
+
+pub fn could_not_read_toml_file() -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        COULD_NOT_READ_TOML_FILE,
+        messages::toml_file_could_not_be_read(),
     )
 }
