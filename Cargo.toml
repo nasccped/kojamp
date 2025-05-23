@@ -5,12 +5,23 @@ edition = "2021"
 authors = ["nasccped <pdb.contact@gmail.com>"]
 description = "Some kind of basic 'n academic Java/Kotlin project-manager tool 📦"
 documentation = "https://github.com/nasccped/kojamp"
-readme = "README.md"
+readme = "README.crates.io.md"
 homepage = "https://github.com/nasccped/kojamp"
 license = "Apache-2.0"
 keywords = ["kotlin", "java", "rust", "cli", "project-manager"]
 categories = ["command-line-utilities"]
-exclude = ["target/", ".git/", ".gitignore", "WARN_MESSAGE.md", "USAGE.md", "INSTALL.md", "Dockerfile", "scripts/", "docker/"]
+exclude = [
+  "target/",
+  ".git/",
+  ".gitignore",
+  "WARN_MESSAGE.md",
+  "USAGE.md",
+  "INSTALL.md",
+  "Dockerfile",
+  "scripts/",
+  "docker/",
+  "README.md"
+]
 
 [badges]
 maintenance = { status = "actively-developed" }
