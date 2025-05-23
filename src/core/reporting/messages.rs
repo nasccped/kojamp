@@ -210,3 +210,13 @@ pub fn main_app_undefined_error() -> String {
         PROGRAM_REPO_URL
     )
 }
+
+pub fn kojamp_toml_not_found() -> String {
+    format!(
+        "\
+        {} file wasn't found.\n\
+        Make sure you're at the {}",
+        "Kojamp.toml".bright_cyan(),
+        "right path".bright_green()
+    )
+}
