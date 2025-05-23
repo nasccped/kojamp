@@ -220,3 +220,16 @@ pub fn kojamp_toml_not_found() -> String {
         "right path".bright_green()
     )
 }
+
+pub fn empty_message() -> String {
+    format!("")
+}
+
+pub fn toml_file_could_not_be_read() -> String {
+    format!(
+        "\
+    It {} but {}",
+        "exists".bright_green(),
+        "couldn't be read".bright_red()
+    )
+}
