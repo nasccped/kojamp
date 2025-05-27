@@ -1,7 +1,7 @@
 use super::{reports::*, utils::*};
 use crate::core::reporting::{KojampReport, ReportType};
 use clap::ArgMatches;
-use std::fs;
+use std::{fs, path::PathBuf};
 
 fn todo_result() -> Vec<KojampReport> {
     vec![KojampReport::new(
@@ -44,7 +44,9 @@ pub fn main(matching: ArgMatches) -> Result<Vec<KojampReport>, Vec<KojampReport>
         return Err(errors);
     }
 
-    let (_name, _kind) = (name.unwrap(), kind.unwrap());
+    let (_name, kind) = (name.unwrap(), kind.unwrap());
+    let _src_files = get_all_sources(kind, &PathBuf::from("src"))
+        .map_err(|p| vec![unreadable_src_content(&p)])?;
 
     // TODO: implement the remaining logic
     Err(todo_result())
