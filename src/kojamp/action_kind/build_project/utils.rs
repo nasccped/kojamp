@@ -13,8 +13,16 @@ pub fn item_is_here<T: AsRef<str>>(path: &PathBuf, file: T) -> Result<bool, ()> 
         }))
 }
 
-pub fn get_project_name_from_toml(file_input: String) -> Result<String, ()> {
+pub fn get_project_name_from_toml(file_input: &str) -> Result<String, ()> {
     let toml_file = file_input.parse::<toml::Value>().map_err(|_| ())?;
     let name = toml_file["project"]["name"].as_str().ok_or(())?;
     Ok(String::from(name))
+}
+
+pub fn get_project_kind_from_toml(file_input: &str) -> Result<String, ()> {
+    let toml_file = file_input.parse::<toml::Value>().map_err(|_| ())?;
+    toml_file["project"]["kind"]
+        .as_str()
+        .map(|val| val.into())
+        .ok_or(())
 }
