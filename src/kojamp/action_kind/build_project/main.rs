@@ -33,9 +33,18 @@ pub fn main(matching: ArgMatches) -> Result<Vec<KojampReport>, Vec<KojampReport>
     let toml_content = fs::read_to_string(curdir.join(KOJAMP_TOML))
         .map_err(|_| vec![could_not_read_toml_file()])?;
 
-    let _name = get_project_name_from_toml(&toml_content)
-        .map_err(|_| vec![could_not_get_project_name_from_toml()])?;
-    let _kind = get_project_kind_from_toml(&toml_content);
+    let mut errors: Vec<KojampReport> = Vec::new();
+
+    let name = get_project_name_from_toml(&toml_content)
+        .map_err(|_| errors.push(could_not_get_project_name_from_toml()));
+    let kind = get_project_kind_from_toml(&toml_content)
+        .map_err(|_| errors.push(could_not_get_project_kind_from_toml()));
+
+    if !errors.is_empty() {
+        return Err(errors);
+    }
+
+    let (_name, _kind) = (name.unwrap(), kind.unwrap());
 
     // TODO: implement the remaining logic
     Err(todo_result())
