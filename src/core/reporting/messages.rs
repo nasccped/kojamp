@@ -2,7 +2,7 @@ use super::super::consts::program::PROGRAM_REPO_URL;
 use super::IntoReasons;
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn invalid_cur_dir() -> String {
     let function_name = format!(
@@ -231,5 +231,16 @@ pub fn toml_file_could_not_be_read() -> String {
     It {} but {}",
         "exists".bright_green(),
         "couldn't be read".bright_red()
+    )
+}
+
+pub fn unreadable_src_content(path: &Path) -> String {
+    format!(
+        "\
+        You're trying to read `{}` dir entries but get\n\
+        fail at a `{}`
+        ",
+        "src".bright_green(),
+        format!("{:?}", path).bright_red()
     )
 }

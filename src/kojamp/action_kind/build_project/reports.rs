@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use crate::core::reporting::{messages, KojampReport, ReportType};
 
 const COULD_NOT_READ_PROJECT_FOLDER: &str = "Couldn't read project folder";
@@ -7,6 +9,7 @@ const COULD_NOT_FIND_SRC_DIR: &str = "Couldn't find src dir";
 const COULD_NOT_READ_TOML_FILE: &str = "Couldn't read toml file";
 const COULD_NOT_GET_PROJECT_NAME_FROM_TOML: &str = "Couldn't get project name from toml";
 const COULD_NOT_GET_PROJECT_KIND_FROM_TOML: &str = "Couldn't get project kind from toml";
+const UNREADABLE_SRC_CONTENT: &str = "Unreadable src content";
 
 pub fn could_not_get_curdir() -> KojampReport {
     KojampReport::new(
@@ -61,5 +64,13 @@ pub fn could_not_get_project_kind_from_toml() -> KojampReport {
         ReportType::Error,
         COULD_NOT_GET_PROJECT_KIND_FROM_TOML,
         messages::empty_message(),
+    )
+}
+
+pub fn unreadable_src_content(path: &Path) -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        UNREADABLE_SRC_CONTENT,
+        messages::unreadable_src_content(path),
     )
 }
