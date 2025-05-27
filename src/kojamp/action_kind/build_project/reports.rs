@@ -6,6 +6,7 @@ const PROBABLY_A_NON_KOJAMP_PROJECT: &str = "Probably a non kojamp project";
 const COULD_NOT_FIND_SRC_DIR: &str = "Couldn't find src dir";
 const COULD_NOT_READ_TOML_FILE: &str = "Couldn't read toml file";
 const COULD_NOT_GET_PROJECT_NAME_FROM_TOML: &str = "Couldn't get project name from toml";
+const COULD_NOT_GET_PROJECT_KIND_FROM_TOML: &str = "Couldn't get project kind from toml";
 
 pub fn could_not_get_curdir() -> KojampReport {
     KojampReport::new(
@@ -51,6 +52,14 @@ pub fn could_not_get_project_name_from_toml() -> KojampReport {
     KojampReport::new(
         ReportType::Error,
         COULD_NOT_GET_PROJECT_NAME_FROM_TOML,
+        messages::empty_message(),
+    )
+}
+
+pub fn could_not_get_project_kind_from_toml() -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        COULD_NOT_GET_PROJECT_KIND_FROM_TOML,
         messages::empty_message(),
     )
 }
