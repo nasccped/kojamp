@@ -9,6 +9,5 @@ impl<const N: usize> IntoReasons for [String; N] {
         self.into_iter()
             .zip('a'..='z')
             .map(|(r, ind)| format!("... {} {}", (ind.to_string() + ")").bright_cyan(), r))
-            .into_iter()
     }
 }
