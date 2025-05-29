@@ -93,24 +93,21 @@ impl KojampApp for Command {
             return Ok(Vec::new());
         }
 
-        let output: Result<Vec<KojampReport>, Vec<KojampReport>>;
-
         let matching = matching.unwrap();
-
-        match (matching.0.as_ref(), matching.1) {
+        let output: Result<Vec<KojampReport>, Vec<KojampReport>> = match (matching.0.as_ref(), matching.1) {
             (x, m) if CREATE_PROJECT_COMMANDS.contains(&x) => {
-                output = action::new_project((x, m));
+                action::new_project((x, m))
             }
-            (x, m) if BUILD_PROJECT_COMMANDS.contains(&x) => output = action::build_project(m),
+            (x, m) if BUILD_PROJECT_COMMANDS.contains(&x) => action::build_project(m),
             // if matching isn't None and it's different from the matches above, alert:
             _ => {
-                output = Err(Vec::from([KojampReport::new(
+                Err(Vec::from([KojampReport::new(
                     ReportType::Error,
                     "Undefined error",
                     messages::main_app_undefined_error(),
-                )]));
+                )]))
             }
-        }
+        };
         output
     }
 
