@@ -10,6 +10,8 @@ const COULD_NOT_READ_TOML_FILE: &str = "Couldn't read toml file";
 const COULD_NOT_GET_PROJECT_NAME_FROM_TOML: &str = "Couldn't get project name from toml";
 const COULD_NOT_GET_PROJECT_KIND_FROM_TOML: &str = "Couldn't get project kind from toml";
 const UNREADABLE_SRC_CONTENT: &str = "Unreadable src content";
+const THERES_NO_FILES_FOR_THE_GIVEN_PROJECT_KIND: &str = "There's no files for the given project kind";
+const MAIN_PROJECT_FILE_IS_NOT_PRESENT: &str = "Main project file isn't present in src dir";
 
 pub fn could_not_get_curdir() -> KojampReport {
     KojampReport::new(
@@ -72,5 +74,21 @@ pub fn unreadable_src_content(path: &Path) -> KojampReport {
         ReportType::Error,
         UNREADABLE_SRC_CONTENT,
         messages::unreadable_src_content(path),
+    )
+}
+
+pub fn src_dir_is_empty(kind: &str) -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        THERES_NO_FILES_FOR_THE_GIVEN_PROJECT_KIND,
+        messages::theres_no_files_for_the_given_project_kind(kind),
+    )
+}
+
+pub fn main_project_file_is_not_present(file_name: String) -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        MAIN_PROJECT_FILE_IS_NOT_PRESENT,
+        messages::main_project_file_is_not_present(file_name)
     )
 }
