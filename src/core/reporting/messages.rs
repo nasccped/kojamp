@@ -222,7 +222,7 @@ pub fn kojamp_toml_not_found() -> String {
 }
 
 pub fn empty_message() -> String {
-    format!("")
+    String::new()
 }
 
 pub fn toml_file_could_not_be_read() -> String {
