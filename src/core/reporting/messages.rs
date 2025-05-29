@@ -253,3 +253,12 @@ pub fn theres_no_files_for_the_given_project_kind(kind: &str) -> String {
         "src".bright_green()
     )
 }
+
+pub fn main_project_file_is_not_present(file_name: String) -> String {
+    format!(
+        "\
+        The `{}` file was expected but\n\
+        it couldn't be found!",
+        file_name.bright_green()
+    )
+}
