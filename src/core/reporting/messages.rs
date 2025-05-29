@@ -244,3 +244,12 @@ pub fn unreadable_src_content(path: &Path) -> String {
         format!("{:?}", path).bright_red()
     )
 }
+
+pub fn theres_no_files_for_the_given_project_kind(kind: &str) -> String {
+    format!(
+        "\
+        At least one {} file should be present in `{}` dir",
+        kind.bright_cyan(),
+        "src".bright_green()
+    )
+}
