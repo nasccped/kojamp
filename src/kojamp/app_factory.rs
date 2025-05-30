@@ -97,7 +97,7 @@ impl KojampApp for Command {
         let output: Result<Vec<KojampReport>, Vec<KojampReport>> =
             match (matching.0.as_ref(), matching.1) {
                 (x, m) if CREATE_PROJECT_COMMANDS.contains(&x) => action::new_project((x, m)),
-                (x, m) if BUILD_PROJECT_COMMANDS.contains(&x) => action::build_project(m),
+                (x, _) if BUILD_PROJECT_COMMANDS.contains(&x) => action::build_project(),
                 // if matching isn't None and it's different from the matches above, alert:
                 _ => Err(Vec::from([KojampReport::new(
                     ReportType::Error,
