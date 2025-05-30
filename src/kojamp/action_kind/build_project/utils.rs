@@ -1,6 +1,7 @@
 use std::{
     fs,
     path::{Path, PathBuf},
+    process::Command,
 };
 
 pub fn item_is_here<T: AsRef<str>>(path: &PathBuf, file: T) -> Result<bool, ()> {
@@ -57,4 +58,23 @@ pub fn get_all_sources<T: AsRef<str>>(kind: T, init_path: &Path) -> Result<Vec<P
     }
 
     Ok(output)
+}
+
+pub fn run_build(name: &str, sources: Vec<PathBuf>, kind: &str) -> Result<bool, Vec<PathBuf>> {
+    let (cmd_name, dest) = match kind {
+        "java" => ("javac", String::from("out")),
+        _ => ("koltinc", format!("out/{}.jar", name)),
+    };
+
+    let mut command_runner = Command::new(cmd_name);
+    if kind == "kotlin" {
+        command_runner.arg("-include-runtime");
+    }
+
+    command_runner
+        .args(&sources)
+        .args(["-d", &dest])
+        .status()
+        .map(|x| x.success())
+        .map_err(|_| sources)
 }

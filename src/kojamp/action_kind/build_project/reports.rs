@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::path::Path;
 
 use crate::core::reporting::{messages, KojampReport, ReportType};
@@ -10,8 +11,11 @@ const COULD_NOT_READ_TOML_FILE: &str = "Couldn't read toml file";
 const COULD_NOT_GET_PROJECT_NAME_FROM_TOML: &str = "Couldn't get project name from toml";
 const COULD_NOT_GET_PROJECT_KIND_FROM_TOML: &str = "Couldn't get project kind from toml";
 const UNREADABLE_SRC_CONTENT: &str = "Unreadable src content";
-const THERES_NO_FILES_FOR_THE_GIVEN_PROJECT_KIND: &str = "There's no files for the given project kind";
+const THERES_NO_FILES_FOR_THE_GIVEN_PROJECT_KIND: &str =
+    "There's no files for the given project kind";
 const MAIN_PROJECT_FILE_IS_NOT_PRESENT: &str = "Main project file isn't present in src dir";
+const COULD_NOT_COMPILE_THE_SOURCES: &str = "Couldn't compile the source code";
+const PROGRAM_SUCCESSFULLY_COMPILED: &str = "The `$$$` program was successfully compile";
 
 pub fn could_not_get_curdir() -> KojampReport {
     KojampReport::new(
@@ -89,6 +93,22 @@ pub fn main_project_file_is_not_present(file_name: String) -> KojampReport {
     KojampReport::new(
         ReportType::Error,
         MAIN_PROJECT_FILE_IS_NOT_PRESENT,
-        messages::main_project_file_is_not_present(file_name)
+        messages::main_project_file_is_not_present(file_name),
+    )
+}
+
+pub fn could_not_compile_the_sources() -> KojampReport {
+    KojampReport::new(
+        ReportType::Error,
+        COULD_NOT_COMPILE_THE_SOURCES,
+        messages::empty_message(),
+    )
+}
+
+pub fn success_report(name: String, file_count: usize) -> KojampReport {
+    KojampReport::new(
+        ReportType::Success,
+        PROGRAM_SUCCESSFULLY_COMPILED.replace("$$$", &format!("{}", name.bright_green())),
+        messages::successfully_compiled(file_count),
     )
 }

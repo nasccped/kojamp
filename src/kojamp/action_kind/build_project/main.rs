@@ -1,21 +1,11 @@
 use super::{reports::*, utils::*};
-use crate::core::reporting::{KojampReport, ReportType};
-use clap::ArgMatches;
+use crate::core::reporting::KojampReport;
 use std::{fs, path::PathBuf};
-
-fn todo_result() -> Vec<KojampReport> {
-    vec![KojampReport::new(
-        ReportType::Error,
-        "Not yet implemented",
-        "The code to build project should be implemented",
-    )]
-}
 
 const KOJAMP_TOML: &str = "Kojamp.toml";
 const SRC_DIR: &str = "src";
 
-pub fn main(matching: ArgMatches) -> Result<Vec<KojampReport>, Vec<KojampReport>> {
-    let _matching = &matching;
+pub fn main() -> Result<Vec<KojampReport>, Vec<KojampReport>> {
     let curdir = std::env::current_dir().map_err(|_| vec![could_not_get_curdir()])?;
 
     match item_is_here(&curdir, KOJAMP_TOML) {
@@ -53,16 +43,21 @@ pub fn main(matching: ArgMatches) -> Result<Vec<KojampReport>, Vec<KojampReport>
         return Err(vec![src_dir_is_empty(&kind)]);
     }
 
-    let file_names: Vec<String> = src_files.iter().flat_map(|pth| {
-        let as_pbf = PathBuf::from(pth);
-        as_pbf.file_name().map(|name| name.to_string_lossy().to_string())
-    }).collect();
+    let file_names: Vec<String> = src_files
+        .iter()
+        .flat_map(|pth| {
+            let as_pbf = PathBuf::from(pth);
+            as_pbf
+                .file_name()
+                .map(|name| name.to_string_lossy().to_string())
+        })
+        .collect();
 
     let main_file = {
-        let mut as_pbf = PathBuf::from(name);
+        let mut as_pbf = PathBuf::from(&name);
         as_pbf.set_extension(match kind.as_ref() {
             "java" => "java",
-            _ => "kt"
+            _ => "kt",
         });
         as_pbf.to_string_lossy().to_string()
     };
@@ -71,6 +66,10 @@ pub fn main(matching: ArgMatches) -> Result<Vec<KojampReport>, Vec<KojampReport>
         return Err(vec![main_project_file_is_not_present(main_file)]);
     }
 
-    // TODO: implement the remaining logic
-    Err(todo_result())
+    match run_build(&name, src_files, &kind) {
+        Ok(true) => {}
+        _ => return Err(vec![could_not_compile_the_sources()]),
+    }
+
+    Ok(vec![success_report(name, file_names.len())])
 }
