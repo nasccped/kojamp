@@ -13,7 +13,7 @@ Kojamp
 > Consider going to the
 > [official GitHub repository](https://github.com/nasccped/kojamp).
 
-This is **Kojamp**, a Java/Kotlin project manager tool 📦
+This is **Kojamp**, a Java and Kotlin project manager tool 📦
 
 ## Installation
 
