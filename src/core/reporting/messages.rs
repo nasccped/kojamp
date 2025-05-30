@@ -262,3 +262,12 @@ pub fn main_project_file_is_not_present(file_name: String) -> String {
         file_name.bright_green()
     )
 }
+
+pub fn successfully_compiled(file_count: usize) -> String {
+    format!(
+        "\
+        {} file(s) successfully compiled (`{}` dir)",
+        file_count,
+        "out".bright_yellow()
+    )
+}
