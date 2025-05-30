@@ -44,9 +44,32 @@ pub fn main(matching: ArgMatches) -> Result<Vec<KojampReport>, Vec<KojampReport>
         return Err(errors);
     }
 
-    let (_name, kind) = (name.unwrap(), kind.unwrap());
-    let _src_files = get_all_sources(kind, &PathBuf::from("src"))
+    let kind = kind.unwrap();
+    let name = name.unwrap();
+    let src_files = get_all_sources(&kind, &PathBuf::from("src"))
         .map_err(|p| vec![unreadable_src_content(&p)])?;
+
+    if src_files.is_empty() {
+        return Err(vec![src_dir_is_empty(&kind)]);
+    }
+
+    let file_names: Vec<String> = src_files.iter().flat_map(|pth| {
+        let as_pbf = PathBuf::from(pth);
+        as_pbf.file_name().map(|name| name.to_string_lossy().to_string())
+    }).collect();
+
+    let main_file = {
+        let mut as_pbf = PathBuf::from(name);
+        as_pbf.set_extension(match kind.as_ref() {
+            "java" => "java",
+            _ => "kt"
+        });
+        as_pbf.to_string_lossy().to_string()
+    };
+
+    if !file_names.contains(&main_file) {
+        return Err(vec![main_project_file_is_not_present(main_file)]);
+    }
 
     // TODO: implement the remaining logic
     Err(todo_result())
