@@ -63,7 +63,7 @@ pub fn get_all_sources<T: AsRef<str>>(kind: T, init_path: &Path) -> Result<Vec<P
 pub fn run_build(name: &str, sources: Vec<PathBuf>, kind: &str) -> Result<bool, Vec<PathBuf>> {
     let (cmd_name, dest) = match kind {
         "java" => ("javac", String::from("out")),
-        _ => ("koltinc", format!("out/{}.jar", name)),
+        _ => ("kotlinc", format!("out/{}.jar", name)),
     };
 
     let mut command_runner = Command::new(cmd_name);
