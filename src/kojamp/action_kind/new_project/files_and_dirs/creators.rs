@@ -6,7 +6,7 @@ use crate::core::{
 };
 use std::{
     fs,
-    path::PathBuf,
+    path::{Path, PathBuf},
     process::{Command, Stdio},
 };
 
@@ -66,7 +66,7 @@ pub fn create_readme_file(path: &mut PathBuf, fields: &ProjectFields) -> Option<
     output
 }
 
-pub fn initialize_git(path: &PathBuf) -> Option<()> {
+pub fn initialize_git(path: &Path) -> Option<()> {
     let mut git_abspath = std::env::current_dir().unwrap();
     git_abspath.push(".git");
     if git_abspath.exists() {

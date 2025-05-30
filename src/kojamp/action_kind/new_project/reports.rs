@@ -4,7 +4,7 @@ use crate::core::{
     reporting::{messages, KojampReport, ReportType},
 };
 use colored::Colorize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const INVALID_PROJECT_NAME: &str = "Invalid project name";
 const INVALID_PROJECT_KIND: &str = "Invalid project kind";
@@ -53,7 +53,7 @@ pub fn path_error2(path: &PathBuf) -> KojampReport {
     )
 }
 
-pub fn dir_file_creation_error(title: &str, path: &PathBuf) -> KojampReport {
+pub fn dir_file_creation_error(title: &str, path: &Path) -> KojampReport {
     let as_str = pathbuf_to_str(path);
     KojampReport::new(
         ReportType::Error,
@@ -62,7 +62,7 @@ pub fn dir_file_creation_error(title: &str, path: &PathBuf) -> KojampReport {
     )
 }
 
-pub fn dir_file_creation_warning(title: &str, path: &PathBuf) -> KojampReport {
+pub fn dir_file_creation_warning(title: &str, path: &Path) -> KojampReport {
     let as_str = pathbuf_to_str(path);
     KojampReport::new(
         ReportType::Warning,
@@ -94,7 +94,7 @@ pub fn git_init_warning() -> KojampReport {
     )
 }
 
-pub fn success_report(project_name: &str, new_called: bool, path: &PathBuf) -> KojampReport {
+pub fn success_report(project_name: &str, new_called: bool, path: &Path) -> KojampReport {
     KojampReport::new(
         ReportType::Success,
         PROJECT_CREATED.replace("$$$", project_name),
@@ -102,7 +102,7 @@ pub fn success_report(project_name: &str, new_called: bool, path: &PathBuf) -> K
     )
 }
 
-fn gen_success_message(new_called: bool, path: &PathBuf) -> String {
+fn gen_success_message(new_called: bool, path: &Path) -> String {
     let mut may_goto = if new_called {
         vec![format!(
             "cd to your project ({})",

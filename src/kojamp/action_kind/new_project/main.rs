@@ -82,8 +82,9 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
 
     let mut output: Vec<KojampReport> = Vec::new();
 
-    create_readme_file(&mut mut_path, &project_fields)
-        .map(|x| output.push(dir_file_creation_warning(COULD_NOT_CREATE_README_FILE, &x)));
+    if let Some(x) = create_readme_file(&mut mut_path, &project_fields) {
+        output.push(dir_file_creation_warning(COULD_NOT_CREATE_README_FILE, &x));
+    }
 
     'git_repository: {
         if !git_repo {
@@ -95,8 +96,9 @@ pub fn main(pair: (&str, ArgMatches)) -> Result<Vec<KojampReport>, Vec<KojampRep
             break 'git_repository;
         }
 
-        create_git_ignore(&mut mut_path)
-            .map(|x| output.push(dir_file_creation_warning(COULD_NOT_CREATE_GITIGNORE, &x)));
+        if let Some(x) = create_git_ignore(&mut mut_path) {
+            output.push(dir_file_creation_warning(COULD_NOT_CREATE_GITIGNORE, &x));
+        }
     }
 
     output.push(success_report(

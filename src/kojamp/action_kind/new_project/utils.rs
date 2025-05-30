@@ -1,6 +1,9 @@
-use std::{fs, path::PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
-pub fn pathbuf_to_str(path: &PathBuf) -> &str {
+pub fn pathbuf_to_str(path: &Path) -> &str {
     path.file_name()
         .map(|f| f.to_str().unwrap_or(""))
         .unwrap_or("")
