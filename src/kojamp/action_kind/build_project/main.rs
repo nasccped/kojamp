@@ -38,6 +38,10 @@ pub fn main() -> Result<Vec<KojampReport>, Vec<KojampReport>> {
     let name = name.unwrap();
     let src_files = get_all_sources(&kind, &PathBuf::from("src"))
         .map_err(|p| vec![unreadable_src_content(&p)])?;
+    let src_files: Vec<String> = src_files
+        .into_iter()
+        .map(|f| f.to_string_lossy().to_string())
+        .collect();
 
     if src_files.is_empty() {
         return Err(vec![src_dir_is_empty(&kind)]);
