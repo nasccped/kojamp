@@ -2,7 +2,7 @@ use super::super::consts::program::PROGRAM_REPO_URL;
 use super::IntoReasons;
 use crate::utils::string::StringTransformation;
 use colored::Colorize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn invalid_cur_dir() -> String {
     let function_name = format!(
@@ -43,10 +43,7 @@ pub fn invalid_cur_dir() -> String {
     )
 }
 
-pub fn invalid_project_name<T>(name: T) -> String
-where
-    T: AsRef<str>,
-{
+pub fn invalid_project_name<T: AsRef<str>>(name: T) -> String {
     let name = name.as_ref();
     let fixed_name = name.to_valid_camel_case();
 
@@ -211,5 +208,66 @@ pub fn main_app_undefined_error() -> String {
         "unexpected behavior".bright_red(),
         "issue".bright_cyan(),
         PROGRAM_REPO_URL
+    )
+}
+
+pub fn kojamp_toml_not_found() -> String {
+    format!(
+        "\
+        {} file wasn't found.\n\
+        Make sure you're at the {}",
+        "Kojamp.toml".bright_cyan(),
+        "right path".bright_green()
+    )
+}
+
+pub fn empty_message() -> String {
+    String::new()
+}
+
+pub fn toml_file_could_not_be_read() -> String {
+    format!(
+        "\
+    It {} but {}",
+        "exists".bright_green(),
+        "couldn't be read".bright_red()
+    )
+}
+
+pub fn unreadable_src_content(path: &Path) -> String {
+    format!(
+        "\
+        You're trying to read `{}` dir entries but get\n\
+        fail at a `{}`
+        ",
+        "src".bright_green(),
+        format!("{:?}", path).bright_red()
+    )
+}
+
+pub fn theres_no_files_for_the_given_project_kind(kind: &str) -> String {
+    format!(
+        "\
+        At least one {} file should be present in `{}` dir",
+        kind.bright_cyan(),
+        "src".bright_green()
+    )
+}
+
+pub fn main_project_file_is_not_present(file_name: String) -> String {
+    format!(
+        "\
+        The `{}` file was expected but\n\
+        it couldn't be found!",
+        file_name.bright_green()
+    )
+}
+
+pub fn successfully_compiled(file_count: usize) -> String {
+    format!(
+        "\
+        {} file(s) successfully compiled (`{}` dir)",
+        file_count,
+        "out".bright_yellow()
     )
 }

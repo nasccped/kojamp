@@ -13,14 +13,14 @@ pub fn cmd() -> Command {
                 .index(1),
             Arg::new("kind")
                 .long("kind")
-                .short('K')
+                .short('k')
                 .required(false)
                 .value_name("JAVA|KOTLIN")
                 .action(ArgAction::Set)
                 .help("Specifies the project kind"),
             Arg::new("authors")
                 .long("authors")
-                .short('A')
+                .short('a')
                 .required(false)
                 .value_name("QUOTED_LIST")
                 .action(ArgAction::Set)
@@ -32,7 +32,7 @@ pub fn cmd() -> Command {
                 .help("No git repo initialization when starting new project"),
             Arg::new("force")
                 .long("force")
-                .short('F')
+                .short('f')
                 .required(false)
                 .action(ArgAction::SetTrue)
                 .help("Force project initialization in a non empty dir"),
