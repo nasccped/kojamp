@@ -15,7 +15,7 @@ This is **Kojamp**, a Java and Kotlin project manager tool 📦
 > This is just a short overview about the Kojamp project. To see all
 > detailed info, check:
 >   - [`INSTALL.md`](https://github.com/nasccped/kojamp/blob/main/INSTALL.md), the installation guide 
->   - [`USAGE.md`](https://github.com/nasccped/kojamp/blob/main/INSTALL.md), the usage guide
+>   - [`USAGE.md`](https://github.com/nasccped/kojamp/blob/main/USAGE.md), the usage guide
 >   - [`WARN_MESSAGE.md`](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md), important
 >     warnings
 
