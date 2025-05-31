@@ -13,14 +13,14 @@ pub fn cmd() -> Command {
                 .index(1),
             Arg::new("kind")
                 .long("kind")
-                .short('K')
+                .short('k')
                 .required(false)
                 .value_name("JAVA|KOTLIN")
                 .action(ArgAction::Set)
                 .help("Specifies the project kind"),
             Arg::new("path")
                 .long("path")
-                .short('P')
+                .short('p')
                 .required(false)
                 .value_name("PATH")
                 .action(ArgAction::Set)
@@ -32,7 +32,7 @@ pub fn cmd() -> Command {
                 )),
             Arg::new("authors")
                 .long("authors")
-                .short('A')
+                .short('a')
                 .required(false)
                 .value_name("QUOTED_LIST")
                 .action(ArgAction::Set)
