@@ -66,6 +66,8 @@ project.
 
 ## Inspirations
 
+Others projects that helped me during the development 🫂
+
 - **[bacon](https://github.com/Canop/bacon) by [Denys Séguret](https://github.com/Canop):**
   good crate documentation 🐷
 - **[jargo](https://github.com/Marlon-Sbardelatti/jargo) by [Marlon Sbardelatti](https://github.com/Marlon-Sbardelatti):**
