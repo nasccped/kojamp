@@ -1,5 +1,5 @@
 use std::{
-    fs,
+    env, fs,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -60,20 +60,27 @@ pub fn get_all_sources<T: AsRef<str>>(kind: T, init_path: &Path) -> Result<Vec<P
     Ok(output)
 }
 
-pub fn run_build(name: &str, sources: Vec<PathBuf>, kind: &str) -> Result<bool, Vec<PathBuf>> {
+pub fn run_build(name: &str, sources: Vec<String>, kind: &str) -> Result<bool, Vec<String>> {
+    let pathenv: String = env::var("PATH").unwrap_or_default();
     let (cmd_name, dest) = match kind {
         "java" => ("javac", String::from("out")),
-        _ => ("kotlinc", format!("out/{}.jar", name)),
+        _ => (
+            r#"C:\Program Files\Kotlin\kotlinc\bin\kotlinc.bat"#,
+            format!("out/{}.jar", name),
+        ),
     };
 
-    let mut command_runner = Command::new(cmd_name);
+    let mut args = Vec::new();
     if kind == "kotlin" {
-        command_runner.arg("-include-runtime");
+        args.push("-include-runtime");
     }
+    args.extend(sources.iter().map(|s| s.as_str()));
+    args.push("-d");
+    args.push(&dest);
 
-    command_runner
-        .args(&sources)
-        .args(["-d", &dest])
+    Command::new(cmd_name)
+        .env("PATH", pathenv)
+        .args(args)
         .status()
         .map(|x| x.success())
         .map_err(|_| sources)
