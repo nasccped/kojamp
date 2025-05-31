@@ -44,7 +44,7 @@ kojamp new CodeDude --kind java
 ### Build the project's bytecode
 
 Works the same as `maven`, `gradle` and other project managers. It
-will take the java/kotlin files at src dir, compile it and drop the
+will take the java/kotlin files at `src` dir, compile it and drop the
 bytecode at `out` directory (you can use `b` as alias for this
 subcommand).
 
