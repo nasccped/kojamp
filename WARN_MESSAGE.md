@@ -9,6 +9,6 @@ So far we have the following implementations:
 
 - [x] `kojamp new`
 - [x] `kojamp init (ini)`
-- [ ] `kojamp build (b)`
+- [x] `kojamp build (b)`
 - [ ] `kojamp run (r)`
 - [x] `kojamp help`

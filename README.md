@@ -8,12 +8,16 @@ Kojamp
 
 </div>
 
-This is **Kojamp**, a Java/Kotlin project manager tool 📦
+This is **Kojamp**, a Java and Kotlin project manager tool 📦
 
-> [!CAUTION]
+> [!NOTE]
 >
-> Not all operations have been implemented. Check the
-> [WARN_MESSAGE.md](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md).
+> This is just a short overview about the Kojamp project. To see all
+> detailed info, check:
+>   - [`INSTALL.md`](https://github.com/nasccped/kojamp/blob/main/INSTALL.md), the installation guide 
+>   - [`USAGE.md`](https://github.com/nasccped/kojamp/blob/main/INSTALL.md), the usage guide
+>   - [`WARN_MESSAGE.md`](https://github.com/nasccped/kojamp/blob/main/WARN_MESSAGE.md), important
+>     warnings
 
 ## Installation
 
@@ -22,13 +26,6 @@ The following command will install **Kojamp** at your machine ⬇️
 ```sh
 cargo install kojamp
 ```
-
-> [!TIP]
->
-> [`cargo`](https://doc.rust-lang.org/cargo/getting-started/installation.html)
-> program is required to run the program above, but you can find
-> other ways of installation at
-> [INSTALL.md](https://github.com/nasccped/kojamp/blob/main/INSTALL.md).
 
 And now, you can test if the program runs 🔬
 
@@ -40,21 +37,36 @@ kojamp # A help panel is expected
 
 ### Create a new project
 
+The command bellow will create the `CodeDude` java project at code-dude
+directory (but you still can specify a directory destination by using
+the `--path` | `-p` flag followed by the path name 🤓☝️)
+
 ```sh
 kojamp new CodeDude --kind java
 ```
 
-This will create a new Java project called `CodeDude`. The project
-will be inside an auto-generated directory called `code-dude`, but
-you can still specify a path by using the `--path` flag.
-
-> [!NOTE]
+> [!TIP]
 >
-> The subcommand(s) above are just a sample of the `Kojamp` features.
-> You can find all features guide at
-> [USAGE.md](https://github.com/nasccped/kojamp/blob/main/USAGE.md).
+> By using `--kind java` flag/arg, a Java project will be created but
+> you can also use the `k` as `kind` alias and pass kotlin as value.
+
+### Build the project's bytecode
+
+Just like others project managers (`maven`, `gradle`, ...), you can
+use the `build` (or `b`) to compile your code:
+
+```sh
+kojamp build
+```
+
+This will take all your source code files (`.java` or `.kt`,
+depending on your project kind) compile and put it at `out` dir if
+**Java** project, else, `out/<PROJECT_NAME>.jar` if **Kotlin**
+project.
 
 ## Inspirations
+
+Others projects that helped me during the development 🫂
 
 - **[bacon](https://github.com/Canop/bacon) by [Denys Séguret](https://github.com/Canop):**
   good crate documentation 🐷
