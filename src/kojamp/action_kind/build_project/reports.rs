@@ -15,7 +15,7 @@ const THERES_NO_FILES_FOR_THE_GIVEN_PROJECT_KIND: &str =
     "There's no files for the given project kind";
 const MAIN_PROJECT_FILE_IS_NOT_PRESENT: &str = "Main project file isn't present in src dir";
 const COULD_NOT_COMPILE_THE_SOURCES: &str = "Couldn't compile the source code";
-const PROGRAM_SUCCESSFULLY_COMPILED: &str = "The `$$$` program was successfully compile";
+const PROGRAM_SUCCESSFULLY_COMPILED: &str = "The `$$$` program was successfully compiled";
 
 pub fn could_not_get_curdir() -> KojampReport {
     KojampReport::new(
