@@ -8,7 +8,7 @@ Kojamp
 
 </div>
 
-This is **Kojamp**, a Java/Kotlin project manager tool 📦
+This is **Kojamp**, a Java and Kotlin project manager tool 📦
 
 > [!CAUTION]
 >
