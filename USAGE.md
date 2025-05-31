@@ -16,6 +16,7 @@ Here you'll find infos about subcommands and flags usage.
 - [init](#init)
   - [rules, usage and examples](#init-rules-usage-and-examples)
     - [force](#init-force)
+- [build](#build)
 
 ## Help
 
@@ -211,3 +212,48 @@ It'll also preserve some auto-generated project files/dirs such as
 > file. These components are created whithin the program logic.
 > Otherwise, the process will fail and the program will print an
 > error message.
+
+## Build
+
+Builds the project bytecode from the files located at `src`
+directory.
+
+Here's a basic usage example:
+
+```sh
+kojamp build
+```
+
+It'll read your `src` directory recursively and take:
+- `.java` files (if your project kind is java)
+- `.kt` files (if your project kind is kotlin)
+
+So, don't worry if you're  putting `.txt` files at `src` too.
+
+After catching all source files, it will mount a `Vector` of paths
+and pass this to the respective compiler (`javac` |  `kotlinc`).
+Here's a brief example:
+
+```txt
+>>> Consider a java project kind
+
+🗂️ src
+├─ 🗂️ subdir
+│  ├─ 📄 ignore1.txt
+│  └─ ☕ SubJava.java
+├─ 📄 ignore2.txt
+└─ ☕ MainJava.java
+
+Will catch all java files within src dir and then, run
+
+$ javac src/MainJava.java src/subdir/SubJava.java -d out
+```
+
+> [!IMPORTANT]
+>
+> 1. The kojamp app doesn't care about how you organize your files
+>    and use your imports, it'll just take all sources and send it to
+>    the compiler 💂
+> 2. The same logic is valid to Kotlin kind projects, but instead of
+>    dropping the bytecode at `out`, it will create a `.jar` file
+>    with the same name as the project 👨‍🔧
