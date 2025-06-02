@@ -35,9 +35,10 @@ kojamp # A help panel is expected
 
 ### Create a new project
 
-The command bellow will create the `CodeDude` java project at code-dude
-directory (but you still can specify a directory destination by using
-the `--path` | `-p` flag followed by the path name 🤓☝️)
+The command bellow will create the `CreepShow` java project at
+creep-show directory, but you still can specify a directory
+destination by using the `--path` | `-p` flag followed by the path
+name.
 
 ```sh
 kojamp new CodeDude --kind java
