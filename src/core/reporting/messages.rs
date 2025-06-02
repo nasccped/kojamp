@@ -281,3 +281,16 @@ pub fn output_file_doesnt_exists(file_path: &Path) -> String {
         "kojamp run".bright_green()
     )
 }
+
+pub fn could_not_generate_output_file_path(name: &str, kind: &str) -> String {
+    format!(
+        "\
+        Couldn't generate the output file path for\n\
+        `{}` name and `{}` kind.\n\
+        \n\
+        They're probably unvalid fields at `{}`",
+        name.bright_green(),
+        kind.bright_green(),
+        "Kojamp.toml".bright_green()
+    )
+}
