@@ -16,6 +16,16 @@ This is **Kojamp**, a Java and Kotlin project manager tool 📦
 > detailed info, check:
 >   - [`INSTALL.md`](https://github.com/nasccped/kojamp/blob/main/INSTALL.md), the installation guide 
 >   - [`USAGE.md`](https://github.com/nasccped/kojamp/blob/main/USAGE.md), the usage guide
+>
+> ---
+>
+> The first beta release (`0.1.0`) is done but the project aren't on
+> the ideal implementation.
+>
+> You can now use it to have fun with fast project managing but
+> isn't recommended to professional/commercial purposes.
+>
+> The program will be refactored!
 
 ## Installation
 
