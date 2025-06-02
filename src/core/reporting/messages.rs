@@ -278,7 +278,7 @@ pub fn output_file_doesnt_exists(file_path: &Path) -> String {
         Trying to find `{}` file but it doesn't exists.\n\
         Consider using `{}` before",
         file_path.to_string_lossy().bright_green(),
-        "kojamp run".bright_green()
+        "kojamp build".bright_green()
     )
 }
 
