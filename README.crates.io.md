@@ -52,6 +52,14 @@ subcommand).
 kojamp build
 ```
 
+### Run the bytecode
+
+The command bellow will run your project's bytecode output:
+
+```sh
+kojamp run # also works by passing 'r' as subcommand
+```
+
 ## Inspirations
 
 - **[bacon](https://github.com/Canop/bacon) by [Denys Séguret](https://github.com/Canop):**
