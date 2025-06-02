@@ -52,7 +52,7 @@ kojamp new CodeDude --kind java
 ### Build the project's bytecode
 
 Just like others project managers (`maven`, `gradle`, ...), you can
-use the `build` (or `b`) to compile your code:
+use the `build` (or `b`) subcommand to compile your code:
 
 ```sh
 kojamp build
