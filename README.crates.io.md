@@ -15,6 +15,13 @@ Kojamp
 
 This is **Kojamp**, a Java and Kotlin project manager tool 📦
 
+## Requirements
+
+- 🦀 Rust compiler ([rustc](https://www.rust-lang.org/)) + Rust package
+  manager ([cargo](https://www.rust-lang.org/))
+- ☕ Java tools ([java, javac, jvm, ...](https://www.oracle.com/java/technologies/downloads/))
+- 🏝️ Kotlin compiler ([kotlinc](https://kotlinlang.org/docs/command-line.html#install-the-compiler))
+
 ## Installation
 
 The following command will install **Kojamp** at your machine ⬇️
