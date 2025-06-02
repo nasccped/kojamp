@@ -17,6 +17,7 @@ Here you'll find infos about subcommands and flags usage.
   - [rules, usage and examples](#init-rules-usage-and-examples)
     - [force](#init-force)
 - [build](#build)
+- [run](#run)
 
 ## Help
 
@@ -185,7 +186,7 @@ Creates a Java/Kotlin project in the current directory. (Can also be called with
 | `authors` | `A`          | (called with flag) | `--authors [-A] "<COMMA_SEPARATED_AUTHORS>"` | Specifies the authors for the project being created                 | No ❌    |
 | `no-git`  | **no alias** | (called with flag) | `--no-git`                                   | Disable git repository initialization for the project being created | No ❌    |
 | `force`   | **no alias** | (called with flag) | `--force`                                    | Forces the project initializing (even if isn't an empty dir)        | No ❌    |
-| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `init` subcommand                       | No ❌    |
+| `help`    | `-h`         | (called with flag) | `--help [-h]`                                | Print the help panel for the `init` subcommand                      | No ❌    |
 
 <h3 id="init-rules-usage-and-examples">Rules, usage and examples</h3>
 
@@ -257,3 +258,17 @@ $ javac src/MainJava.java src/subdir/SubJava.java -d out
 > 2. The same logic is valid to Kotlin kind projects, but instead of
 >    dropping the bytecode at `out`, it will create a `.jar` file
 >    with the same name as the project 👨‍🔧
+
+## Run
+
+Run the project's built bytecode (located at `out` dir):
+
+```sh
+kojamp run
+```
+
+> [!CAUTION]
+>
+> To use the `run` subcommand, you should have the project's
+> bytecode, so, make sure to use `kojamp build` before
+> running.
