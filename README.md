@@ -60,7 +60,7 @@ kojamp build
 
 This will take all your source code files (`.java` or `.kt`,
 depending on your project kind) compile and put it at `out` dir if
-**Java** project, else, `out/<PROJECT_NAME>.jar` if **Kotlin**
+**Java** project, otherwise, `out/<PROJECT_NAME>.jar` if **Kotlin**
 project.
 
 ## Inspirations
