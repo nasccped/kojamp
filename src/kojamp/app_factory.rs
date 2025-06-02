@@ -11,6 +11,7 @@ type MatchingAlias = Option<(Rc<str>, ArgMatches)>;
 
 const CREATE_PROJECT_COMMANDS: [&str; 3] = ["new", "init", "ini"];
 const BUILD_PROJECT_COMMANDS: [&str; 2] = ["build", "b"];
+const RUN_PROJECT_COMMANDS: [&str; 2] = ["run", "r"];
 
 #[derive(Default)]
 pub struct KojampBuilder {
@@ -98,6 +99,7 @@ impl KojampApp for Command {
             match (matching.0.as_ref(), matching.1) {
                 (x, m) if CREATE_PROJECT_COMMANDS.contains(&x) => action::new_project((x, m)),
                 (x, _) if BUILD_PROJECT_COMMANDS.contains(&x) => action::build_project(),
+                (x, _) if RUN_PROJECT_COMMANDS.contains(&x) => action::run_project(),
                 // if matching isn't None and it's different from the matches above, alert:
                 _ => Err(Vec::from([KojampReport::new(
                     ReportType::Error,
