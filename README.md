@@ -63,6 +63,14 @@ depending on your project kind) compile and put it at `out` dir if
 **Java** project, otherwise, `out/<PROJECT_NAME>.jar` if **Kotlin**
 project.
 
+### Run the bytecode
+
+The command bellow will run your project's bytecode output:
+
+```sh
+kojamp run # also works by passing 'r' as subcommand
+```
+
 ## Inspirations
 
 Others projects that helped me during the development 🫂
