@@ -63,9 +63,15 @@ pub fn get_all_sources<T: AsRef<str>>(kind: T, init_path: &Path) -> Result<Vec<P
 pub fn run_build(name: &str, sources: Vec<String>, kind: &str) -> Result<bool, Vec<String>> {
     let pathenv: String = env::var("PATH").unwrap_or_default();
     let (cmd_name, dest) = match kind {
-        "java" => ("javac", String::from("out")),
+        "java" => (String::from("javac"), String::from("out")),
         _ => (
-            r#"C:\Program Files\Kotlin\kotlinc\bin\kotlinc.bat"#,
+            {
+                let mut cmd = String::from("kotlinc");
+                if cfg!(target_os = "windows") {
+                    cmd.push_str(".bat");
+                }
+                cmd
+            },
             format!("out/{}.jar", name),
         ),
     };

@@ -271,3 +271,26 @@ pub fn successfully_compiled(file_count: usize) -> String {
         "out".bright_yellow()
     )
 }
+
+pub fn output_file_doesnt_exists(file_path: &Path) -> String {
+    format!(
+        "\
+        Trying to find `{}` file but it doesn't exists.\n\
+        Consider using `{}` before",
+        file_path.to_string_lossy().bright_green(),
+        "kojamp build".bright_green()
+    )
+}
+
+pub fn could_not_generate_output_file_path(name: &str, kind: &str) -> String {
+    format!(
+        "\
+        Couldn't generate the output file path for\n\
+        `{}` name and `{}` kind.\n\
+        \n\
+        They're probably unvalid fields at `{}`",
+        name.bright_green(),
+        kind.bright_green(),
+        "Kojamp.toml".bright_green()
+    )
+}
