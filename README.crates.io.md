@@ -52,10 +52,6 @@ subcommand).
 kojamp build
 ```
 
-> ⚠️ The program is undergoing a development stage. Not all features
-> have been implemented. Check the
-> [official repo](https://github.com/nasccped/kojamp)!
-
 ## Inspirations
 
 - **[bacon](https://github.com/Canop/bacon) by [Denys Séguret](https://github.com/Canop):**
