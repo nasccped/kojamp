@@ -38,7 +38,7 @@ pub fn main() -> Result<Vec<KojampReport>, Vec<KojampReport>> {
         return Err(vec![output_file_doesnt_exists(output_exists.1.as_path())]);
     }
 
-    println!("Running `{}` project:\n", name.bright_green());
+    println!("Running `{}` project:\x1b[0m\n", name.bright_green());
     run_output(kind.as_str(), output_exists.1.as_path());
 
     Ok(vec![])
