@@ -29,3 +29,8 @@ reason to exists:
 | `unstable` | ❌ No          | No changes here. It can result in conflicts when merging               |
 
 </div>
+
+## So, how can I contribute?
+
+Simple! With the previous info in mind, I'll give you the
+step-by-step to contribute:
