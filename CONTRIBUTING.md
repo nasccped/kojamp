@@ -1,6 +1,11 @@
 Contributing
 ============
 
+> [!NOTE]
+>
+> This is just a provisional contributing help page. It can change
+> soon. So... stay tuned for new contribute guides!
+
 Do you want to contribute in **kojamp** project? I really appreciate
 it ❤️
 
