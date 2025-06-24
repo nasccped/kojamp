@@ -111,3 +111,9 @@ git push origin <FEATURE_BRANCH_NAME>
 
 Go to your forked repo at GitHub and set `Base branch` to
 `<TARGET_BRANCH_NAME>` and PR it!
+
+## Warning
+
+This isn't the ideal way to contribute to a project, I know. This
+guide is temporary and will be updated. Thank you for the
+attention ❤️
