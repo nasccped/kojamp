@@ -40,14 +40,14 @@ reason to exists:
 Simple! With the previous info in mind, I'll give you the
 step-by-step to contribute:
 
-### `1.` Forking
+1. Forking
 
 Go to the [repository main page](https://github.com/nasccped/kojamp)
 and click on **Fork** button.
 
 > Make sure to **uncheck** the `copy only main branch` option!
 
-### `2.` Cloning + set original as upstream
+2. Cloning + set original as upstream
 
 Go to an appropriate path at your machine and clone the repo, then
 add the original repo as upstream for later fetching:
@@ -63,7 +63,7 @@ git remote add upstream https://github.com/nasccped/kojamp
 > default name (`kojamp`). If you have specified a new name, you
 > should replace the `kojamp` with the new repository name!
 
-### `3.` Project branch
+3. Project branch
 
 Before start contributing, go to the target branch that you want to
 contribute (`docs`, `docker`, `dev`) and then create a new branch
@@ -74,7 +74,7 @@ git checkout <TARGET_BRANCH_NAME> &&
 git checkout -b <FEATURE_BRANCH_NAME>
 ```
 
-### `4.` Changes & committing
+4. Changes & committing
 
 Add and commit your changes:
 
@@ -88,7 +88,7 @@ git commit -m "changes commit"
 > For commits, you can use the
 > [commit conventions cheatsheet](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13#file-conventional-commits-cheatsheet-md).
 
-### `5.` Branch sync
+5. Branch sync
 
 Before pushing your PR, you should sync it to your target branch to
 avoid conflict when merging it into `main` branch:
@@ -101,7 +101,7 @@ git merge upstream/<TARGET_BRANCH_NAME>
 # then, solve conflict cases...
 ```
 
-### `6.` Pushing PR
+6. Pushing PR
 
 And finally, push your pull request to you GitHub forked repo:
 
