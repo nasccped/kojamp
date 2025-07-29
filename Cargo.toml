@@ -1,6 +1,6 @@
 [package]
 name = "kojamp"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["nasccped <pdbt.contact@gmail.com>"]
 description = "Some kind of basic 'n academic Java/Kotlin project-manager tool 📦"
