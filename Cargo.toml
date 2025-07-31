@@ -39,3 +39,6 @@ toml = "0.8.22"
 
 [workspace.dependencies]
 toml = "0.8.22"
+
+[build-dependencies]
+kojamp_builder = { path = "./crates/kojamp_builder" }
