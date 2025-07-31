@@ -1,3 +1,7 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
 [package]
 name = "kojamp"
 version = "0.1.2"
@@ -31,4 +35,7 @@ clap = "4.5.34"
 colored = "3.0.0"
 regex = "1.11.1"
 serde = { version = "1.0.219", features = ["derive", "rc"] }
+toml = "0.8.22"
+
+[workspace.dependencies]
 toml = "0.8.22"
