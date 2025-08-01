@@ -37,91 +37,89 @@ pub struct Config {
 /// authors = ["some body@gmail.com"]
 /// repository = "https://link-to.repository"
 /// ```
-///
-/// This enum represents if:
-///
-/// - a field is missing (ie, `name` field not found);
-///
-/// - a field have unexpected formatting (ie, an integer where a string was
-///   expected);
-///
-/// - the `authors` field have unexpected formatting (even the Clap app
-///   receives only one author, the `authors` at `Cargo.toml` is always an
-///   array of strings).
 #[derive(Debug)]
-pub enum ErrorKind {
+pub enum ErrorKind<'a> {
+    /// When a toml field is missing.
+    ///
+    /// It stores a Vector of all missing fields (as String). The field name is
+    /// recursive also, so this input:
+    ///
+    /// ```toml
+    /// [package]
+    /// name = "example"
+    /// # expecting (lang = "rust") to be here...
+    /// other_items = {
+    ///     # expecting (salary = 1000.50) to be here...
+    ///
+    ///     # ...
+    /// ```
+    ///
+    /// will return a `FieldsNotFound(["package.lang",
+    /// "package.other_items.salary"])`.
     FieldsNotFound(Vec<String>),
+    /// When a field doesn't have the expected type. It returns the field
+    /// name + field in debug format (ie, `NAME<TYPE(VALUE)>`).
     UnexpectedFieldsFormatting(Vec<String>),
+    /// When the 'authors' field doesn't have the expected type (List(String)).
     UnexpectedAuthorsFormatting(String),
-    UnexpectedTomlFormatting(String),
+    /// When `&str` parsing returns an error.
+    UnparseableToml(&'a str),
 }
 
-impl ErrorKind {
+impl ErrorKind<'_> {
+    /// Prints the self-enum inner variant.
     pub fn report(&self) {
-        eprintln!("toml-config parsing returned {self:?}");
+        eprintln!("toml-config parsing returned:\n{self:?}");
     }
 }
 
-impl TryFrom<Value> for Config {
-    type Error = ErrorKind;
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        // get package or return not found
-        let package = value
+impl<'a> TryFrom<&'a str> for Config {
+    type Error = ErrorKind<'a>;
+
+    /// Try converting a `&str` to a [`Config`].
+    ///
+    /// It may return an error accordingly to the [`ErrorKind`] variants
+    /// description.
+    fn try_from(value: &'a str) -> Result<Self, Self::Error> {
+        let toml_item: Value = value
+            .parse::<Value>()
+            .map_err(|_| ErrorKind::UnparseableToml(value))?;
+        let package = toml_item
             .get(ACCESS_PACKAGE)
             .ok_or(ErrorKind::FieldsNotFound(vec![ACCESS_PACKAGE.into()]))?;
-        let fields = [
-            ACCESS_NAME,
-            ACCESS_VERSION,
-            ACCESS_ABOUT,
-            // ACCESS_AUTHORS - should not be present since 'authors' field is
-            // an array instead of a string
-            ACCESS_REPO_URL,
-        ];
-        // extract values from `toml::Value` obj. else return Err(Missing)
-        let toml_values = {
-            let (success, errors) = fields
-                .iter()
-                .map(|f| package.get(f).ok_or(format!("{ACCESS_PACKAGE}.{f}")))
-                .fold((Vec::new(), Vec::new()), |(mut suc, mut err), item| {
-                    match item {
-                        Ok(i) => suc.push(i),
-                        Err(i) => err.push(i),
-                    }
-                    (suc, err)
-                });
-            if errors.is_empty() {
-                Ok(success)
-            } else {
-                Err(ErrorKind::FieldsNotFound(errors))
-            }
-        }?;
-        // unwrap all items as iter of strings, else return
-        // Err(UnexpectedFormat)
-        let mut toml_strs = {
-            let (success, errors) = toml_values
-                .iter()
-                .map(|v| v.as_str().ok_or(format!("{v:?}")))
-                .fold((Vec::new(), Vec::new()), |(mut suc, mut err), item| {
-                    match item {
-                        Ok(i) => suc.push(i),
-                        Err(i) => err.push(i),
-                    }
-                    (suc, err)
-                });
-            if errors.is_empty() {
-                Ok(success)
-            } else {
-                Err(ErrorKind::UnexpectedFieldsFormatting(errors))
+
+        let mut missing_fields = Vec::new();
+        let mut not_str_fields = Vec::new();
+        let mut struct_fields = Vec::new();
+
+        for field in
+            [ACCESS_NAME, ACCESS_VERSION, ACCESS_ABOUT, ACCESS_REPO_URL]
+        {
+            match package.get(field) {
+                Some(v) => match v.as_str() {
+                    Some(s) => struct_fields.push(s),
+                    _ => not_str_fields.push(format!("{field}<{v:?}>")),
+                },
+                None => {
+                    missing_fields.push(format!("{ACCESS_PACKAGE}.{field}"))
+                }
             }
         }
-        .map(|vector| vector.into_iter())?;
 
-        let mut next_str = || toml_strs.next().unwrap();
-        let name = next_str().to_string();
-        let version = next_str().to_string();
+        if !missing_fields.is_empty() {
+            return Err(ErrorKind::FieldsNotFound(missing_fields));
+        } else if !not_str_fields.is_empty() {
+            return Err(ErrorKind::UnexpectedFieldsFormatting(not_str_fields));
+        }
+
+        let mut struct_fields = struct_fields.iter();
+
+        let mut next = || struct_fields.next().unwrap().to_string();
+        let name = next();
+        let version = next();
         let author = try_get_author(package)?;
-        let about = next_str().to_string();
-        let repo_url = next_str().to_string();
+        let about = next();
+        let repo_url = next();
 
         Ok(Self {
             name,
@@ -130,17 +128,6 @@ impl TryFrom<Value> for Config {
             repo_url,
             author,
         })
-    }
-}
-
-impl TryFrom<&str> for Config {
-    type Error = ErrorKind;
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        if let Ok(tml) = value.parse::<Value>() {
-            Config::try_from(tml)
-        } else {
-            Err(ErrorKind::UnexpectedTomlFormatting(value.into()))
-        }
     }
 }
 
@@ -169,9 +156,9 @@ impl TryFrom<&str> for Config {
 ///
 /// Before returning the `Ok(String)` result, the author name will be changed
 /// to a clap acceptable value, (from `"USER_NAME <USER_EMAIL>"` to
-/// `"USER_NAME, USER_EMAIL"`). if it fails, the function will also return an
+/// `"USER_NAME, USER_EMAIL"`). if it fails, the function will return an
 /// [`ErrorKind::UnexpectedAuthorsFormatting`].
-fn try_get_author(from: &Value) -> Result<String, ErrorKind> {
+fn try_get_author(from: &Value) -> Result<String, ErrorKind<'static>> {
     let authors = from
         .get(ACCESS_AUTHORS)
         .ok_or(ErrorKind::FieldsNotFound(vec![ACCESS_AUTHORS.into()]))?;
@@ -201,7 +188,7 @@ fn try_get_author(from: &Value) -> Result<String, ErrorKind> {
 fn author_unwrap_or_err<T>(
     from: Option<T>,
     toml_value: &Value,
-) -> Result<T, ErrorKind> {
+) -> Result<T, ErrorKind<'static>> {
     from.ok_or(ErrorKind::UnexpectedAuthorsFormatting(format!(
         "{toml_value:?}"
     )))
@@ -249,6 +236,15 @@ mod tests {
 
     const EMPTY_INPUT: &str = "";
 
+    const INVALID_FORMATTING_INPUT: &str = r#"
+        [package]
+        name = "A name"
+        version = 12
+        authors = ["Kalleb Jhonsons <pseudo@name.com>"]
+        description = "A cool description, I guess..."
+        repository = "https://url.example"
+        "#;
+
     const FINAL_INPUT: &str = r#"
         [package]
         name = "package.name"
@@ -258,227 +254,112 @@ mod tests {
         repository = "https://url.example"
         "#;
 
-    fn gen_toml(toml_str: &str) -> Value {
-        toml_str
-            .parse::<Value>()
-            .expect("Failed to unwrap string as toml:")
+    #[test]
+    fn valid_input() {
+        let _ = Config::try_from(VALID_INPUT).unwrap_or_else(|e| {
+            e.report();
+            panic!();
+        });
     }
 
-    // ------------------------------------------------------------------------
-    // test try_from using &str inputs
-    // ------------------------------------------------------------------------
-    mod str_testing {
-        use super::*;
-        #[test]
-        fn valid_input() {
-            if let Err(x) = Config::try_from(VALID_INPUT) {
-                x.report();
-                panic!();
-            }
-        }
-
-        #[test]
-        fn missing_name_input() {
-            let err_val = Config::try_from(MISSING_NAME_INPUT).expect_err(
-            "An Error type (ErrorKind) was expected but Ok(_) was returned!",
-        );
-            match err_val {
-                ErrorKind::FieldsNotFound(v) => {
-                    assert_eq!(
-                        v,
-                        ["package.name"],
-                        "Only name field must be missing from input"
-                    )
-                }
-                e => {
-                    panic!(
-                        "`FieldsNotFound` variant was expected but item is {e:?}"
-                    )
-                }
-            }
-        }
-
-        #[test]
-        fn empty_authors_input() {
-            let err_val = Config::try_from(EMPTY_AUTHORS_INPUT).expect_err(
-            "An Error type (ErrorKind) was expected but Ok(_) was returned!",
-        );
-            match err_val {
-                ErrorKind::UnexpectedAuthorsFormatting(a) => {
-                    assert_eq!(a, "Array([])")
-                }
-                e => {
-                    panic!(
-                        "`UnexpectedAuthorsFormatting` variant was expected but item is {e:?}"
-                    )
-                }
-            }
-        }
-
-        #[test]
-        fn wrong_author_format_input() {
-            let err_val = Config::try_from(WRONG_AUTHOR_FORMAT_INPUT).expect_err(
-            "An Error type (ErrorKind) was expected but Ok(_) was returned!",
-        );
-            match err_val {
-                ErrorKind::UnexpectedAuthorsFormatting(a) => {
-                    assert_eq!(
-                        a,
-                        r#"Array([String("This is <An> Invalid <name@mail.com>")])"#
-                    )
-                }
-                e => {
-                    panic!(
-                        "`UnexpectedAuthorsFormatting` variant was expected but item is {e:?}"
-                    )
-                }
-            }
-        }
-
-        #[test]
-        fn empty_input() {
-            match Config::try_from(EMPTY_INPUT)
-                .expect_err("An error was expected from empty input")
-            {
-                ErrorKind::FieldsNotFound(v) => assert_eq!(
+    #[test]
+    fn missing_name_input() {
+        let err_val = Config::try_from(MISSING_NAME_INPUT)
+            .expect_err("An Err variant was expected but the result is Ok");
+        match err_val {
+            ErrorKind::FieldsNotFound(v) => {
+                assert_eq!(
                     v,
-                    ["package"],
-                    "Only package should be missing from {EMPTY_INPUT}"
-                ),
-                e => {
-                    panic!(
-                        "`FieldsNotFound` variant was expected but item is {e:?}"
-                    )
-                }
+                    ["package.name"],
+                    "Only name field must be missing from input"
+                )
             }
-        }
-
-        #[test]
-        fn final_input() {
-            let config = match Config::try_from(FINAL_INPUT) {
-                Ok(c) => c,
-                Err(e) => {
-                    panic!("A Ok variant was expected but the result is {e:?}")
-                }
-            };
-            println!("{}", config.author);
-            assert_eq!(config.name, "package.name");
-            assert_eq!(config.version, "0.4.2");
-            assert_eq!(config.about, "I live within a test world");
-            assert_eq!(config.author, "nascc, ped@mail.com");
-            assert_eq!(config.repo_url, "https://url.example");
+            e => {
+                panic!(
+                    "`FieldsNotFound` variant was expected but item is {e:?}"
+                )
+            }
         }
     }
 
-    // ------------------------------------------------------------------------
-    // test try_from using toml::Value inputs
-    // ------------------------------------------------------------------------
-    mod toml_obj_testing {
-        use super::*;
-        #[test]
-        fn valid_input() {
-            let t = gen_toml(VALID_INPUT);
-            if let Err(x) = Config::try_from(t) {
-                x.report();
-                panic!();
+    #[test]
+    fn empty_authors_input() {
+        let err_val = Config::try_from(EMPTY_AUTHORS_INPUT)
+            .expect_err("An Err variant was expected but the result is Ok");
+        match err_val {
+            ErrorKind::UnexpectedAuthorsFormatting(a) => {
+                assert_eq!(a, "Array([])")
+            }
+            e => {
+                panic!(
+                    "`UnexpectedAuthorsFormatting` variant was expected but item is {e:?}"
+                )
             }
         }
+    }
 
-        #[test]
-        fn missing_name_input() {
-            let t = gen_toml(MISSING_NAME_INPUT);
-            let err_val = Config::try_from(t).expect_err(
-            "An Error type (ErrorKind) was expected but Ok(_) was returned!",
-        );
-            match err_val {
-                ErrorKind::FieldsNotFound(v) => {
-                    assert_eq!(
-                        v,
-                        ["package.name"],
-                        "Only name field must be missing from input"
-                    )
-                }
-                e => {
-                    panic!(
-                        "`FieldsNotFound` variant was expected but item is {e:?}"
-                    )
-                }
+    #[test]
+    fn wrong_author_format_input() {
+        let err_val = Config::try_from(WRONG_AUTHOR_FORMAT_INPUT)
+            .expect_err("An Err variant was expected but the result is Ok");
+        match err_val {
+            ErrorKind::UnexpectedAuthorsFormatting(a) => {
+                assert_eq!(
+                    a,
+                    r#"Array([String("This is <An> Invalid <name@mail.com>")])"#
+                )
+            }
+            e => {
+                panic!(
+                    "`UnexpectedAuthorsFormatting` variant was expected but item is {e:?}"
+                )
             }
         }
+    }
 
-        #[test]
-        fn empty_authors_input() {
-            let t = gen_toml(EMPTY_AUTHORS_INPUT);
-            let err_val = Config::try_from(t).expect_err(
-            "An Error type (ErrorKind) was expected but Ok(_) was returned!",
-        );
-            match err_val {
-                ErrorKind::UnexpectedAuthorsFormatting(a) => {
-                    assert_eq!(a, "Array([])")
-                }
-                e => {
-                    panic!(
-                        "`UnexpectedAuthorsFormatting` variant was expected but item is {e:?}"
-                    )
-                }
+    #[test]
+    fn empty_input() {
+        match Config::try_from(EMPTY_INPUT)
+            .expect_err("An Err variant was expected but the result is Ok")
+        {
+            ErrorKind::FieldsNotFound(v) => assert_eq!(
+                v,
+                ["package"],
+                "Only package should be missing from {EMPTY_INPUT}"
+            ),
+            e => {
+                panic!(
+                    "`FieldsNotFound` variant was expected but item is {e:?}"
+                )
             }
         }
+    }
 
-        #[test]
-        fn wrong_author_format_input() {
-            let t = gen_toml(WRONG_AUTHOR_FORMAT_INPUT);
-            let err_val = Config::try_from(t).expect_err(
-            "An Error type (ErrorKind) was expected but Ok(_) was returned!",
-        );
-            match err_val {
-                ErrorKind::UnexpectedAuthorsFormatting(a) => {
-                    assert_eq!(
-                        a,
-                        r#"Array([String("This is <An> Invalid <name@mail.com>")])"#
-                    )
-                }
-                e => {
-                    panic!(
-                        "`UnexpectedAuthorsFormatting` variant was expected but item is {e:?}"
-                    )
-                }
+    #[test]
+    fn invalid_formatting_input() {
+        let config = Config::try_from(INVALID_FORMATTING_INPUT)
+            .expect_err("An Err variant was expected but the result is Ok");
+        match config {
+            ErrorKind::UnexpectedFieldsFormatting(fields) => {
+                assert_eq!(fields, ["version<Integer(12)>"])
             }
+            e => panic!(
+                "UnexpectedFieldsFormatting variant was expected but return was {e:?}"
+            ),
         }
+    }
 
-        #[test]
-        fn empty_input() {
-            let t = gen_toml(EMPTY_INPUT);
-            match Config::try_from(t)
-                .expect_err("An error was expected from empty input")
-            {
-                ErrorKind::FieldsNotFound(v) => assert_eq!(
-                    v,
-                    ["package"],
-                    "Only package should be missing from {EMPTY_INPUT}"
-                ),
-                e => {
-                    panic!(
-                        "`FieldsNotFound` variant was expected but item is {e:?}"
-                    )
-                }
-            }
-        }
+    #[test]
+    fn final_input() {
+        let config = Config::try_from(FINAL_INPUT).unwrap_or_else(|e| {
+            panic!("An Ok variant was expected but the result is {e:?}")
+        });
 
-        #[test]
-        fn final_input() {
-            let t = gen_toml(FINAL_INPUT);
-            let config = match Config::try_from(t) {
-                Ok(c) => c,
-                Err(e) => {
-                    panic!("A Ok variant was expected but the result is {e:?}")
-                }
-            };
-            println!("{}", config.author);
-            assert_eq!(config.name, "package.name");
-            assert_eq!(config.version, "0.4.2");
-            assert_eq!(config.about, "I live within a test world");
-            assert_eq!(config.author, "nascc, ped@mail.com");
-            assert_eq!(config.repo_url, "https://url.example");
-        }
+        println!("{}", config.author);
+        assert_eq!(config.name, "package.name");
+        assert_eq!(config.version, "0.4.2");
+        assert_eq!(config.about, "I live within a test world");
+        assert_eq!(config.author, "nascc, ped@mail.com");
+        assert_eq!(config.repo_url, "https://url.example");
     }
 }
