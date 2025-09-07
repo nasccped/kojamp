@@ -137,16 +137,8 @@ version = "0.1.2"
 dependencies = [
  "clap",
  "colored",
- "kojamp_builder",
  "regex",
  "serde",
- "toml",
-]
-
-[[package]]
-name = "kojamp_builder"
-version = "0.1.0"
-dependencies = [
  "toml",
 ]
 
