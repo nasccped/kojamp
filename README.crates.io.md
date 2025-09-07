@@ -7,31 +7,33 @@ Kojamp
 
 </div>
 
-> ⚠️ This is a shorter README version designed to be displayed only at
-> crates.io.
+> [!CAUTION]
 >
-> Consider going to the
-> [official GitHub repository](https://github.com/nasccped/kojamp).
+> This project is no longer maintained. Try using
+> [jsmoke](https://github.com/nasccped/jsmoke) instead!
+>
+> The official README is located at it's own repository:
+> https://github.com/nasccped/kojamp
 
 This is **Kojamp**, a Java and Kotlin project manager tool 📦
 
 ## Requirements
 
-- 🦀 Rust compiler ([rustc](https://www.rust-lang.org/)) + Rust package
-  manager ([cargo](https://www.rust-lang.org/))
-- ☕ Java tools ([java, javac, jvm, ...](https://www.oracle.com/java/technologies/downloads/))
-- 🏝️ Kotlin compiler ([kotlinc](https://kotlinlang.org/docs/command-line.html#install-the-compiler))
+- [rust tools](https://www.rust-lang.org/) (compiler + package
+  manager)
+- [java tools](https://www.oracle.com/java/technologies/downloads/)
+  (`java`, `javac`, ...)
+- [kotlin compiler](https://kotlinlang.org/docs/command-line.html#install-the-compiler)
+  (if building kotlin projects)
 
 ## Installation
 
-The following command will install **Kojamp** at your machine ⬇️
-
+The following command will install **Kojamp** at your machine:
 ```sh
 cargo install kojamp
 ```
 
-And now, you can test if the program runs 🔬
-
+And now, you can test if the program runs:
 ```sh
 kojamp # A help panel is expected
 ```
@@ -40,39 +42,38 @@ kojamp # A help panel is expected
 
 ### Create a new project
 
-The command bellow will create the `CodeDude` java project at code-dude
-directory (but you still can specify a directory destination by using
-the `--path` | `-p` flag followed by the path name 🤓☝️)
-
+The command bellow will create a new directory _(code-dude)_ with a
+java project:
 ```sh
 kojamp new CodeDude --kind java
 ```
 
 ### Build the project's bytecode
 
-Works the same as `maven`, `gradle` and other project managers. It
-will take the java/kotlin files at `src` dir, compile it and drop the
-bytecode at `out` directory (you can use `b` as alias for this
-subcommand).
+Just like others project managers (`maven`, `gradle`, ...), you can
+use the `build` (or `b`) subcommand to compile your code:
 
 ```sh
 kojamp build
 ```
+
+It will place the bytecode at `out` directory (if compilation
+success).
 
 ### Run the bytecode
 
 The command bellow will run your project's bytecode output:
 
 ```sh
-kojamp run # also works by passing 'r' as subcommand
+kojamp run
 ```
 
 ## Inspirations
 
 - **[bacon](https://github.com/Canop/bacon) by [Denys Séguret](https://github.com/Canop):**
-  good crate documentation 🐷
+  good crate documentation
 - **[jargo](https://github.com/Marlon-Sbardelatti/jargo) by [Marlon Sbardelatti](https://github.com/Marlon-Sbardelatti):**
-  similar project 🏝️
+  similar project
 
 ## License
 
